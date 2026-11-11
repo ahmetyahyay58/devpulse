@@ -1,11 +1,11 @@
 """Canlı GitHub istemcisi (GraphQL API). GitHubSource arayüzünü uygular."""
 import time
 from collections.abc import Iterator
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import httpx
 
-from app.sync.source import CommitData, Profile, RepoData, RequestStat
+from app.sync.source import CalendarDay, CommitData, Profile, RepoData, RequestStat
 
 GRAPHQL_URL = "https://api.github.com/graphql"
 RETRY_STATUSES = {502, 503, 504}  # GitHub büyük sorgularda ara sıra 502 verir
@@ -55,6 +55,17 @@ query($from: DateTime!, $to: DateTime!) {
 }
 """
 
+CALENDAR_QUERY = """
+query($from: DateTime!, $to: DateTime!) {
+  viewer {
+    contributionsCollection(from: $from, to: $to) {
+      contributionCalendar { weeks { contributionDays { date contributionCount } } }
+    }
+  }
+  rateLimit { cost remaining }
+}
+"""
+
 COMMITS_QUERY = """
 query($repo: ID!, $author: ID!, $after: String) {
   node(id: $repo) {
@@ -86,6 +97,18 @@ class GitHubError(Exception):
 def _dt(value: str | None) -> datetime | None:
     # GitHub "2026-11-11T08:00:00Z" biçiminde UTC döner.
     return datetime.fromisoformat(value) if value else None
+
+
+def _year_ranges(profile: Profile) -> list[dict]:
+    """contributionsCollection en fazla 1 yıllık aralık kabul eder: hesap açılış
+    yılından bugüne her yıl için bir {from, to} aralığı."""
+    now = datetime.now(timezone.utc)
+    ranges = []
+    for year in range(profile.created_at.year, now.year + 1):
+        start = datetime(year, 1, 1, tzinfo=timezone.utc)
+        end = min(datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc), now)
+        ranges.append({"from": start.isoformat(), "to": end.isoformat()})
+    return ranges
 
 
 class LiveGitHubClient:
@@ -142,22 +165,24 @@ class LiveGitHubClient:
                 break
             after = page["pageInfo"]["endCursor"]
 
-        # 2) Başkasına ait ama commit atılmış repolar: contributionsCollection en fazla
-        #    1 yıllık aralık kabul ettiği için hesap açılış yılından bugüne yıl yıl.
-        now = datetime.now(timezone.utc)
-        for year in range(profile.created_at.year, now.year + 1):
-            start = datetime(year, 1, 1, tzinfo=timezone.utc)
-            end = min(datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc), now)
-            data = self._query(
-                "contributed_repos",
-                CONTRIBUTED_REPOS_QUERY,
-                {"from": start.isoformat(), "to": end.isoformat()},
-            )
+        # 2) Başkasına ait ama commit atılmış repolar (yıl yıl)
+        for year_range in _year_ranges(profile):
+            data = self._query("contributed_repos", CONTRIBUTED_REPOS_QUERY, year_range)
             for item in data["viewer"]["contributionsCollection"]["commitContributionsByRepository"]:
                 node = item["repository"]
                 repos.setdefault(node["id"], self._repo(node, profile))
 
         return list(repos.values())
+
+    def fetch_calendar(self, profile: Profile) -> list[CalendarDay]:
+        days: dict[date, int] = {}
+        for year_range in _year_ranges(profile):
+            data = self._query("calendar", CALENDAR_QUERY, year_range)
+            weeks = data["viewer"]["contributionsCollection"]["contributionCalendar"]["weeks"]
+            for week in weeks:
+                for d in week["contributionDays"]:
+                    days[date.fromisoformat(d["date"])] = d["contributionCount"]
+        return [CalendarDay(day=k, count=v) for k, v in sorted(days.items())]
 
     def fetch_commits(self, repo: RepoData, profile: Profile) -> Iterator[CommitData]:
         after = None

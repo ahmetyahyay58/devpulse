@@ -10,8 +10,8 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
-from app.models import Commit, Repo, SyncJob, User
-from app.sync.source import GitHubSource, Profile, RepoData
+from app.models import Commit, ContributionDay, Repo, SyncJob, User
+from app.sync.source import CalendarDay, GitHubSource, Profile, RepoData
 
 COMMIT_BATCH = 500
 
@@ -50,6 +50,21 @@ def _insert_commits(db: Session, repo_id: int, batch: list[dict]) -> int:
         .returning(Commit.id)
     )
     return len(db.execute(stmt).all())
+
+
+def _upsert_calendar(db: Session, user_id: int, days: list[CalendarDay]) -> int:
+    """Takvim günlerini yazar; gün zaten varsa sayıyı günceller (gün içinde artabilir)."""
+    if not days:
+        return 0
+    stmt = insert(ContributionDay).values(
+        [{"user_id": user_id, "day": d.day, "count": d.count} for d in days]
+    )
+    stmt = stmt.on_conflict_do_update(
+        index_elements=[ContributionDay.user_id, ContributionDay.day],
+        set_={"count": stmt.excluded.count},
+    )
+    db.execute(stmt)
+    return len(days)
 
 
 def _record_requests(job: SyncJob, source: GitHubSource) -> None:
@@ -92,6 +107,9 @@ def run_sync(source: GitHubSource) -> int:
                 job.repos_done += 1
                 _record_requests(job, source)
                 db.commit()  # her repodan sonra: ilerleme ekranı bunu görür
+
+            job.calendar_days = _upsert_calendar(db, user_id, source.fetch_calendar(profile))
+            _record_requests(job, source)
 
             job.status = "done"
             job.finished_at = _now()

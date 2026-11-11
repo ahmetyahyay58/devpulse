@@ -4,13 +4,14 @@ Gizlilik: e-posta ve commit yazar adı hiçbir tabloda saklanmaz.
 Başka kişilerin kullanıcı adları da saklanmaz (repo sahibi login'i dahil).
 Tüm zamanlar UTC olarak timezone'lu tutulur; yerel saate çevirme users.timezone ile yapılır.
 """
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     ARRAY,
     BigInteger,
     Boolean,
     CheckConstraint,
+    Date,
     DateTime,
     ForeignKey,
     Integer,
@@ -38,6 +39,26 @@ class User(Base):
 
     repos: Mapped[list["Repo"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     sync_jobs: Mapped[list["SyncJob"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    contribution_days: Mapped[list["ContributionDay"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class ContributionDay(Base):
+    """GitHub katkı takviminin bir günü, GitHub'ın verdiği haliyle.
+
+    Takvim yalnız commit'leri değil PR, issue ve incelemeleri de sayar; bu yüzden
+    commits tablosundaki günlük sayılarla birebir tutması beklenmez.
+    """
+
+    __tablename__ = "contribution_days"
+
+    # Bileşik birincil anahtar: kullanıcı başına her gün tek satır.
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    day: Mapped[date] = mapped_column(Date, primary_key=True)
+    count: Mapped[int] = mapped_column(Integer)
+
+    user: Mapped[User] = relationship(back_populates="contribution_days")
 
 
 class Repo(Base):
@@ -101,6 +122,7 @@ class SyncJob(Base):
     repos_done: Mapped[int] = mapped_column(Integer, default=0)
     commits_synced: Mapped[int] = mapped_column(Integer, default=0)  # API'den gelen
     commits_inserted: Mapped[int] = mapped_column(Integer, default=0)  # yeni yazılan
+    calendar_days: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     # Her API isteğinin ölçümü: [{"kind": "commits", "cost": 1, "duration_ms": 1840}, ...]
     requests: Mapped[list[dict]] = mapped_column(JSONB, default=list)
     request_count: Mapped[int] = mapped_column(Integer, default=0)

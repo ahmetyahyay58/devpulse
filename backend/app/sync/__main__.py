@@ -48,6 +48,7 @@ def main() -> int:
         print(f"sync_job #{job.id}: {job.status}")
         print(f"  repo: {job.repos_done}/{job.repos_total}")
         print(f"  commit: API'den {job.commits_synced}, yeni yazılan {job.commits_inserted}")
+        print(f"  katkı takvimi: {job.calendar_days} gün")
         print(f"  istek: {job.request_count}, puan: {job.total_cost}, süre: {job.total_duration_ms / 1000:.1f} s")
         for kind, (n, cost, ms) in by_kind.items():
             print(f"    {kind:<18} {n:>3} istek  {cost:>3} puan  ort. {ms / n / 1000:.2f} s")

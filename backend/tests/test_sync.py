@@ -1,12 +1,12 @@
 """Senkron testleri: demo istemcisiyle, internetsiz."""
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pytest
 from sqlalchemy import func, select
 
-from app.models import Commit, Repo, SyncJob, User
+from app.models import Commit, ContributionDay, Repo, SyncJob, User
 from app.sync.demo_client import DemoClient
 from app.sync.runner import run_sync
 
@@ -34,9 +34,9 @@ def test_demo_sync_writes_repos_and_commits(db):
 
 def test_request_log_is_recorded(db):
     job = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
-    # 1 profil + 1 repo listesi + her repo için 1 commit isteği
-    assert [r["kind"] for r in job.requests] == ["profile", "repos", "commits", "commits"]
-    assert job.request_count == 4
+    # 1 profil + 1 repo listesi + her repo için 1 commit isteği + 1 takvim
+    assert [r["kind"] for r in job.requests] == ["profile", "repos", "commits", "commits", "calendar"]
+    assert job.request_count == 5
     assert job.total_cost == 0  # demo istemcisi puan harcamaz
 
 
@@ -74,6 +74,32 @@ def test_commit_fields_are_stored_correctly(db):
     assert commit.authored_at == datetime(2025, 9, 3, 22, 40, tzinfo=timezone.utc)
     assert (commit.additions, commit.deletions, commit.changed_files) == (85, 12, 3)
     assert db.scalar(select(func.count()).where(Commit.is_coauthored)) == 1
+
+
+def test_calendar_is_stored(db):
+    job = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
+
+    assert job.calendar_days == 7
+    days = {d.day: d.count for d in db.scalars(select(ContributionDay))}
+    assert days[date(2026, 10, 20)] == 2
+    # Takvim commit'ten fazlasını sayar: bu günde commit yok ama katkı (ör. PR) var.
+    assert days[date(2026, 3, 5)] == 2
+    assert db.scalar(
+        select(func.count()).where(func.date(Commit.authored_at) == date(2026, 3, 5))
+    ) == 0
+
+
+def test_calendar_resync_updates_counts(db, tmp_path):
+    run_sync(DemoClient(DEMO_FILE))
+
+    data = json.loads(DEMO_FILE.read_text(encoding="utf-8"))
+    data["calendar"][-1]["count"] = 5  # gün içinde yeni katkılar geldi
+    changed = tmp_path / "demo.json"
+    changed.write_text(json.dumps(data), encoding="utf-8")
+    run_sync(DemoClient(changed))
+
+    assert _count(db, ContributionDay) == 7  # satır sayısı aynı, çift kayıt yok
+    assert db.get(ContributionDay, (1, date(2026, 10, 20))).count == 5
 
 
 class FailingSource(DemoClient):

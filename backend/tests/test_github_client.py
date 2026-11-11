@@ -54,7 +54,15 @@ class FakeGitHub:
         query, var = body["query"], body["variables"]
         self.calls.append({"var": var, "auth": request.headers["Authorization"]})
 
-        if "contributionsCollection" in query:
+        if "contributionCalendar" in query:
+            # Her yıl için aynı iki gün; 2026-01-01 sıfır katkılı gün de saklanmalı.
+            data = {"viewer": {"contributionsCollection": {"contributionCalendar": {"weeks": [
+                {"contributionDays": [
+                    {"date": "2026-01-01", "contributionCount": 0},
+                    {"date": "2026-01-02", "contributionCount": 3},
+                ]},
+            ]}}}}
+        elif "contributionsCollection" in query:
             data = {"viewer": {"contributionsCollection": {"commitContributionsByRepository": [
                 {"repository": repo_node("R_other", "katki", OTHER)},
                 {"repository": repo_node("R_a", "proje-a", ME, readme_key="readme2")},  # tekrar
@@ -135,6 +143,13 @@ def test_every_request_is_logged_with_cost(client):
     years = datetime.now(timezone.utc).year - 2026 + 1
     assert kinds == ["profile", "repos", "repos"] + ["contributed_repos"] * years
     assert all(s.cost == 1 and s.duration_ms >= 0 for s in client.request_log)
+
+
+def test_calendar_days_are_parsed_and_deduplicated(client):
+    days = client.fetch_calendar(client.fetch_profile())
+    # Birden fazla yılın cevabı aynı günü içerse de gün bir kez döner, sıralıdır.
+    assert [(d.day.isoformat(), d.count) for d in days] == [("2026-01-01", 0), ("2026-01-02", 3)]
+    assert {s.kind for s in client.request_log} == {"profile", "calendar"}
 
 
 def test_retries_on_502(monkeypatch):

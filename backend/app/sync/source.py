@@ -4,8 +4,8 @@ Canlı GitHub istemcisi ve demo istemcisi bu arayüzü uygular; senkron kodu
 (runner.py) yalnızca bunu bilir, verinin nereden geldiğini bilmez.
 """
 from collections.abc import Iterator
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
+from datetime import date, datetime
 from typing import Protocol
 
 
@@ -44,9 +44,15 @@ class CommitData:
 
 
 @dataclass
+class CalendarDay:
+    day: date
+    count: int  # o günkü katkı sayısı (commit + PR + issue + inceleme)
+
+
+@dataclass
 class RequestStat:
     """Tek bir API isteğinin ölçümü (sync_jobs.requests'e yazılır)."""
-    kind: str  # "profile", "repos", "contributed_repos", "commits"
+    kind: str  # "profile", "repos", "contributed_repos", "commits", "calendar"
     cost: int  # GraphQL rateLimit puanı; demo için 0
     duration_ms: int
 
@@ -63,4 +69,8 @@ class GitHubSource(Protocol):
 
     def fetch_commits(self, repo: RepoData, profile: Profile) -> Iterator[CommitData]:
         """Repodaki (varsayılan dal) kullanıcının kendi commit'leri, sayfa sayfa."""
+        ...
+
+    def fetch_calendar(self, profile: Profile) -> list[CalendarDay]:
+        """Hesabın açıldığı yıldan bugüne katkı takviminin günleri."""
         ...

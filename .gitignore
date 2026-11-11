@@ -1,0 +1,30 @@
+# Gizli bilgiler
+.env
+.env.*
+!.env.example
+*.token
+
+# Ham GitHub verisi (kişisel veri, repoya girmez)
+ham_veri/
+scripts/ham_veri/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Flutter / Dart
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/local.properties
+mobile/android/.gradle/
+
+# Editör ve sistem
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

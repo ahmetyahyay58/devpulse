@@ -1,0 +1,3 @@
+# Geliştirme ve test araçları (sunucuda gerekmez).
+-r requirements.txt
+pytest==9.2.0

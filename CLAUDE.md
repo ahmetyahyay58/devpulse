@@ -21,6 +21,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Backend: Python, FastAPI, PostgreSQL. Docker Compose ile çalışır.
 - Şema yalnızca Alembic migration'larıyla değişir (`backend/migrations/`); `create_all` kullanılmaz. Model değişince: `py -m alembic revision --autogenerate -m "..."`, dosyayı gözden geçir, `py -m alembic upgrade head`. `py -m alembic check` model ile veritabanı arasındaki farkı yakalar.
 - Backend'i geliştirmede `py -m uvicorn app.main:app --reload --reload-dir app` ile çalıştır (`.venv`'i izlemesin).
+- Testler: `backend/` içinde `py -m pytest` (PostgreSQL açık olmalı). Testler ayrı `devpulse_test` veritabanını migration'larla kurar ve sonunda siler; gerçek veriye dokunmaz, GitHub'a gitmez (sahte HTTP). Gizlilik kuralı (`tests/test_app.py`) yasaklı sütunları denetler. Yeni özellik = yeni test.
 - Sade tut: Redis, kuyruk sistemi ve karmaşık durum makinesi yok. Tek arka plan görevi yeter.
 - ML: scikit-learn (ve gerekirse ruptures).
 - GitHub verisi: GraphQL API. Giriş: GitHub OAuth, yetki kodu akışı + PKCE; kod-token değişimi backend'de yapılır, client secret asla uygulamada durmaz.

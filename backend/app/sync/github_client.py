@@ -89,11 +89,13 @@ def _dt(value: str | None) -> datetime | None:
 
 
 class LiveGitHubClient:
-    def __init__(self, token: str):
+    def __init__(self, token: str, transport: httpx.BaseTransport | None = None):
+        # transport: testlerde sahte GitHub (httpx.MockTransport) vermek için.
         self.request_log: list[RequestStat] = []
         self._http = httpx.Client(
             timeout=30,
             headers={"Authorization": f"bearer {token}", "User-Agent": "devpulse-sync"},
+            transport=transport,
         )
 
     def _query(self, kind: str, query: str, variables: dict | None = None) -> dict:

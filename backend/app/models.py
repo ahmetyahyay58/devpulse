@@ -19,6 +19,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -98,7 +99,13 @@ class SyncJob(Base):
     # Senkron dakikalar sürebilir; ekran ilerlemeyi bu sayılardan gösterir.
     repos_total: Mapped[int | None] = mapped_column(Integer)
     repos_done: Mapped[int] = mapped_column(Integer, default=0)
-    commits_synced: Mapped[int] = mapped_column(Integer, default=0)
+    commits_synced: Mapped[int] = mapped_column(Integer, default=0)  # API'den gelen
+    commits_inserted: Mapped[int] = mapped_column(Integer, default=0)  # yeni yazılan
+    # Her API isteğinin ölçümü: [{"kind": "commits", "cost": 1, "duration_ms": 1840}, ...]
+    requests: Mapped[list[dict]] = mapped_column(JSONB, default=list)
+    request_count: Mapped[int] = mapped_column(Integer, default=0)
+    total_cost: Mapped[int] = mapped_column(Integer, default=0)
+    total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)
     error: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

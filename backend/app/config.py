@@ -8,5 +8,8 @@ class Settings(BaseSettings):
     # SQLAlchemy bağlantı adresi; "+psycopg" sürücüsü psycopg 3'ü kullanır.
     database_url: str = "postgresql+psycopg://devpulse:devpulse@localhost:5432/devpulse"
 
+    # Geçici: OAuth gelene kadar senkron bu token'la çalışır (GITHUB_TOKEN ortam değişkeni).
+    github_token: str | None = None
+
 
 settings = Settings()

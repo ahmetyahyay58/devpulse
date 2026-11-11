@@ -6,6 +6,7 @@ Tekrar çalıştırılabilir: kullanıcı ve repolar güncellenir (upsert), comm
 from dataclasses import asdict
 from datetime import datetime, timezone
 
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -75,8 +76,30 @@ def _record_requests(job: SyncJob, source: GitHubSource) -> None:
     job.total_duration_ms = sum(s["duration_ms"] for s in log)
 
 
-def run_sync(source: GitHubSource) -> int:
-    """Senkronu çalıştırır, sync_jobs kaydının id'sini döner."""
+def _sync_repo_commits(
+    db: Session, source: GitHubSource, profile: Profile, job: SyncJob, repo_id: int, repo: RepoData
+) -> None:
+    batch: list[dict] = []
+    for commit in source.fetch_commits(repo, profile):
+        batch.append(asdict(commit))
+        if len(batch) >= COMMIT_BATCH:
+            job.commits_inserted += _insert_commits(db, repo_id, batch)
+            job.commits_synced += len(batch)
+            batch = []
+    if batch:
+        job.commits_inserted += _insert_commits(db, repo_id, batch)
+        job.commits_synced += len(batch)
+    # Yalnızca tüm sayfalar başarıyla çekildikten sonra işaretlenir; yarıda kesilirse
+    # (hata, rollback) işaret yazılmaz ve repo bir sonraki senkronda yeniden çekilir.
+    db.execute(update(Repo).where(Repo.id == repo_id).values(commits_synced_pushed_at=repo.pushed_at))
+
+
+def run_sync(source: GitHubSource, full: bool = False) -> int:
+    """Senkronu çalıştırır, sync_jobs kaydının id'sini döner.
+
+    full=False: son senkrondan beri push gelmeyen repoların commit'leri tekrar çekilmez.
+    full=True: tüm repoların commit'leri baştan çekilir (yine de çift kayıt oluşmaz).
+    """
     with SessionLocal() as db:
         profile = source.fetch_profile()
         user_id = _upsert_user(db, profile)
@@ -93,17 +116,19 @@ def run_sync(source: GitHubSource) -> int:
             db.commit()
 
             for repo in repos:
+                # Upsert'ten ÖNCE oku: commit'ler en son hangi push'ta çekilmişti?
+                last_synced_push = db.scalar(
+                    select(Repo.commits_synced_pushed_at).where(
+                        Repo.user_id == user_id, Repo.github_node_id == repo.node_id
+                    )
+                )
                 repo_id = _upsert_repo(db, user_id, repo)
-                batch: list[dict] = []
-                for commit in source.fetch_commits(repo, profile):
-                    batch.append(asdict(commit))
-                    if len(batch) >= COMMIT_BATCH:
-                        job.commits_inserted += _insert_commits(db, repo_id, batch)
-                        job.commits_synced += len(batch)
-                        batch = []
-                if batch:
-                    job.commits_inserted += _insert_commits(db, repo_id, batch)
-                    job.commits_synced += len(batch)
+
+                unchanged = repo.pushed_at is not None and last_synced_push == repo.pushed_at
+                if unchanged and not full:
+                    job.repos_skipped += 1  # yeni push yok: commit'ler değişmemiştir
+                else:
+                    _sync_repo_commits(db, source, profile, job, repo_id, repo)
                 job.repos_done += 1
                 _record_requests(job, source)
                 db.commit()  # her repodan sonra: ilerleme ekranı bunu görür

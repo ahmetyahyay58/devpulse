@@ -42,13 +42,70 @@ def test_request_log_is_recorded(db):
 
 def test_resync_does_not_duplicate(db):
     run_sync(DemoClient(DEMO_FILE))
-    second = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
+    # full=True: atlama kapalı, commit'ler yeniden gelir; ON CONFLICT çift kaydı engellemeli.
+    second = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE), full=True))
 
     assert second.commits_synced == 6  # kaynak yine 6 commit verdi
     assert second.commits_inserted == 0  # ama hiçbiri tekrar yazılmadı
     assert _count(db, Commit) == 6
     assert _count(db, Repo) == 2
     assert _count(db, User) == 1
+
+
+def _write_demo(tmp_path, change) -> Path:
+    """Demo verisinin değiştirilmiş bir kopyasını yazar."""
+    data = json.loads(DEMO_FILE.read_text(encoding="utf-8"))
+    change(data)
+    path = tmp_path / "demo.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return path
+
+
+def test_unchanged_repos_are_skipped(db):
+    run_sync(DemoClient(DEMO_FILE))
+    second = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
+
+    assert second.repos_skipped == 2
+    assert second.commits_synced == 0
+    assert "commits" not in [r["kind"] for r in second.requests]  # GitHub'a commit sorulmadı
+
+
+def test_pushed_repo_is_refetched(db, tmp_path):
+    run_sync(DemoClient(DEMO_FILE))
+
+    def new_push(data):
+        repo = data["repos"][1]
+        repo["pushed_at"] = "2026-11-01T10:00:00Z"
+        repo["commits"].append({
+            "oid": "d000000000000000000000000000000000000007", "authored_at": "2026-11-01T10:00:00Z",
+            "message": "yeni not", "additions": 2, "deletions": 0, "changed_files": 1,
+            "is_coauthored": False,
+        })
+
+    second = db.get(SyncJob, run_sync(DemoClient(_write_demo(tmp_path, new_push))))
+    assert second.repos_skipped == 1  # push gelmeyen repo atlandı
+    assert (second.commits_synced, second.commits_inserted) == (3, 1)  # yalnız değişen repo
+    assert _count(db, Commit) == 7
+
+
+class FailsOnSecondRepo(DemoClient):
+    """İkinci reponun commit'lerini çekerken bağlantı kopar."""
+
+    def fetch_commits(self, repo, profile):
+        if repo.node_id == "DEMO_REPO_2":
+            raise RuntimeError("bağlantı koptu")
+        yield from super().fetch_commits(repo, profile)
+
+
+def test_interrupted_repo_is_not_skipped_next_time(db):
+    with pytest.raises(RuntimeError):
+        run_sync(FailsOnSecondRepo(DEMO_FILE))
+
+    retry = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
+    # Birinci repo tamamlanmıştı, atlanır; yarıda kalan ikinci repo yeniden çekilir.
+    assert retry.repos_skipped == 1
+    assert retry.commits_inserted == 2
+    assert _count(db, Commit) == 6
 
 
 def test_resync_updates_repo_metadata(db, tmp_path):

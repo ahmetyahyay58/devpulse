@@ -82,6 +82,9 @@ class Repo(Base):
 
     created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     pushed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Artımlı senkron: commit'ler en son hangi pushed_at değerindeyken eksiksiz çekildi?
+    # pushed_at bununla aynıysa repoya yeni push gelmemiştir, commit'leri tekrar çekilmez.
+    commits_synced_pushed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     user: Mapped[User] = relationship(back_populates="repos")
     commits: Mapped[list["Commit"]] = relationship(back_populates="repo", cascade="all, delete-orphan")
@@ -120,6 +123,7 @@ class SyncJob(Base):
     # Senkron dakikalar sürebilir; ekran ilerlemeyi bu sayılardan gösterir.
     repos_total: Mapped[int | None] = mapped_column(Integer)
     repos_done: Mapped[int] = mapped_column(Integer, default=0)
+    repos_skipped: Mapped[int] = mapped_column(Integer, default=0, server_default="0")  # push yok
     commits_synced: Mapped[int] = mapped_column(Integer, default=0)  # API'den gelen
     commits_inserted: Mapped[int] = mapped_column(Integer, default=0)  # yeni yazılan
     calendar_days: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

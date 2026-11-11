@@ -18,6 +18,7 @@ from app.sync.runner import run_sync
 def main() -> int:
     parser = argparse.ArgumentParser(description="DevPulse GitHub senkronu")
     parser.add_argument("--demo", metavar="DOSYA", help="canlı GitHub yerine demo JSON dosyası")
+    parser.add_argument("--full", action="store_true", help="push gelmeyen repoları da baştan çek")
     args = parser.parse_args()
 
     if args.demo:
@@ -30,7 +31,7 @@ def main() -> int:
         from app.sync.github_client import LiveGitHubClient
         source = LiveGitHubClient(settings.github_token)
 
-    job_id = run_sync(source)  # tablolar Alembic ile oluşturulmuş olmalı
+    job_id = run_sync(source, full=args.full)  # tablolar Alembic ile oluşturulmuş olmalı
 
     with SessionLocal() as db:
         job = db.get(SyncJob, job_id)
@@ -46,7 +47,7 @@ def main() -> int:
             k[2] += r["duration_ms"]
 
         print(f"sync_job #{job.id}: {job.status}")
-        print(f"  repo: {job.repos_done}/{job.repos_total}")
+        print(f"  repo: {job.repos_done}/{job.repos_total} (push gelmediği için atlanan: {job.repos_skipped})")
         print(f"  commit: API'den {job.commits_synced}, yeni yazılan {job.commits_inserted}")
         print(f"  katkı takvimi: {job.calendar_days} gün")
         print(f"  istek: {job.request_count}, puan: {job.total_cost}, süre: {job.total_duration_ms / 1000:.1f} s")

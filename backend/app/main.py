@@ -3,6 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app import models  # noqa: F401  (tabloların Base'e kaydolması için)
@@ -23,6 +24,15 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="DevPulse API", lifespan=lifespan)
+
+# Yalnızca Flutter web (tarayıcı) için gerekir; Android uygulaması CORS'tan etkilenmez.
+# Geliştirmede yerel adreslere, her porta izin verilir.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")

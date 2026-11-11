@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:devpulse/api/health_api.dart';
@@ -32,6 +33,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('unreachable'), findsOneWidget);
+  });
+
+  testWidgets('Yenile yeni istek atar, beklerken butonu kilitler', (tester) async {
+    var calls = 0;
+    final secondResponse = Completer<void>();
+    final client = MockClient((_) async {
+      calls++;
+      if (calls == 2) await secondResponse.future; // ikinci cevabı bekletiyoruz
+      return http.Response(jsonEncode({'status': 'ok', 'database': 'ok'}), 200);
+    });
+
+    await tester.pumpWidget(DevPulseApp(api: _api(client)));
+    await tester.pumpAndSettle();
+    expect(calls, 1);
+    expect(find.textContaining('Son kontrol:'), findsOneWidget);
+
+    await tester.tap(find.text('Yenile'));
+    await tester.pump();
+
+    expect(calls, 2);
+    expect(find.text('Kontrol ediliyor…'), findsOneWidget);
+    expect(find.text('ok'), findsNWidgets(2)); // eski sonuç ekranda kalır
+
+    secondResponse.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Yenile'), findsOneWidget);
   });
 
   testWidgets('sunucuya ulaşılamazsa hata gösterir', (tester) async {

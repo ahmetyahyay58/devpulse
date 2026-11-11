@@ -13,17 +13,51 @@ class HealthScreen extends StatefulWidget {
 }
 
 class _HealthScreenState extends State<HealthScreen> {
-  late Future<HealthResult> _future;
+  // Durumu kendimiz tutuyoruz: yenilenirken eski sonuç ekranda kalabilsin.
+  HealthResult? _result;
+  Object? _error;
+  bool _loading = false;
+  DateTime? _checkedAt;
 
   @override
   void initState() {
     super.initState();
-    _future = widget.api.check(); // ekran açılınca bir kez sor
+    _refresh(); // ekran açılınca bir kez sor
   }
 
-  void _refresh() {
+  Future<void> _refresh() async {
     // setState: durumu değiştirir ve Flutter'a ekranı yeniden çizmesini söyler.
-    setState(() => _future = widget.api.check());
+    setState(() => _loading = true);
+    try {
+      final result = await widget.api.check();
+      if (!mounted) return; // bu arada ekran kapandıysa dokunma
+      setState(() {
+        _result = result;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _checkedAt = DateTime.now();
+        });
+      }
+    }
+  }
+
+  Widget _body() {
+    if (_error != null) return _ErrorView(error: _error!);
+    if (_result != null) return _ResultView(result: _result!);
+    // İlk açılış: henüz hiç sonuç yok.
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 
   @override
@@ -51,28 +85,27 @@ class _HealthScreenState extends State<HealthScreen> {
                           ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 24),
-                    FutureBuilder<HealthResult>(
-                      future: _future,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState != ConnectionState.done) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return _ErrorView(error: snapshot.error!);
-                        }
-                        return _ResultView(result: snapshot.data!);
-                      },
-                    ),
+                    _body(),
+                    if (_checkedAt != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        'Son kontrol: ${_formatTime(_checkedAt!)}',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: _refresh,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Yenile'),
+                      // null: buton devre dışı (sorgu sürerken tekrar basılamaz)
+                      onPressed: _loading ? null : _refresh,
+                      icon: _loading
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
+                      label: Text(_loading ? 'Kontrol ediliyor…' : 'Yenile'),
                     ),
                   ],
                 ),
@@ -84,6 +117,9 @@ class _HealthScreenState extends State<HealthScreen> {
     );
   }
 }
+
+String _formatTime(DateTime t) =>
+    [t.hour, t.minute, t.second].map((n) => n.toString().padLeft(2, '0')).join(':');
 
 class _ResultView extends StatelessWidget {
   const _ResultView({required this.result});

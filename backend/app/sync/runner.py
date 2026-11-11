@@ -4,7 +4,7 @@ Tekrar çalıştırılabilir: kullanıcı ve repolar güncellenir (upsert), comm
 (repo_id, oid) benzersizliği sayesinde ikinci kez yazılmaz.
 """
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
@@ -15,20 +15,47 @@ from app.models import Commit, ContributionDay, Repo, SyncJob, User
 from app.sync.source import CalendarDay, GitHubSource, Profile, RepoData
 
 COMMIT_BATCH = 500
+# Bu süreden eski "pending/running" iş yarıda kalmış sayılır (ör. sunucu yeniden başladı).
+STALE_AFTER = timedelta(minutes=30)
+
+
+class SyncAlreadyRunning(Exception):
+    def __init__(self, job_id: int):
+        super().__init__(f"Bu kullanıcı için senkron zaten sürüyor (iş #{job_id}).")
+        self.job_id = job_id
 
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _upsert_user(db: Session, profile: Profile) -> int:
+def _upsert_user(db: Session, profile: Profile, tz: str | None) -> int:
+    values = {"github_node_id": profile.node_id, "github_login": profile.login}
+    if tz:  # saat dilimi gönderilmediyse eskisini silme
+        values["timezone"] = tz
     stmt = (
         insert(User)
-        .values(github_node_id=profile.node_id, github_login=profile.login)
-        .on_conflict_do_update(index_elements=[User.github_node_id], set_={"github_login": profile.login})
+        .values(**values)
+        .on_conflict_do_update(
+            index_elements=[User.github_node_id],
+            set_={k: v for k, v in values.items() if k != "github_node_id"},
+        )
         .returning(User.id)
     )
     return db.execute(stmt).scalar_one()
+
+
+def _check_not_running(db: Session, user_id: int) -> None:
+    """Aynı kullanıcı için iki senkron aynı anda çalışmasın."""
+    active = db.scalars(
+        select(SyncJob).where(SyncJob.user_id == user_id, SyncJob.status.in_(["pending", "running"]))
+    ).all()
+    for job in active:
+        if _now() - job.created_at < STALE_AFTER:
+            raise SyncAlreadyRunning(job.id)
+        job.status = "failed"
+        job.error = "Yarıda kaldı (sunucu yeniden başlatılmış olabilir)."
+        job.finished_at = _now()
 
 
 def _upsert_repo(db: Session, user_id: int, repo: RepoData) -> int:
@@ -94,20 +121,34 @@ def _sync_repo_commits(
     db.execute(update(Repo).where(Repo.id == repo_id).values(commits_synced_pushed_at=repo.pushed_at))
 
 
-def run_sync(source: GitHubSource, full: bool = False) -> int:
-    """Senkronu çalıştırır, sync_jobs kaydının id'sini döner.
+def start_sync(source: GitHubSource, tz: str | None = None) -> tuple[int, Profile]:
+    """Hızlı kısım (tek istek): profili çeker, kullanıcıyı yazar, işi 'pending' açar.
+
+    Aynı kullanıcı için süren bir iş varsa SyncAlreadyRunning fırlatır.
+    """
+    with SessionLocal() as db:
+        profile = source.fetch_profile()
+        user_id = _upsert_user(db, profile, tz)
+        _check_not_running(db, user_id)
+        job = SyncJob(user_id=user_id, status="pending")
+        db.add(job)
+        _record_requests(job, source)
+        db.commit()
+        return job.id, profile
+
+
+def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool = False) -> None:
+    """Uzun kısım: repolar, commit'ler, takvim. API'de arka planda çalışır.
 
     full=False: son senkrondan beri push gelmeyen repoların commit'leri tekrar çekilmez.
     full=True: tüm repoların commit'leri baştan çekilir (yine de çift kayıt oluşmaz).
     """
     with SessionLocal() as db:
-        profile = source.fetch_profile()
-        user_id = _upsert_user(db, profile)
-        job = SyncJob(user_id=user_id, status="running", started_at=_now())
-        db.add(job)
-        _record_requests(job, source)
+        job = db.get(SyncJob, job_id)
+        user_id = job.user_id
+        job.status = "running"
+        job.started_at = _now()
         db.commit()
-        job_id = job.id
 
         try:
             repos = source.fetch_repos(profile)
@@ -149,4 +190,10 @@ def run_sync(source: GitHubSource, full: bool = False) -> int:
             _record_requests(job, source)
             db.commit()
             raise
+
+
+def run_sync(source: GitHubSource, full: bool = False, tz: str | None = None) -> int:
+    """İki kısmı art arda çalıştırır (komut satırı ve testler). İş id'sini döner."""
+    job_id, profile = start_sync(source, tz)
+    execute_sync(job_id, source, profile, full)
     return job_id

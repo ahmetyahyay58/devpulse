@@ -7,9 +7,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app.api import sync
 from app.db import engine
 
 app = FastAPI(title="DevPulse API")
+app.include_router(sync.router)
 
 # Yalnızca Flutter web (tarayıcı) için gerekir; Android uygulaması CORS'tan etkilenmez.
 # Geliştirmede yerel adreslere, her porta izin verilir.

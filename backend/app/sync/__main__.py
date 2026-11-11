@@ -9,9 +9,8 @@ from collections import defaultdict
 
 from sqlalchemy import func, select
 
-from app import models  # noqa: F401
 from app.config import settings
-from app.db import Base, SessionLocal, engine
+from app.db import SessionLocal
 from app.models import Commit, Repo, SyncJob
 from app.sync.runner import run_sync
 
@@ -31,8 +30,7 @@ def main() -> int:
         from app.sync.github_client import LiveGitHubClient
         source = LiveGitHubClient(settings.github_token)
 
-    Base.metadata.create_all(engine)
-    job_id = run_sync(source)
+    job_id = run_sync(source)  # tablolar Alembic ile oluşturulmuş olmalı
 
     with SessionLocal() as db:
         job = db.get(SyncJob, job_id)

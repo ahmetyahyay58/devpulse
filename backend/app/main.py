@@ -1,29 +1,15 @@
-"""FastAPI uygulama girişi."""
-import logging
-from contextlib import asynccontextmanager
+"""FastAPI uygulama girişi.
 
+Şema Alembic ile yönetilir; tabloları oluşturmak/güncellemek için:
+    py -m alembic upgrade head
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
-from app import models  # noqa: F401  (tabloların Base'e kaydolması için)
-from app.db import Base, engine
+from app.db import engine
 
-log = logging.getLogger("uvicorn.error")
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Geçici çözüm: eksik tabloları oluşturur, var olanlara dokunmaz.
-    # Şema değişmeye başlayınca Alembic migration'larına geçilecek.
-    try:
-        Base.metadata.create_all(engine)
-    except Exception as exc:
-        log.warning("Veritabanına bağlanılamadı, tablolar oluşturulmadı: %s", exc)
-    yield
-
-
-app = FastAPI(title="DevPulse API", lifespan=lifespan)
+app = FastAPI(title="DevPulse API")
 
 # Yalnızca Flutter web (tarayıcı) için gerekir; Android uygulaması CORS'tan etkilenmez.
 # Geliştirmede yerel adreslere, her porta izin verilir.

@@ -25,6 +25,14 @@ def rhythm(commits: int, timezone_known: bool) -> Sufficiency:
     return Sufficiency.NORMAL
 
 
+def anomaly(active_days: int) -> Sufficiency:
+    if active_days < 10:
+        return Sufficiency.NONE
+    if active_days < 30:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL
+
+
 def sessions(session_count: int) -> Sufficiency:
     if session_count < 3:
         return Sufficiency.NONE

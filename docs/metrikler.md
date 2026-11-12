@@ -14,7 +14,9 @@ Kod (`backend/app/metrics/`) bu belgeye uyar; tanım değişirse önce burası g
 - **Bugün:** Kullanıcının saat dilimindeki bugünün tarihi.
 - **Betimleme, puanlama değil:** Commit sayısı üretkenliği ya da kaliteyi ölçmez. Metrikler
   çalışma alışkanlığını betimler; "iyi/kötü" yargısı içermez.
-- **Kural tabanlıdır:** Bu sayfadaki hiçbir metrik makine öğrenmesi kullanmaz.
+- **Kural tabanlıdır:** Bu sayfadaki metrikler makine öğrenmesi kullanmaz. Tek istisna
+  "Olağan dışı günler" bölümündeki Isolation Forest kıyasıdır: gözetimsiz bir yöntemdir
+  (etiketli veri yok), arayüzdeki ana sonuç ise istatistiksel MAD kuralıdır.
 
 ## Veri yeterliliği (üç durum)
 
@@ -26,6 +28,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Süreklilik | < 3 aktif gün | < 10 aktif gün ya da ilk commit'ten bu yana < 30 gün | diğer |
 | Ritim | < 10 commit | < 50 commit ya da saat dilimi bilinmiyor | diğer |
 | Oturum ve yoğunluk | < 3 oturum | < 15 oturum | diğer |
+| Olağan dışı günler | < 10 aktif gün | < 30 aktif gün | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -63,6 +66,32 @@ sınırdır).
 
 Ortalama yerine **medyan** kullanılır: tek bir dev commit (ör. bağımlılık klasörü) ortalamayı
 bozar, medyanı bozmaz.
+
+### Olağan dışı günler (anomali, gözetimsiz)
+**Ne arar:** Kullanıcının kendi alışkanlığına göre belirgin şekilde yoğun geçen günleri.
+"İyi" ya da "kötü" yargısı içermez. Yalnızca **aktif günler** (en az bir commit) incelenir;
+hiç commit olmayan günler dahil edilseydi seyrek çalışan birinin medyanı 0 olur ve her aktif
+gün "olağan dışı" görünürdü. Yalnızca yukarı yönlü sapma aranır (düşük gün zaten sıradandır).
+
+**Ana yöntem: robust z-skoru (medyan/MAD).** Aktif günlerin commit sayıları için
+`z = 0,6745 × (x − medyan) / MAD`, MAD = |x − medyan| değerlerinin medyanı. `z > 3,5` olan
+gün olağan dışıdır (eşik: Iglewicz ve Hoaglin, 1993, *How to Detect and Handle Outliers*).
+MAD = 0 ise (günlerin yarıdan fazlası aynı sayıda commit) z hesaplanamaz; bu durumda
+"olağan dışı gün yok" denir ve gerekçesi gösterilir.
+
+**Kıyas yöntemi: Isolation Forest** (scikit-learn, `random_state` sabit). Her aktif gün beş
+özellikle temsil edilir: commit sayısı, log(1 + değişen satır), gece (00–06) commit oranı,
+oturum sayısı, gün içindeki ilk–son commit arası saat. `contamination = 0,05` (günlerin
+yaklaşık %5'i işaretlenir; sabit bir varsayımdır). Arayüzde ana sonuç MAD'dir; Isolation
+Forest yalnızca kıyas ve rapor içindir.
+
+**Veri yeterliliği:** < 10 aktif gün "Yeterli veri yok", < 30 aktif gün "Düşük güven".
+
+**Enjeksiyon testi:** Sentetik demo verisine bilerek eklenen 3 günlük yoğunluğun (bkz.
+`demo_user.json` → `_injected`) iki yöntemce bulunup bulunmadığı ve kaç yanlış alarm
+verildiği ölçülür: `py -m app.metrics.anomaly_eval`. Sonuçlar `docs/olcumler.md`'dedir.
+Sentetik veri yöntemin genel başarısını kanıtlamaz; yalnızca bilinen bir olayı yakalayıp
+yakalamadığını gösterir.
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

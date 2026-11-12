@@ -2,6 +2,44 @@
 
 Rapor için ölçümler. Her bölüm, sonucu yeniden üreten komutu ve tarihini içerir.
 
+## Commit sınıflandırma: ara sonuç (12 Kasım 2026)
+
+Komutlar: `cd backend; py -m ml.collect_tr` (veri), `py -m ml.train` (test), `py -m ml.tune`
+(tasarım seçimi; yalnız eğitim verisinde 5 katlı çapraz doğrulama). scikit-learn 1.9.1.
+
+**Veri.** GitHub commit aramasıyla toplanan, herkese açık 2479 Türkçe commit mesajı, 1474 repo
+(repo başına en çok 5). Etiket = yazarın kullandığı conventional commits öneki (`fix:` vb.),
+önek metinden silinmiştir. Arama, sınıfa ipucu vermemek için her sınıfta aynı bağlaçlarla
+("için", "ile", "ve") yapıldı. Sınıflar: feat 704, fix 540, refactor 439, chore 427, docs 310,
+test 59. İngilizce sızıntısı %0,4 (11 örnek). Çift önekli 9 örnek (cevabı sızdırdığı için)
+çıkarıldı.
+
+**Test (repo bazında ayırma: test repoları eğitimde hiç yok; 1980 eğitim / 499 test):**
+
+| yöntem | doğruluk | macro-F1 | karar verilen |
+|---|---|---|---|
+| Taban: hep 'feat' | 0.26 | 0.07 | %100 |
+| Kelime TF-IDF + LR | 0.59 | 0.56 | %100 |
+| Harf parçası (3-5) TF-IDF + LR | 0.64 | 0.60 | %100 |
+| Yalnız kurallar | 0.18 | 0.23 | %37 |
+| Hibrit (kural → model, eşik 0,5) | 0.22 | 0.27 | %41 |
+
+Harf parçası modeli sınıf başına F1: feat 0.66, fix 0.66, docs 0.59, refactor 0.64, test 0.43
+(yalnız 12 test örneği), chore 0.64.
+
+**Yorum.**
+- Model en basit tabanın çok üstünde (0,64'e karşı 0,26); test repoları eğitimde görülmediği
+  için bu ezber değil genellemedir.
+- Harf parçası, kelime tabanlı modelden 5 puan iyi: Türkçe eklerin ("düzelt-ildi/-me/-tim")
+  ortak kökü harf parçalarında yakalanır.
+- Kurallar ve hibrit bu ölçümde kötü görünüyor; ancak buradaki "doğru cevap" yazarın kendi
+  önek alışkanlığıdır, `docs/etiketler.md`'deki tanımlarımız değil (ör. "Android entegrasyonu
+  düzeltildi" yazar tarafından `docs` etiketlenmiş; kural tanımımız gereği `fix` der). Bu veri
+  modeli eğitmek için uygundur, hibrit sistemin tanımımıza göre doğruluğunu ölçmek için değil.
+- Modelin olasılıkları 6 sınıfa yayılır (en yüksek olasılık çoğunlukla 0,3-0,4); 0,5 güven eşiği
+  neredeyse hiç karar verdirmez. Çapraz doğrulamada en iyi sonuç eşiksiz alındı (0,61).
+- Gerçek doğruluk için tanımlarımıza göre elle etiketlenmiş Türkçe mesajlar gerekir (açık konu).
+
 ## Anomali: enjeksiyon testi (12 Kasım 2026)
 
 Komut: `cd backend; py -m app.metrics.anomaly_eval` (scikit-learn 1.9.1).

@@ -48,7 +48,9 @@ query($owner: String!, $name: String!, $after: String) {
 # "Signed-off-by:", "Co-authored-by:", "Reviewed-on:", "Change-Id:" gibi imza/iz satırları.
 _TRAILER = re.compile(r"^\s*[A-Za-z][\w-]*-(by|on|Id|Result|Submit|Queue)\s*:.*$", re.IGNORECASE | re.MULTILINE)
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
-_MENTION = re.compile(r"(?<![\w@])@[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")
+# GitHub kullanıcı adı yalnız ASCII harf/rakam/tire içerir: ardından başka harf geliyorsa
+# (ör. Türkçe "@kullanıcı") bu bir kullanıcı adı değildir, dokunulmaz.
+_MENTION = re.compile(r"(?<![\w@])@[A-Za-z0-9][A-Za-z0-9-]{0,38}(?!\w)")
 MAX_LEN = 1000
 
 

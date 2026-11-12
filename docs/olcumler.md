@@ -81,6 +81,41 @@ Karşılaştırma: 7 sınıfta rastgele tahmin ~0,14.
   grafiğinde doğruluğun yaklaşık %40-60 olduğu açıkça yazılır.
 - Kurallar bu sonuçlara bakılarak yeniden ayarlanmamıştır (test kümesi tasarımda kullanılmadı).
 
+### İnsan etiketli eğitim verisiyle ikinci tur (13 Kasım 2026)
+
+Komutlar: `py -m ml.human select | evaluate | save`. Tüm sistemler yalnızca mesajın ilk
+satırını kullanır.
+
+**Veri.** Eğitim repolarından (test repoları hariç) seçilen 200 kısa, anlaşılır mesaj (15-90
+karakter, tek satır); geliştirici tanımlarımıza göre kör etiketledi (32'si "Belirsiz"). Bu
+kısa mesajlarda da yazar öneki ile insan etiketinin uyuşması **%40**: uyuşmazlığın kaynağı
+mesajın karmaşıklığı değil, tür tanımlarının kendisidir.
+
+**Seçim (yalnız bu 200 etiket üzerinde, repo bazında 5 katlı CV; test kümesine bakılmadı):**
+en iyi "insan + yazar öneki (ağırlık 0,3), kural önce" 0,45 ± 0,08; eski sistem (yalnız yazar
+önekleri, kural önce) 0,42 ± 0,09; yalnız insan etiketleri 0,40-0,41. Fark sapmanın içindedir.
+
+**Test (bir kez):**
+
+| model | sistem | Türkçe test (94) | kendi (33) |
+|---|---|---|---|
+| Eski (yazar önekleri) | yalnız model | 0.36 | 0.67 |
+| Eski (yazar önekleri) | kural önce | 0.36 | 0.58 |
+| Yeni (insan + yazar 0,3) | yalnız model | 0.34 | 0.79 |
+| **Yeni (insan + yazar 0,3)** | **kural önce (seçilen)** | **0.35** | **0.58** |
+
+**Yorum.**
+- Genel Türkçe mesajlarda 200 ek insan etiketi anlamlı bir iyileşme getirmedi (0,36 → 0,35,
+  gürültü düzeyinde). Darboğaz veri miktarı değil, tanımların belirsizliğidir.
+- Geliştiricinin kendi commit'lerinde yeni model tek başına belirgin daha iyi (0,67 → 0,79;
+  33'te 22 → 26 doğru): model geliştiricinin tanımlarını öğrenmiştir. "Kural önce" düzeninde
+  bu kazanç kaybolur (0,58). Bu bir gözlemdir; sistem test sonucuna göre değil CV'ye göre
+  seçildiği için uygulamada "kural önce" kullanılır.
+- Yalnız ilk satırı kullanmanın bedeli: eski sistem Türkçe testte tam mesajla 0,39, ilk
+  satırla 0,36.
+- Uygulamaya alınan model: insan + yazar (0,3), "Belirsiz" sınıfını da öğrenmiş; test
+  repolarını görmeden eğitildi (altın küme ileride yeniden ölçüm için temiz kalır).
+
 **Sınırlamalar.**
 - Test kümesini tek kişi etiketledi; kişiler arası uyuşma (ör. Cohen's kappa) ölçülmedi.
 - Küçük kümeler: 94 ve 33 mesaj; tek bir yüzde puanı yaklaşık 1 mesajdır.

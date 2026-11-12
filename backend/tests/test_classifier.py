@@ -41,6 +41,23 @@ def test_low_confidence_is_belirsiz(model, monkeypatch):
     assert (c.label, c.label_tr, c.source) == ("diger", "Belirsiz", "belirsiz")
 
 
+def test_only_first_line_is_used(model):
+    # Gövdedeki "düzeltildi" ilk satırın kararını değiştirmez (model ilk satırlarla eğitildi).
+    c = classify("README\n\nayrıca giriş hatası düzeltildi", model)
+    assert (c.label, c.source) == ("docs", "kural")
+
+
+def test_saved_app_model_loads_and_knows_belirsiz():
+    import app.classify.classifier as clf
+
+    clf._model.cache_clear()
+    m = clf._model()
+    assert m is not None
+    assert "diger" in set(map(str, m.classes_))  # insan etiketlerinden "Belirsiz" öğrenildi
+    c = clf.classify("kullanıcı profili sayfası")
+    assert c.source in ("kural", "model") and isinstance(c.label, str)
+
+
 def test_works_without_model_file(monkeypatch):
     import app.classify.classifier as clf
 

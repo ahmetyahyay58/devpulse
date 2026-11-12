@@ -83,8 +83,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Son senkron:'), findsOneWidget);
-    expect(find.text('Yeni commit'), findsOneWidget);
-    expect(find.text('6'), findsOneWidget);
+    // "6" yalnızca "Yeni commit" satırında aranır (saat grafiğinin "6" etiketiyle karışmasın).
+    final newCommitRow = find.ancestor(of: find.text('Yeni commit'), matching: find.byType(Row)).first;
+    expect(find.descendant(of: newCommitRow, matching: find.text('6')), findsOneWidget);
     expect(find.text('Yeniden senkronla'), findsOneWidget);
   });
 

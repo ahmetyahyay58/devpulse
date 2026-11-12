@@ -31,9 +31,54 @@ class FakeBackend {
         'finished_at': status == 'done' || status == 'failed' ? '2026-11-12T10:00:02Z' : null,
       };
 
+  // --- Metrik taklidi ---
+  Map<String, dynamic> overview = sampleOverview();
+
+  static Map<String, dynamic> section(String sufficiency, String summary, Map<String, dynamic> extra) => {
+        'sufficiency': sufficiency, 'basis': 'test dayanağı', 'summary': summary,
+        'how': 'Test: nasıl hesaplandı metni.', ...extra,
+      };
+
+  static Map<String, dynamic> sampleOverview({int totalCommits = 33}) => {
+        'timezone': 'Europe/Istanbul', 'timezone_known': true, 'today': '2026-11-12',
+        'kpi': {
+          'total_commits': totalCommits, 'active_days': 10, 'repos': 4,
+          'current_streak': 1, 'commits_last_30_days': 5,
+        },
+        'continuity': section('normal', 'Son 90 günde aktif gün oranın %1; en uzun serin 7 gün.', {
+          'current_streak': 1, 'longest_streak': 7, 'active_ratio_90d': 0.011,
+        }),
+        'rhythm': section('dusuk', "Commit'lerin en çok 13:00-13:59 arasında.", {
+          'by_hour': List.generate(24, (h) => h == 13 ? 18 : 1),
+          'by_weekday': [4, 9, 7, 2, 7, 2, 2],
+          'peak_hour': 13, 'night_share': 0.0, 'weekend_share': 0.12,
+        }),
+        'sessions': section('yetersiz', 'Bu metrik için henüz yeterli veri yok (2 oturum).', {
+          'count': 2, 'commits_per_session': 2.0, 'session_minutes': 4.5,
+          'commits_per_active_day': 2.0, 'lines_per_commit': 14.0,
+        }),
+      };
+
+  int overviewCalls = 0;
+
   late final client = MockClient((request) async {
     requests.add(request);
     final path = request.url.path;
+    if (path == '/metrics/overview') {
+      overviewCalls++;
+      return _json(overview);
+    }
+    if (path == '/metrics/calendar') {
+      final start = DateTime(2026, 11, 6);
+      return _json({
+        'days': [
+          for (var k = 0; k < 7; k++)
+            {'day': start.add(Duration(days: k)).toIso8601String().substring(0, 10), 'count': k == 5 ? 5 : 0},
+        ],
+        'total': 5,
+        'note': 'Takvim PR ve issue da sayar.',
+      });
+    }
     if (path.startsWith('/sync')) {
       if (sessionExpired) return _json({'detail': 'Oturumun süresi doldu'}, 401);
       if (path == '/sync' && runningJobId != null) {

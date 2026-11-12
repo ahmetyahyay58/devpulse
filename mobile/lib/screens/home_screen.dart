@@ -4,11 +4,13 @@ import '../api/api_client.dart';
 import '../api/health_api.dart';
 import '../api/sync_api.dart';
 import '../auth/session_store.dart';
+import '../overview/overview_controller.dart';
+import '../overview/overview_section.dart';
 import '../sync/sync_card.dart';
 import '../sync/sync_controller.dart';
 import 'health_card.dart';
 
-/// Giriş sonrası ana ekran: senkron kartı ve sunucu durumu. (Genel Bakış sonra gelecek.)
+/// Giriş sonrası ana ekran: senkron kartı, Genel Bakış ve sunucu durumu.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
@@ -41,9 +43,31 @@ class _HomeScreenState extends State<HomeScreen> {
     pollInterval: widget.pollInterval,
   )..load();
 
+  late final OverviewController _overview = OverviewController(
+    api: widget.api,
+    onUnauthorized: widget.onLogout,
+  )..load();
+
+  bool _wasRunning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sync.addListener(_reloadOverviewWhenSyncFinishes);
+  }
+
+  /// Senkron "sürüyor"dan "bitti"ye geçince metrikler yeni veriyle yeniden yüklenir.
+  void _reloadOverviewWhenSyncFinishes() {
+    final running = _sync.isRunning;
+    if (_wasRunning && !running && _sync.job?.status == 'done') _overview.load();
+    _wasRunning = running;
+  }
+
   @override
   void dispose() {
+    _sync.removeListener(_reloadOverviewWhenSyncFinishes);
     _sync.dispose();
+    _overview.dispose();
     super.dispose();
   }
 
@@ -79,8 +103,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 const SizedBox(height: 16),
                 SyncCard(controller: _sync),
-                const SizedBox(height: 16),
-                HealthCard(api: widget.healthApi),
+                const SizedBox(height: 24),
+                Text('Genel Bakış', style: theme.textTheme.titleLarge),
+                const SizedBox(height: 12),
+                OverviewSection(controller: _overview),
+                const SizedBox(height: 24),
+                HealthCard(api: widget.healthApi), // geliştirme amaçlı; en altta
               ],
             ),
           ),

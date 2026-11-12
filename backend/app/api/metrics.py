@@ -1,21 +1,62 @@
 """Metrik uç noktaları (oturum belirteci gerekir).
 
 GET /metrics/overview  Genel Bakış: KPI, süreklilik, ritim, oturum/yoğunluk
+GET /metrics/calendar  Katkı takvimi (ısı haritası için, eksik günler 0)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from app.auth import current_user
 from app.db import SessionLocal
 from app.metrics.activity import CommitPoint
 from app.metrics.overview import Overview, build_overview
-from app.models import Commit, Repo, User
+from app.models import Commit, ContributionDay, Repo, User
 
 router = APIRouter(prefix="/metrics", tags=["metrikler"])
+
+
+CALENDAR_NOTE = (
+    "GitHub katkı takvimi: commit'lerin yanında PR, issue ve kod incelemelerini de sayar; "
+    "bu yüzden commit sayılarıyla birebir tutmaz. Günler GitHub'ın verdiği haliyle gösterilir."
+)
+
+
+class CalendarDayOut(BaseModel):
+    day: date
+    count: int
+
+
+class CalendarOut(BaseModel):
+    days: list[CalendarDayOut]  # eskiden yeniye, eksik günler 0 ile dolu
+    total: int
+    note: str = CALENDAR_NOTE
+
+
+@router.get("/calendar", response_model=CalendarOut)
+def calendar(
+    days: int = Query(default=371, ge=7, le=731), user: User = Depends(current_user)
+) -> CalendarOut:
+    """Isı haritası için son `days` gün (varsayılan 53 hafta)."""
+    today = datetime.now(ZoneInfo(user.timezone or "UTC")).date()
+    start = today - timedelta(days=days - 1)
+    with SessionLocal() as db:
+        stored = dict(
+            db.execute(
+                select(ContributionDay.day, ContributionDay.count).where(
+                    ContributionDay.user_id == user.id, ContributionDay.day >= start
+                )
+            ).all()
+        )
+    out = [
+        CalendarDayOut(day=d, count=stored.get(d, 0))
+        for d in (start + timedelta(days=k) for k in range(days))
+    ]
+    return CalendarOut(days=out, total=sum(x.count for x in out))
 
 
 @router.get("/overview", response_model=Overview)

@@ -149,8 +149,36 @@ Komut: `py -m ml.merge select | evaluate | save`. Sınıf azalınca doğruluk ke
 - Kappa 0,27-0,35 "zayıf-orta" uyuşmadır; arayüz commit türlerini kesin bilgi gibi değil,
   yaklaşık bir dağılım olarak sunmalıdır.
 
+### Etiketleyiciler arası uyuşma (13 Kasım 2026)
+
+Komut: `py -m ml.agreement`. Altın kümedeki 98 mesaj yapay zekâ (Claude Opus 5.5) tarafından
+da etiketlendi: **kör** (geliştiricinin etiketleri ve yazarın öneki görülmeden), aynı kılavuza
+(`docs/etiketler.md`) göre. Bu etiketler (`tr_gold_llm_labels.jsonl`) yalnızca uyuşma ölçümü
+içindir; eğitimde ve tasarım kararlarında kullanılmadı.
+
+| çift | mesaj | 7 sınıf uyuşma / kappa | 6 sınıf uyuşma / kappa |
+|---|---|---|---|
+| Yapay zekâ – geliştirici | 94 | %37 / 0.26 | %47 / 0.33 |
+| Yazar öneki – geliştirici | 94 | %40 / 0.30 | %48 / 0.34 |
+| Yapay zekâ – yazar öneki | 98 | %78 / 0.73 | %79 / 0.72 |
+
+En sık uyuşmazlıklar (geliştirici → yapay zekâ): Bakım → Kod düzenleme (5), Belgelendirme →
+Bakım (4), Kod düzenleme → Bakım (4).
+
+**Yorum.**
+- İki bağımsız kaynak (mesajın yazarları ve kör etiketleyen yapay zekâ) %78 uyuşuyor (kappa
+  0,73, "iyi"); geliştiricinin etiketleri ikisiyle de ~%40 uyuşuyor. Test kümesinin tek
+  etiketleyicisi diğer kaynaklardan belirgin ayrışmaktadır.
+- Sistemin geliştirici etiketleriyle uyuşması (6 sınıf %41), iki dikkatli etiketleyicinin
+  geliştiriciyle uyuşmasına (%47-48, 6 sınıf) yakındır: bu test kümesiyle ölçülebilecek üst
+  sınıra yaklaşılmıştır. Daha fazla eğitim verisi bu sınırı aşmaz.
+- Yapay zekâ etiketleri yazar öneklerine çok benzediğinden, eğitim verisini yapay zekâya
+  etiketletmek mevcut 2479 önekli örneğe yeni bilgi eklemez; bu yüzden yapılmadı.
+- Önerilen sonraki adım: test kümesinde ikinci tur gözden geçirme (adjudication).
+
 **Sınırlamalar.**
-- Test kümesini tek kişi etiketledi; kişiler arası uyuşma (ör. Cohen's kappa) ölçülmedi.
+- Test kümesini tek kişi etiketledi; ikinci insan etiketleyici yoktur (yapay zekâ ve yazar
+  önekleri insan yerine geçmez).
 - Küçük kümeler: 94 ve 33 mesaj; tek bir yüzde puanı yaklaşık 1 mesajdır.
 - Eğitim etiketleri yazarlara aittir ve tanımımızdan farklıdır (gürültülü/zayıf denetim).
 - Model "Belirsiz" sınıfını öğrenmez; insanın "Belirsiz" dediği 14 mesaj her sistemde hata sayılır.

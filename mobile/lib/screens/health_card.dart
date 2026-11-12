@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../api/health_api.dart';
 
-/// Backend'in ayakta olup olmadığını gösteren ilk ekran.
-class HealthScreen extends StatefulWidget {
-  const HealthScreen({super.key, required this.api});
+/// Backend'in ayakta olup olmadığını gösteren kart.
+class HealthCard extends StatefulWidget {
+  const HealthCard({super.key, required this.api});
 
   final HealthApi api;
 
   @override
-  State<HealthScreen> createState() => _HealthScreenState();
+  State<HealthCard> createState() => _HealthCardState();
 }
 
-class _HealthScreenState extends State<HealthScreen> {
+class _HealthCardState extends State<HealthCard> {
   // Durumu kendimiz tutuyoruz: yenilenirken eski sonuç ekranda kalabilsin.
   HealthResult? _result;
   Object? _error;
@@ -63,55 +63,43 @@ class _HealthScreenState extends State<HealthScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('DevPulse')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text('Sunucu durumu', style: theme.textTheme.titleLarge),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.api.baseUrl,
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: 24),
-                    _body(),
-                    if (_checkedAt != null) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        'Son kontrol: ${_formatTime(_checkedAt!)}',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      // null: buton devre dışı (sorgu sürerken tekrar basılamaz)
-                      onPressed: _loading ? null : _refresh,
-                      icon: _loading
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.refresh),
-                      label: Text(_loading ? 'Kontrol ediliyor…' : 'Yenile'),
-                    ),
-                  ],
-                ),
-              ),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Sunucu durumu', style: theme.textTheme.titleLarge),
+            const SizedBox(height: 4),
+            Text(
+              widget.api.baseUrl,
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
-          ),
+            const SizedBox(height: 24),
+            _body(),
+            if (_checkedAt != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Son kontrol: ${_formatTime(_checkedAt!)}',
+                textAlign: TextAlign.center,
+                style:
+                    theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ],
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              // null: buton devre dışı (sorgu sürerken tekrar basılamaz)
+              onPressed: _loading ? null : _refresh,
+              icon: _loading
+                  ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh),
+              label: Text(_loading ? 'Kontrol ediliyor…' : 'Yenile'),
+            ),
+          ],
         ),
       ),
     );

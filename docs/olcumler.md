@@ -38,7 +38,54 @@ Harf parçası modeli sınıf başına F1: feat 0.66, fix 0.66, docs 0.59, refac
   modeli eğitmek için uygundur, hibrit sistemin tanımımıza göre doğruluğunu ölçmek için değil.
 - Modelin olasılıkları 6 sınıfa yayılır (en yüksek olasılık çoğunlukla 0,3-0,4); 0,5 güven eşiği
   neredeyse hiç karar verdirmez. Çapraz doğrulamada en iyi sonuç eşiksiz alındı (0,61).
-- Gerçek doğruluk için tanımlarımıza göre elle etiketlenmiş Türkçe mesajlar gerekir (açık konu).
+- Gerçek doğruluk için tanımlarımıza göre elle etiketlenmiş Türkçe mesajlar gerekir; aşağıdaki
+  bölümde yapıldı.
+
+## Commit sınıflandırma: insan etiketleriyle değerlendirme (13 Kasım 2026)
+
+Komut: `cd backend; py -m ml.gold evaluate`. Model yalnızca eğitim kısmıyla eğitildi (test
+repoları eğitimde yok); tasarım seçenekleri eşiksizdir (model hep en olası sınıfı söyler).
+
+**Kümeler.**
+- Türkçe altın küme: test repolarından 98 mesaj, sınıflara dengeli seçildi; geliştirici
+  `docs/etiketler.md` tanımlarına göre **kör** etiketledi (yazarın öneki ve repo adı gizli).
+  94'ü etiketlendi (4'ü atlandı); 14'üne "Belirsiz" denildi.
+- Kendi commit'leri: geliştiricinin 33 commit mesajı (Türkçe/İngilizce karışık, çoğu README).
+
+| sistem | Türkçe (94) | Türkçe, "Belirsiz" hariç (80) | kendi (33) |
+|---|---|---|---|
+| Yalnız kurallar (karar veremezse Belirsiz) | 0.28 | 0.21 | 0.58 |
+| Yalnız model | 0.36 | 0.42 | 0.55 |
+| **Kural önce, sonra model** | **0.39** | **0.46** | **0.58** |
+| Kesin kural önce, sonra model | 0.38 | 0.45 | 0.52 |
+
+Karşılaştırma: 7 sınıfta rastgele tahmin ~0,14.
+
+- Türkçe kümede kuralların karar verdiği 41 mesajda kural %41, model %34 doğru; kuralın karar
+  veremediği 53 mesajda model %38 doğru.
+- **Yazarın öneki ile insan etiketinin uyuşma oranı: %40 (94 mesaj).** En sık uyuşmazlıklar:
+  Bakım→Kod düzenleme (4), Kod düzenleme→Belirsiz (4), Hata düzeltme→Kod düzenleme (4).
+- En sık sistem hataları (insan → sistem): Belirsiz→Yeni özellik (7), Bakım→Hata düzeltme (4),
+  Kod düzenleme→Hata düzeltme (4).
+
+**Yorum.**
+- Otomatik (önek) etiketlerle yapılan ölçüm kuralları kötü, modeli iyi gösteriyordu; insan
+  etiketleriyle durum tersine döndü: kuralların karar verdiği mesajlarda kural modelden iyidir
+  ve en iyi sistem "kural önce, sonra model"dir. Önek etiketleri model eğitimi için yararlıdır
+  ama sistemin tanımlarımıza göre doğruluğunu ölçmek için yanıltıcıdır (uyuşma yalnız %40).
+- Tür tanımları doğası gereği tartışmalıdır (özellikle Kod düzenleme / Bakım / Hata düzeltme);
+  yazarların önekiyle insan etiketinin %40 uyuşması, bu görevin üst sınırının da düşük olduğunu
+  gösterir.
+- Uygulamada kullanılan tasarım: kural önce, sonra model, güven eşiği yok (olasılıklar 6 sınıfa
+  yayıldığı için eşik işe yaramıyor); her kararın kaynağı ve model güveni gösterilir; commit türü
+  grafiğinde doğruluğun yaklaşık %40-60 olduğu açıkça yazılır.
+- Kurallar bu sonuçlara bakılarak yeniden ayarlanmamıştır (test kümesi tasarımda kullanılmadı).
+
+**Sınırlamalar.**
+- Test kümesini tek kişi etiketledi; kişiler arası uyuşma (ör. Cohen's kappa) ölçülmedi.
+- Küçük kümeler: 94 ve 33 mesaj; tek bir yüzde puanı yaklaşık 1 mesajdır.
+- Eğitim etiketleri yazarlara aittir ve tanımımızdan farklıdır (gürültülü/zayıf denetim).
+- Model "Belirsiz" sınıfını öğrenmez; insanın "Belirsiz" dediği 14 mesaj her sistemde hata sayılır.
 
 ## Anomali: enjeksiyon testi (12 Kasım 2026)
 

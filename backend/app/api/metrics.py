@@ -3,6 +3,7 @@
 GET /metrics/overview  Genel Bakış: KPI, süreklilik, ritim, oturum/yoğunluk
 GET /metrics/calendar  Katkı takvimi (ısı haritası için, eksik günler 0)
 GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
+GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçeli örnekler)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
 from datetime import date, datetime, timedelta
@@ -16,6 +17,7 @@ from app.auth import current_user
 from app.db import SessionLocal
 from app.metrics.activity import CommitPoint
 from app.metrics.anomaly import AnomaliesOut, build_anomalies
+from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
 from app.models import Commit, ContributionDay, Repo, User
 
@@ -80,6 +82,16 @@ def overview(user: User = Depends(current_user)) -> Overview:
     # "Bugün" kullanıcının saat dilimindeki tarihtir (İstanbul'da gece 01:00 ise UTC'de dün).
     today = datetime.now(ZoneInfo(user.timezone or "UTC")).date()
     return build_overview(points, user.timezone, today, repo_count)
+
+
+@router.get("/commit-types", response_model=CommitTypesOut)
+def commit_types(user: User = Depends(current_user)) -> CommitTypesOut:
+    """Commit türleri dağılımı ve her türden en yeni örnekler (kural/model gerekçesiyle)."""
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Commit.message, Commit.authored_at, Repo.name).join(Repo).where(Repo.user_id == user.id)
+        ).all()
+    return build_commit_types([CommitText(m, t, r) for m, t, r in rows])
 
 
 @router.get("/anomalies", response_model=AnomaliesOut)

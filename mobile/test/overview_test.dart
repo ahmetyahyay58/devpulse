@@ -44,10 +44,35 @@ void main() {
     expect(find.byType(ContributionHeatmap), findsOneWidget);
 
     // Üç durum da ikon + yazıyla gösterilir.
-    expect(find.text('Normal'), findsNWidgets(2)); // süreklilik + olağan dışı günler
+    expect(find.text('Normal'), findsNWidgets(3)); // süreklilik + commit türleri + olağan dışı
     expect(find.text('Düşük güven'), findsOneWidget);
     expect(find.text('Yeterli veri yok'), findsOneWidget);
     expect(find.textContaining('en uzun serin 7 gün'), findsOneWidget);
+  });
+
+  testWidgets('commit türleri: oranlar, doğruluk notu; 0 olan tür gizli', (tester) async {
+    await _pumpHome(tester, FakeBackend());
+    expect(find.text('Commit türleri'), findsOneWidget);
+    expect(find.text('Belgelendirme'), findsOneWidget);
+    expect(find.text('19 · %58'), findsOneWidget);
+    expect(find.text('Test'), findsNothing); // sayısı 0
+    expect(find.textContaining('yaklaşık bir tahmindir'), findsOneWidget);
+  });
+
+  testWidgets('türe dokununca commit\'ler ve karar gerekçesi görünür', (tester) async {
+    await _pumpHome(tester, FakeBackend());
+    await tester.tap(find.text('Yeni özellik'));
+    await tester.pumpAndSettle();
+    expect(find.text("Yeni özellik · son commit'ler"), findsOneWidget);
+    expect(find.text('profil sayfası'), findsOneWidget);
+    expect(find.text('model, %72 güven'), findsOneWidget); // modelden karar
+  });
+
+  testWidgets('kural kararı "kural:" önekiyle gösterilir', (tester) async {
+    await _pumpHome(tester, FakeBackend());
+    await tester.tap(find.text('Belgelendirme'));
+    await tester.pumpAndSettle();
+    expect(find.text('kural: Markdown dosyası'), findsOneWidget);
   });
 
   testWidgets('olağan dışı günler kartı işaretlenen günü gösterir', (tester) async {

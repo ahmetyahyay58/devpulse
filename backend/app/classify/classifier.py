@@ -37,6 +37,34 @@ def _model():
     return joblib.load(MODEL_PATH)
 
 
+def classify_many(messages: list[str], model=None) -> list[Classification]:
+    """Toplu sınıflandırma: kurallar her mesaja, kalanlar modele TEK seferde gider (hızlı)."""
+    headlines = [m.strip().splitlines()[0] if m.strip() else "" for m in messages]
+    out: list[Classification | None] = []
+    pending: list[int] = []
+    for i, h in enumerate(headlines):
+        rule = classify_rules(h)
+        if rule:
+            label = to_app_label(rule.label)
+            out.append(Classification(label, LABEL_TR[label], "kural", rule.reason, None))
+        else:
+            out.append(None)
+            if h:
+                pending.append(i)
+
+    model = model if model is not None else _model()
+    if model is not None and pending:
+        probas = model.predict_proba([headlines[i] for i in pending])
+        for i, proba in zip(pending, probas):
+            best = int(proba.argmax())
+            if proba[best] >= THRESHOLD:
+                label = to_app_label(str(model.classes_[best]))
+                out[i] = Classification(label, LABEL_TR[label], "model",
+                                        f"model, %{round(100 * proba[best])} güven", float(proba[best]))
+    belirsiz = Classification("diger", LABEL_TR["diger"], "belirsiz", "kurallar ve model emin değil", None)
+    return [c or belirsiz for c in out]
+
+
 def classify(message: str, model=None) -> Classification:
     # Yalnızca ilk satır: model de ilk satırlarla eğitildi (tutarlılık).
     headline = message.strip().splitlines()[0] if message.strip() else ""

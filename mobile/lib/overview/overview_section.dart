@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'charts.dart';
+import 'commit_types_card.dart';
 import 'metric_card.dart';
 import 'overview_controller.dart';
 import 'overview_models.dart';
@@ -40,6 +41,10 @@ class OverviewSection extends StatelessWidget {
             if (controller.calendar != null) _CalendarCard(data: controller.calendar!),
             const SizedBox(height: 12),
             _continuity(o.continuity),
+            if (controller.commitTypes != null) ...[
+              const SizedBox(height: 12),
+              CommitTypesCard(section: controller.commitTypes!),
+            ],
             const SizedBox(height: 12),
             _rhythm(o),
             const SizedBox(height: 12),

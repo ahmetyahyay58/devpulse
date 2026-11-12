@@ -62,6 +62,32 @@ class FakeBackend {
   int overviewCalls = 0;
   int projectsCalls = 0;
 
+  static Map<String, dynamic> typeShare(String label, String tr, int count, double share,
+          [List<Map<String, dynamic>> examples = const []]) =>
+      {'label': label, 'label_tr': tr, 'count': count, 'share': share, 'examples': examples};
+
+  Map<String, dynamic> commitTypes = section(
+    'normal',
+    "Commit'lerin en çok 'Belgelendirme' türünde: 19 commit (%58).",
+    {
+      'total': 33,
+      'types': [
+        typeShare('docs', 'Belgelendirme', 19, 19 / 33, [
+          {'headline': 'Update README.md', 'repo': 'proje', 'authored_at': '2026-11-11T10:00:00Z',
+           'source': 'kural', 'reason': 'Markdown dosyası'},
+        ]),
+        typeShare('feat', 'Yeni özellik', 8, 8 / 33, [
+          {'headline': 'profil sayfası', 'repo': 'proje', 'authored_at': '2026-11-10T10:00:00Z',
+           'source': 'model', 'reason': 'model, %72 güven'},
+        ]),
+        typeShare('fix', 'Hata düzeltme', 6, 6 / 33),
+        typeShare('test', 'Test', 0, 0),
+      ],
+      'by_source': {'kural': 30, 'model': 3},
+      'note': 'Türler yaklaşık bir tahmindir: %63 doğru (kappa 0,53).',
+    },
+  );
+
   Map<String, dynamic> anomalies = section(
     'normal',
     '1 gün alışkanlığının belirgin dışında yoğundu. En yoğunu 02.10.2026: 23 commit.',
@@ -130,6 +156,9 @@ class FakeBackend {
     if (path == '/metrics/overview') {
       overviewCalls++;
       return _json(overview);
+    }
+    if (path == '/metrics/commit-types') {
+      return _json(commitTypes);
     }
     if (path == '/metrics/anomalies') {
       return _json(anomalies);

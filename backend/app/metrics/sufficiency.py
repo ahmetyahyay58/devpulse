@@ -33,6 +33,14 @@ def anomaly(active_days: int) -> Sufficiency:
     return Sufficiency.NORMAL
 
 
+def commit_types(commits: int) -> Sufficiency:
+    if commits < 10:
+        return Sufficiency.NONE
+    if commits < 30:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL
+
+
 def sessions(session_count: int) -> Sufficiency:
     if session_count < 3:
         return Sufficiency.NONE

@@ -29,6 +29,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Ritim | < 10 commit | < 50 commit ya da saat dilimi bilinmiyor | diğer |
 | Oturum ve yoğunluk | < 3 oturum | < 15 oturum | diğer |
 | Olağan dışı günler | < 10 aktif gün | < 30 aktif gün | diğer |
+| Commit türleri | < 10 commit | < 30 commit | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -92,6 +93,16 @@ Forest yalnızca kıyas ve rapor içindir.
 verildiği ölçülür: `py -m app.metrics.anomaly_eval`. Sonuçlar `docs/olcumler.md`'dedir.
 Sentetik veri yöntemin genel başarısını kanıtlamaz; yalnızca bilinen bir olayı yakalayıp
 yakalamadığını gösterir.
+
+### Commit türleri (gözetimli ML + kural)
+Her commit mesajının **ilk satırı** altı türden birine ayrılır: Yeni özellik, Hata düzeltme,
+Belgelendirme, Bakım ve düzenleme, Test, Belirsiz (kılavuz: `docs/etiketler.md`). Önce önek ve
+Türkçe/İngilizce kurallar denenir; karar verilemezse model (harf parçası TF-IDF + lojistik
+regresyon) karar verir. Her commit için kaynak (kural/model) ve gerekçe gösterilir.
+- **Doğruluk:** tutarlı bir test standardına göre %63, kappa 0,53 ("orta"); türler kesin bilgi
+  değil, yaklaşık bir dağılımdır (ayrıntı `docs/olcumler.md`). Bu not arayüzde de gösterilir.
+- **Veri yeterliliği:** < 10 commit "Yeterli veri yok", < 30 commit "Düşük güven".
+- Commit mesajları hiçbir dış hizmete gönderilmez; sınıflandırma sunucuda yereldir.
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

@@ -201,12 +201,19 @@ sonra model; 6 sade sınıf. Yapay zekâ etiketleri eğitimde/tasarımda kullan�
   uyuşmadır.
 - Yeni model yazar önekleriyle eğitildiği için "Belirsiz" sınıfını öğrenmez; "Belirsiz" yalnızca
   kurallardan (Revert, Merge) gelir.
-- İnsan kontrolü: geliştirici, yapay zekâ etiketlerinden rastgele 20'sini (etiket görünür
-  biçimde) onaylar ya da reddeder (`py -m ml.llm_ref check`); sonuç buraya eklenecek.
+- **İnsan kabul edilebilirlik kontrolü (13 Kasım 2026):** geliştirici, yapay zekâ
+  etiketlerinden rastgele 20'sini etiket görünür biçimde inceledi (`py -m ml.llm_ref check`,
+  tohum 20261113): **19/20'sine (%95) katıldı.** Katılmadığı tek örnek: "RPM ve DEB paketlerini
+  uygulama olarak açabilen hale getir" (yapay zekâ: Yeni özellik).
+- Kör etiketlemede geliştirici ile yapay zekâ %37 uyuşurken, yapay zekâ etiketi gösterildiğinde
+  geliştirici %95 katılıyor. İkisi çelişmez: mesajların çoğu için birden fazla tür makuldür
+  (tanım belirsizliği bulgusunu destekler). Etiket gösterilerek yapılan kontrol bağımsız
+  değildir (gösterilen cevaba katılma eğilimi); bu yüzden "doğrulama" değil "kabul
+  edilebilirlik kontrolü" olarak raporlanır.
 
 **Sınırlamalar.**
-- Test referansı bir yapay zekânın etiketleridir; insan doğrulaması 20 örnekle sınırlıdır ve
-  etiket gösterilerek yapılır (bağımsız değil, onay niteliğindedir).
+- Test referansı bir yapay zekânın etiketleridir; insan kontrolü 20 örnekle sınırlıdır ve
+  etiket gösterilerek yapıldı (bağımsız değil, kabul edilebilirlik niteliğindedir; %95).
 - Yapay zekâ, bu sistemin kurallarını tasarlayan aynı model ailesindendir; kör etiketlemede
   kurallar ve sistem çıktıları görülmemiş olsa da tanım yorumu ortak olabilir.
 - Test kümesini tek kişi etiketledi; ikinci insan etiketleyici yoktur (yapay zekâ ve yazar

@@ -60,10 +60,48 @@ class FakeBackend {
       };
 
   int overviewCalls = 0;
+  int projectsCalls = 0;
+
+  static Map<String, dynamic> check(String key, String label, String status, [String? hint]) =>
+      {'key': key, 'label': label, 'weight': 25, 'status': status, 'hint': hint};
+
+  static Map<String, dynamic> project(String name, int? score, List<Map<String, dynamic>> checks,
+          {bool owner = true, String? reason}) =>
+      {
+        'name': name, 'language': 'Python', 'is_private': false, 'is_fork': false, 'is_owner': owner,
+        'scored': reason == null, 'not_scored_reason': reason, 'score': score, 'checks': checks,
+        'days_since_push': 3, 'commit_count': 4,
+      };
+
+  Map<String, dynamic> projects = {
+    'summary': {
+      'scored_count': 2, 'average_score': 70,
+      'missing_counts': {'readme': 0, 'description': 0, 'license': 2, 'topics': 1},
+      'summary': 'Puanlanan 2 reponun ortalama skoru 70/100. En sık eksik: Lisans (2/2 repoda).',
+      'how': 'Test: proje sağlığı nasıl hesaplandı.',
+    },
+    'projects': [
+      project('eksikli-repo', 60, [
+        check('readme', 'README', 'ok'), check('description', 'Açıklama', 'ok'),
+        check('license', 'Lisans', 'missing', 'LICENSE dosyası ekle.'),
+        check('topics', 'Topic', 'missing', 'Topic ekle.'),
+      ]),
+      project('iyi-repo', 80, [
+        check('readme', 'README', 'ok'), check('description', 'Açıklama', 'ok'),
+        check('license', 'Lisans', 'missing', 'LICENSE dosyası ekle.'),
+        check('topics', 'Topic', 'ok'),
+      ]),
+      project('katki-repo', null, [], owner: false, reason: 'Başkasına ait repo.'),
+    ],
+  };
 
   late final client = MockClient((request) async {
     requests.add(request);
     final path = request.url.path;
+    if (path == '/projects') {
+      projectsCalls++;
+      return _json(projects);
+    }
     if (path == '/metrics/overview') {
       overviewCalls++;
       return _json(overview);

@@ -63,3 +63,24 @@ sınırdır).
 
 Ortalama yerine **medyan** kullanılır: tek bir dev commit (ör. bağımlılık klasörü) ortalamayı
 bozar, medyanı bozmaz.
+
+### Proje sağlığı (eksiklik takibi)
+**Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,
+nasıl kullanılacağını ve hangi lisansla paylaşıldığını anlayabiliyor mu?
+**Ne ölçmez:** Kod kalitesi, test, hata sayısı ya da projenin değeri.
+
+| Kontrol | Ağırlık | Geçer sayılması |
+|---|---|---|
+| README | 35 | Varsayılan dalda `README.md`, `readme.md`, `README` ya da `README.rst` var |
+| Açıklama | 25 | GitHub'daki "About" açıklaması boş değil |
+| Lisans | 20 | GitHub bir lisans tanıyor (`licenseInfo`) |
+| Topic | 20 | En az bir topic var |
+
+- **Skor** = geçen kontrollerin ağırlık toplamı / bilinen kontrollerin ağırlık toplamı × 100.
+  Durumu bilinmeyen kontrol (GitHub döndürmediyse) eksik sayılmaz, hesaptan çıkarılır.
+- Ağırlıklar sezgiseldir (README en çok bilgi taşıdığı için en ağır); bir standarda dayanmaz.
+- **Puanlanmaz:** Başkasına ait repolar (yalnızca katkı yapılan) ve fork'lar; vitrinleri
+  kullanıcının elinde değildir. Listede ayrıca gösterilir.
+- Bilinen sınırlama: README yalnızca dört yaygın dosya adına bakılarak aranır (ör. `Readme.md`
+  ya da `docs/README.md` bulunmaz).
+- Skora girmeyen bilgi: son push'tan bu yana geçen gün ve kullanıcının o repodaki commit sayısı.

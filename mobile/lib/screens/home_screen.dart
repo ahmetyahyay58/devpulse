@@ -6,11 +6,13 @@ import '../api/sync_api.dart';
 import '../auth/session_store.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_section.dart';
+import '../projects/projects_controller.dart';
+import '../projects/projects_view.dart';
 import '../sync/sync_card.dart';
 import '../sync/sync_controller.dart';
 import 'health_card.dart';
 
-/// Giriş sonrası ana ekran: senkron kartı, Genel Bakış ve sunucu durumu.
+/// Giriş sonrası ana ekran: alt gezinme çubuğuyla Genel Bakış ve Projeler sekmeleri.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
@@ -48,32 +50,41 @@ class _HomeScreenState extends State<HomeScreen> {
     onUnauthorized: widget.onLogout,
   )..load();
 
+  late final ProjectsController _projects = ProjectsController(
+    api: widget.api,
+    onUnauthorized: widget.onLogout,
+  )..load();
+
   bool _wasRunning = false;
+  int _tab = 0; // 0: Genel Bakış, 1: Projeler
 
   @override
   void initState() {
     super.initState();
-    _sync.addListener(_reloadOverviewWhenSyncFinishes);
+    _sync.addListener(_reloadWhenSyncFinishes);
   }
 
-  /// Senkron "sürüyor"dan "bitti"ye geçince metrikler yeni veriyle yeniden yüklenir.
-  void _reloadOverviewWhenSyncFinishes() {
+  /// Senkron "sürüyor"dan "bitti"ye geçince iki sekme de yeni veriyle yeniden yüklenir.
+  void _reloadWhenSyncFinishes() {
     final running = _sync.isRunning;
-    if (_wasRunning && !running && _sync.job?.status == 'done') _overview.load();
+    if (_wasRunning && !running && _sync.job?.status == 'done') {
+      _overview.load();
+      _projects.load();
+    }
     _wasRunning = running;
   }
 
   @override
   void dispose() {
-    _sync.removeListener(_reloadOverviewWhenSyncFinishes);
+    _sync.removeListener(_reloadWhenSyncFinishes);
     _sync.dispose();
     _overview.dispose();
+    _projects.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('DevPulse'),
@@ -85,32 +96,49 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Merhaba, ${widget.session.login}', style: theme.textTheme.headlineSmall),
-                if (widget.session.isDemo) ...[
-                  const SizedBox(height: 8),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Chip(label: Text('Demo kullanıcı · sentetik veri')),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                SyncCard(controller: _sync),
-                const SizedBox(height: 24),
-                Text('Genel Bakış', style: theme.textTheme.titleLarge),
-                const SizedBox(height: 12),
-                OverviewSection(controller: _overview),
-                const SizedBox(height: 24),
-                HealthCard(api: widget.healthApi), // geliştirme amaçlı; en altta
+      // IndexedStack: iki sekme de bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
+      body: IndexedStack(
+        index: _tab,
+        children: [_overviewTab(context), ProjectsView(controller: _projects)],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _tab,
+        onDestinationSelected: (i) => setState(() => _tab = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.insights), label: 'Genel Bakış'),
+          NavigationDestination(icon: Icon(Icons.folder_outlined), label: 'Projeler'),
+        ],
+      ),
+    );
+  }
+
+  Widget _overviewTab(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Merhaba, ${widget.session.login}', style: theme.textTheme.headlineSmall),
+              if (widget.session.isDemo) ...[
+                const SizedBox(height: 8),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Chip(label: Text('Demo kullanıcı · sentetik veri')),
+                ),
               ],
-            ),
+              const SizedBox(height: 16),
+              SyncCard(controller: _sync),
+              const SizedBox(height: 24),
+              Text('Genel Bakış', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 12),
+              OverviewSection(controller: _overview),
+              const SizedBox(height: 24),
+              HealthCard(api: widget.healthApi), // geliştirme amaçlı; en altta
+            ],
           ),
         ),
       ),

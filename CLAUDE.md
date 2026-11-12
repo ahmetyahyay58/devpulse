@@ -20,7 +20,8 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Mobil: Flutter (Dart), yalnızca Android. iOS kapsam dışı. Geliştirme ortamı Windows. Yedek plan: aynı kodun Flutter web derlemesi.
 - Backend: Python, FastAPI, PostgreSQL. Docker Compose ile çalışır.
 - Şema yalnızca Alembic migration'larıyla değişir (`backend/migrations/`); `create_all` kullanılmaz. Model değişince: `py -m alembic revision --autogenerate -m "..."`, dosyayı gözden geçir, `py -m alembic upgrade head`. `py -m alembic check` model ile veritabanı arasındaki farkı yakalar.
-- Backend'i geliştirmede `py -m uvicorn app.main:app --reload --reload-dir app` ile çalıştır (`.venv`'i izlemesin).
+- Backend'i geliştirmede `py -m uvicorn app.main:app --reload --reload-dir app` ile çalıştır (`.venv`'i izlemesin). Windows'ta `--reload` bazen "Reloading..." deyip takılıyor (eski süreç kapanmıyor); değişiklik canlıda görünmüyorsa log'a bak ve sunucuyu yeniden başlat. `.env` değişikliği her zaman yeniden başlatma ister.
+- Metrik tanımları ve veri yeterliliği eşikleri: `docs/metrikler.md` (kod `backend/app/metrics/` buna uyar; önce belge güncellenir). Özet cümleleri şablondur; sayıdan sonra Türkçe ek kullanma (%12'si/%1'i ayrımı), ek gerektirmeyen cümle kur.
 - Testler: `backend/` içinde `py -m pytest` (PostgreSQL açık olmalı). Testler ayrı `devpulse_test` veritabanını migration'larla kurar ve sonunda siler; gerçek veriye dokunmaz, GitHub'a gitmez (sahte HTTP). Gizlilik kuralı (`tests/test_app.py`) yasaklı sütunları denetler. Yeni özellik = yeni test.
 - Sade tut: Redis, kuyruk sistemi ve karmaşık durum makinesi yok. Tek arka plan görevi yeter.
 - ML: scikit-learn (ve gerekirse ruptures).

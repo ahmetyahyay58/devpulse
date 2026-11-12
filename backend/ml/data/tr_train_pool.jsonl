@@ -1,0 +1,200 @@
+{"id": "oklukk/haftalik-gorevler@0c22ab469a0d", "repo": "eğitim örneği", "message": "geliştirme kurallarını AGENTS.md ile kalıcılaştır", "author_label": "docs"}
+{"id": "ismetdyn/noteapp@f57e5cf5871d", "repo": "eğitim örneği", "message": "TUI ayarlar ekranını ekle (T23)", "author_label": "feat"}
+{"id": "TranHoangDatSC/Flight-Management-Study@56b6f5ba03dd", "repo": "eğitim örneği", "message": "chuyen file du lieu vao data/, file ve vao data/ve/", "author_label": "refactor"}
+{"id": "mustafamertakceylan/MorseCore@3a60f0c2560c", "repo": "eğitim örneği", "message": "beyaz logoyu şeffaf ve ortak kaynaktan üret", "author_label": "fix"}
+{"id": "minniesmick/turkish-wordnet-ui@b19d130e4a10", "repo": "eğitim örneği", "message": "Google AI Studio için derin öğrenme laboratuvarları promptu", "author_label": "docs"}
+{"id": "yunopo42/AmbarciApp@b3b9fc34dee8", "repo": "eğitim örneği", "message": "ekran tasarımları ve tasarım değerleri", "author_label": "docs"}
+{"id": "hasankaankahraman/takeapill@1be0ebcd1121", "repo": "eğitim örneği", "message": "alarm köprüsü kanalını taklit et, tam ekran izin akışını kapsa", "author_label": "test"}
+{"id": "Yaren-Dogan/studiopass@1d0fc963ad76", "repo": "eğitim örneği", "message": "ayrıntılı proje dokümanı (PDF) ve Figma görüntüleri", "author_label": "docs"}
+{"id": "baran1248/bende@400c0827c6a0", "repo": "eğitim örneği", "message": "Bende 2 kopyasi icin baslangic noktasi ve calisma plani", "author_label": "chore"}
+{"id": "melike-mutlu/ULUTEK-staj-projesi@c977e4d81e28", "repo": "eğitim örneği", "message": "tarama geçmişi için tipli model kullan", "author_label": "refactor"}
+{"id": "peckop/venthub-hvac-esite@8ce96698da42", "repo": "eğitim örneği", "message": "rehber yazısı: Plug fan nedir, nerede kullanılır? (#2218)", "author_label": "feat"}
+{"id": "navoelyr-lwe/worldseed@1423be76ec80", "repo": "eğitim örneği", "message": "yönlü gölge eşlemesi + shadows golden sahnesi (#20)", "author_label": "feat"}
+{"id": "ykslaksoy/arac-ozellik-bakim@3649593d509e", "repo": "eğitim örneği", "message": "policy/yasal terimlerini veri standartları ve yönetimi ile değiştir", "author_label": "refactor"}
+{"id": "ridvanay/panel@6f1203f201e5", "repo": "eğitim örneği", "message": "TOTP adim siniri ve tekrar kullanim korumasi icin test yardimcilari", "author_label": "test"}
+{"id": "cerncaycisi/agentsozluk@07859d488685", "repo": "eğitim örneği", "message": "yarış testi kilidin gerçekten beklendiğini pg_locks ile doğrular", "author_label": "test"}
+{"id": "VastSea0/huma-lang@92759c9337f7", "repo": "eğitim örneği", "message": "yorumlayıcı ve VM için golden davranış test koşucusu ekle", "author_label": "test"}
+{"id": "kaannsckin/mail-test-otomasyon@02257112dac7", "repo": "eğitim örneği", "message": "arayüz boş port alanını 0 gönderiyor, port doğrulaması kaydı reddediyordu", "author_label": "fix"}
+{"id": "Yusufygc/Proje_Yonetim_Platformu@3a8f81a2a9bd", "repo": "eğitim örneği", "message": "AnalyticsView bileşenlere bölündü", "author_label": "refactor"}
+{"id": "morimasi/oogmatik@41ff4356993c", "repo": "eğitim örneği", "message": "üretim endpoint'ini sunucu taraflı sağlayıcı zincirine taşı", "author_label": "fix"}
+{"id": "MertKocakaplan/Flow@3b85fd81ffe7", "repo": "eğitim örneği", "message": "depoda yalnızca derleme, çalıştırma ve test için gerekenler kalsın", "author_label": "chore"}
+{"id": "sametulas57/BriefynAI@35e40374bae7", "repo": "eğitim örneği", "message": "\"başla\" akışı, inceleme kuralı, sabitler", "author_label": "docs"}
+{"id": "ykslaksoy/arac-ozellik-bakim@941abc867a67", "repo": "eğitim örneği", "message": "Türkçe otomotiv terim standardı ve UI metin düzeltmeleri", "author_label": "docs"}
+{"id": "burakkayya/vip-transfer-project@abbc4e4b895d", "repo": "eğitim örneği", "message": "Claude Code'a taşıma, tasarım bağlamı ve Impeccable tarama spec'i", "author_label": "docs"}
+{"id": "fertem/trend-bulucu@d8c56eaa6968", "repo": "eğitim örneği", "message": "İlk 10 Trend bar grafiğinde uzun etiketlerin üst üste binmesi", "author_label": "fix"}
+{"id": "mehetgege3-cmyk/bobi-tv@ad51e895908e", "repo": "eğitim örneği", "message": "oturum düşünce tarayıcı kapanması 4 dk asılı kalıyordu + log metni düzeltildi", "author_label": "fix"}
+{"id": "AbidinZengin/Fandoom-Frontend@25851b0bed6d", "repo": "eğitim örneği", "message": "SeriesHero'yu Series ve Movies hub'i icin ortaklastir", "author_label": "refactor"}
+{"id": "skoc10/devsecops-assistant@a5ed7ebf3b4b", "repo": "eğitim örneği", "message": "@kullanici/broker (kasa, kubeconfig içe aktarma, lease)", "author_label": "feat"}
+{"id": "twonezerotwo-hue/clean-e-yay@9b51da20224f", "repo": "eğitim örneği", "message": "temel ve sentinel varliga duyarli; makro baglam kisa TF'de olceklenir", "author_label": "fix"}
+{"id": "MSagiroglu/Enocta_Case_Study@bbe53ae67001", "repo": "eğitim örneği", "message": "Edge driver icin WebDriverManager entegre edildi", "author_label": "refactor"}
+{"id": "Misaki0808/mezunportal@658c3147dc39", "repo": "eğitim örneği", "message": "üretilmiş arama sütunları için migration bekçisi", "author_label": "test"}
+{"id": "omercnkc/toDo@28525e4d923f", "repo": "eğitim örneği", "message": "mvnw ve init.sh için çalıştırma izni", "author_label": "chore"}
+{"id": "Beratemek/the-vault@2c3c2af9164b", "repo": "eğitim örneği", "message": "GitHub Pages'te ilk açılışta boş sayfa", "author_label": "fix"}
+{"id": "abdulkadirelaldi/sahinsamet@d831101e5030", "repo": "eğitim örneği", "message": "tek komutluk ilk kurulum betiği", "author_label": "chore"}
+{"id": "yavuzsayinbulut/folyo@2cff1f048d33", "repo": "eğitim örneği", "message": "güvenlik, hız sınırı ve bildirim ayarları", "author_label": "chore"}
+{"id": "bkrbzdgn40/neon-cekirdek-survival@424856773edd", "repo": "eğitim örneği", "message": "Odak 1.3 sistemleri kilit seviyesine bağla (#80)", "author_label": "feat"}
+{"id": "RAhsencicek/HIPOS@189bbf205c44", "repo": "eğitim örneği", "message": "Faz 6-9 banka pos, cari tahsilat, kritik stok rozeti ve yonetici ekrani senkronizasyonu", "author_label": "feat"}
+{"id": "Sabridemr/dev-academy@fa484904c197", "repo": "eğitim örneği", "message": "npm için 7 gün bekleme ve Expo'ya bağlı paketleri hariç tut", "author_label": "chore"}
+{"id": "asamethon/bluma@ef48c81d6bb4", "repo": "eğitim örneği", "message": "xp artışını tanımlı görev ödülleriyle sınırla", "author_label": "fix"}
+{"id": "onurerkoc-dev/payguard@14e47924e5a4", "repo": "eğitim örneği", "message": "local, test ve production profillerini ayır (#29)", "author_label": "chore"}
+{"id": "mennansevim/abdera@1144bca21587", "repo": "eğitim örneği", "message": "gider kategorileri genişletildi (reklam, bakım, vergi/SGK, malzeme, ekipman)", "author_label": "feat"}
+{"id": "Emirhan0008/opencode-mobile@f9858e65b3fb", "repo": "eğitim örneği", "message": "telsiz tarzi baslangic/bitis tonlari - dinleme ve okuma icin ayri sesler", "author_label": "feat"}
+{"id": "Ankora-Linux/Ankora@c6d129e9442d", "repo": "eğitim örneği", "message": "headless chromium ile 24 tema, 4 yuz ve dock duman testi", "author_label": "test"}
+{"id": "uygarcapar/uni_tinder@dbb1ef488e9d", "repo": "eğitim örneği", "message": "Friends aynı-cinsiyet kuralı için tasarım, plan ve backend sözleşmesi", "author_label": "docs"}
+{"id": "EmirYoneyler/bulletin-service@eb7c300101b8", "repo": "eğitim örneği", "message": "USD, BIST 100, altın ve mevduat kıyas hesapları [E2-2]", "author_label": "feat"}
+{"id": "owuzan/vscode-markdown-pdf-studio@f7afe3b6e2b6", "repo": "eğitim örneği", "message": "kod ve testlerde Türkçe harf ve Türkçe dosya adı kalmadı", "author_label": "chore"}
+{"id": "celikilaydac/polsanleavemanageric@24821fe150d6", "repo": "eğitim örneği", "message": "giriş sınırlayıcısı TimeProvider ile; pencere testi deterministik [verify 0002 V-1, R-03]", "author_label": "fix"}
+{"id": "burcusoyugur/AgileHub@8090d0b14ae8", "repo": "eğitim örneği", "message": "servisler için ortak işlem sonucu tipini ekle", "author_label": "feat"}
+{"id": "Rasimtuzluoglu/raspel-erp@fdbce12b0a3d", "repo": "eğitim örneği", "message": "hizli satis tek kart akisi ve tahsilat dialog testi", "author_label": "refactor"}
+{"id": "dgkngegecan/proje-metraj-hesaplama@977574acb2c2", "repo": "eğitim örneği", "message": "yerel HTTP sözleşmesinin ayrıntılarını sabitle", "author_label": "test"}
+{"id": "uygarcapar/uni_tinder@432c3843fe93", "repo": "eğitim örneği", "message": "tier kararı için tek kaynak", "author_label": "refactor"}
+{"id": "halilogia/GravityGuard@d883357f5e18", "repo": "eğitim örneği", "message": "asiri muhendisligi azalt (ratchet, dokuman/test zorunlulugu, gurultu) ve OE_SPIKE kaldir", "author_label": "refactor"}
+{"id": "cerncaycisi/agentsozluk@df583b6395a7", "repo": "eğitim örneği", "message": "coverage sürelerini ayır ve P7/O4 ölçümünü kaydet (#329)", "author_label": "chore"}
+{"id": "fatihdrmaz/gaiacicegedair@70778dbbfc74", "repo": "eğitim örneği", "message": "iyzipay resources klasörünü Vercel paketine dahil et", "author_label": "fix"}
+{"id": "sudekazan/ciftapp@1602f39b3472", "repo": "eğitim örneği", "message": "Firestore ve Storage güvenlik kuralları için emülatör testleri eklendi", "author_label": "test"}
+{"id": "halilesmer/auto-grid-nextJs@d827fc8add91", "repo": "eğitim örneği", "message": "haber kartı için ekonomik takvim servisi ve /api/news/events (NWS-01, 1107-A16 S1) (#449)", "author_label": "feat"}
+{"id": "ali-han-kaya/leibniz2@2b93e0b173a3", "repo": "eğitim örneği", "message": "yeni kaynak surumu icin defter satirlari ve tam §4 taramasi", "author_label": "test"}
+{"id": "cemdrman/design-patterns@d7c79ed4eb36", "repo": "eğitim örneği", "message": "oluşturucu kalıpları İngilizce ve Java 25 ile yeniden yaz", "author_label": "refactor"}
+{"id": "ibrahimsugun/Documania@b1d8754acdf7", "repo": "eğitim örneği", "message": "özet sırası testi duvar saati yerine intake.join() ile sıralanıyor", "author_label": "test"}
+{"id": "WinierKingYT/Brain-Eleven@11c810e17e1e", "repo": "eğitim örneği", "message": "taşımadan kalan kullanılmayan import'ları temizle, belgeleri güncelle", "author_label": "refactor"}
+{"id": "ulkuderner/ai-cockpit@aa771a7f45c2", "repo": "eğitim örneği", "message": "iş tahtası için adım adım kullanım kılavuzu", "author_label": "docs"}
+{"id": "aserhatsahin/NSWorkshopRe@238cb8ced8be", "repo": "eğitim örneği", "message": "rol-yetki matrisi ve guard testleri", "author_label": "test"}
+{"id": "tfcs-istanbul/mari-ui@9fdf77182bf0", "repo": "eğitim örneği", "message": "story'ler için görsel regresyon testi (#100)", "author_label": "test"}
+{"id": "2f7fjrk4sw-prog/gamenews@2f6863f797c9", "repo": "eğitim örneği", "message": "GitHub commit mesajlarının herkes tarafından kolay anlaşılması için standartlar eklendi", "author_label": "docs"}
+{"id": "reyyannerva/Yapay-Zeka-Ajaniyla-Django-Test-Uretimi-ve-Guvenlik-Analizi@da4227a8c14f", "repo": "eğitim örneği", "message": "ER diyagramları ve şema doğrulama belgeleri eklendi (#26)", "author_label": "docs"}
+{"id": "xdrking/whatsup@af172e0f25c9", "repo": "eğitim örneği", "message": "hazine aktarım sınırı kendi aktarımıyla büyümesin, hazine önce bot cüzdanından harcasın", "author_label": "fix"}
+{"id": "mert-carli/BerbeRandevu2@0e57e824cf16", "repo": "eğitim örneği", "message": "vercel optimizasyonu ve vercel.json yapilandirmasi eklendi", "author_label": "chore"}
+{"id": "smrtkrft/LebensSpur@fb1840374edb", "repo": "eğitim örneği", "message": "başka ürün imajı için 4 KB test dosyası (eski DMF yayını silindiği için)", "author_label": "test"}
+{"id": "erberkay/berkayeracademy@a8940f83ea23", "repo": "eğitim örneği", "message": "modül ekranlarına adres + paralel çalışma için modül blokları", "author_label": "refactor"}
+{"id": "MustafaHali1/Dilvin_FiyatG-z-@e7605166bf93", "repo": "eğitim örneği", "message": "Sesli radar ve gorme engelli moduna belirgin ayarlar ve mod degistirme butonlari eklendi", "author_label": "fix"}
+{"id": "Malibag/minikent@537ef823ddff", "repo": "eğitim örneği", "message": "Lite sürüm için oyun dosyası", "author_label": "test"}
+{"id": "ozhan100/vetmap@fb9a10bcd22e", "repo": "eğitim örneği", "message": "zoom 19 ile isletme/konum gosterimi, watchPosition ile surekli konum takibi", "author_label": "feat"}
+{"id": "Uemit123koop/fistik360@73243926f135", "repo": "eğitim örneği", "message": "ust menuden Toptan ve Panelim linklerini kaldir", "author_label": "refactor"}
+{"id": "Keremircan/JaparAkademi@a89f798d3567", "repo": "eğitim örneği", "message": "testler ayrı veritabanı ve dosya deposunda çalışır (karar #289)", "author_label": "test"}
+{"id": "apuhanciftligi/apuhanciftligi@06ef0b9fb07b", "repo": "eğitim örneği", "message": "siteyi tam ekran açan Android uygulaması (TWA) kabuğu", "author_label": "feat"}
+{"id": "serhattomak/joint@e5ba2b206cca", "repo": "eğitim örneği", "message": "toplu baglanti diyalogu ve paylasilan sabitler", "author_label": "refactor"}
+{"id": "MereTonga/bitirme_projesi@33644e581f4a", "repo": "eğitim örneği", "message": "pytest iskeleti — geçici garage/DB ile izole birim ve API testleri", "author_label": "test"}
+{"id": "tfcs-istanbul/ako-starter@79a2fca0b25e", "repo": "eğitim örneği", "message": "mari-ui 0.3.0'a doğrudan geçiş, packages/ui kaldırıldı", "author_label": "refactor"}
+{"id": "FeniksKlein/Se-im-Online@438c94a03c20", "repo": "eğitim örneği", "message": "oyuncuya ve sirkete cek verme arayuzu ve sirketten kisiye engel", "author_label": "feat"}
+{"id": "YKSAMI1/yikimlient@454b650f48af", "repo": "eğitim örneği", "message": "pelerin/elitra \"bilinmeyen doku\" ve 2D onizleme", "author_label": "fix"}
+{"id": "misbaou672/Portfolio-Misbaou@c43adb16f8cf", "repo": "eğitim örneği", "message": "stage en Ile-de-France, alternance dans toute la France", "author_label": "docs"}
+{"id": "ariyanrahimzadeh/design-patterns-project@acedb3981405", "repo": "eğitim örneği", "message": "python icin gitignore eklendi", "author_label": "chore"}
+{"id": "zehradagasann/Hastane-Iot-Takip-Sistemi@e1ad377b06db", "repo": "eğitim örneği", "message": "gatewayMssqlDbContext için read-only access için existing MSSQL tables eklendi", "author_label": "feat"}
+{"id": "GNAlexandre/Yume-WordEnd@4a77d583a168", "repo": "eğitim örneği", "message": "reprise, ancienne île, démo du récit ; tests de l'ancienne île sur leur carte", "author_label": "test"}
+{"id": "aaricihasan-lang/yasam-saas@22f9ba0596a0", "repo": "eğitim örneği", "message": "C2 başlık sütunu içerik kadar yer tutar — 375px'te tek satır", "author_label": "fix"}
+{"id": "zulficon/fixCampus-mobile@661afc300216", "repo": "eğitim örneği", "message": "yerel gelistirme icin varsayilan Supabase ve Web API yapilandirmasi eklendi", "author_label": "fix"}
+{"id": "hakantr/uPlot.rs@6ed3591b1f7b", "repo": "eğitim örneği", "message": "oransal görünümü render yolundan çıkar", "author_label": "refactor"}
+{"id": "xinitrcn1/dconworld@f9f8920263f8", "repo": "eğitim örneği", "message": "use ve math, ctest, dcon", "author_label": "refactor"}
+{"id": "sbugrayy/vakit-app@847896aa8872", "repo": "eğitim örneği", "message": "bildirim motoru için androidx.core ve JVM test bağımlılıkları", "author_label": "chore"}
+{"id": "Emrahkadi/cumhuriyet-sitesi@2df2b65ca406", "repo": "eğitim örneği", "message": "admin sidebar drawer JS eklendi (mobil hamburger menu)", "author_label": "fix"}
+{"id": "theunal/UFile.PartialUploader@b91fae6163a7", "repo": "eğitim örneği", "message": "paket dogrulama adiminda kabuk belirtilmedi (ubuntu'da bash ile calisiyordu)", "author_label": "fix"}
+{"id": "mustafaakeles/yesilege-website@1ed3ea4c4746", "repo": "eğitim örneği", "message": "Supabase projesini günlük cron ile etkin tut", "author_label": "feat"}
+{"id": "hsyndnc/MicroKpss-AdminPanel-UI@bcc8e8598a27", "repo": "eğitim örneği", "message": "effectiveState'te ebeveyn zinciri döngüsüne karşı koruma", "author_label": "fix"}
+{"id": "iAxstral/operacion-garavito@48056413bae5", "repo": "eğitim örneği", "message": "la comida siempre se ve como la de diciembre", "author_label": "refactor"}
+{"id": "asamethon/bluma@88a6780f95eb", "repo": "eğitim örneği", "message": "marketing/ çıktılarını yok say", "author_label": "chore"}
+{"id": "bugrabalim11/RentACar@7867893fab48", "repo": "eğitim örneği", "message": "BaseController entegrasyonu, AJAX ve formlar icin merkezi hata yonetimi (DRY).", "author_label": "refactor"}
+{"id": "consulate67-lab/ekuafor@b324d67a975d", "repo": "eğitim örneği", "message": "/api/companies — JOIN+GROUP BY ile tek sorgu + LIMIT 50 (performans)", "author_label": "fix"}
+{"id": "zexy2/Hava81@d69c2a38045b", "repo": "eğitim örneği", "message": "sabit güneş konumu ve axe için CSP istisnası (dondurulmuş sözleşme değişmedi)", "author_label": "test"}
+{"id": "hamzakaya/tr-identity@cee58806f6a9", "repo": "eğitim örneği", "message": "React olmayan projeler için tr-identity/core", "author_label": "docs"}
+{"id": "tarikelertarnak/Tarnak-Site@e0f104caf5ab", "repo": "eğitim örneği", "message": "STATE.md son commit hash ile guncellendi", "author_label": "chore"}
+{"id": "mmdemirbas/super-tnt-mod@c8fad9778ace", "repo": "eğitim örneği", "message": "README, TNT duvarı ve oku ile derlenen belge sitesi (GitHub Pages)", "author_label": "docs"}
+{"id": "yunopo42/AmbarciApp@4297568a5dbf", "repo": "eğitim örneği", "message": "stok işlemi açma, onay transaction'ı ve hareketli ortalama maliyet", "author_label": "feat"}
+{"id": "Ercaner1988/pasli-zemin@bf180b7c181a", "repo": "eğitim örneği", "message": "git motoru saglamlastirma ve oluk bagimlilik temizligi", "author_label": "refactor"}
+{"id": "huseyinaydin99/GulhanAtelier@f3fe0607e053", "repo": "eğitim örneği", "message": "1.1.0 sürüm notları", "author_label": "docs"}
+{"id": "mehmet27/yarn-shipment-system@396f47f9b805", "repo": "eğitim örneği", "message": "tipleri shipment-service OpenAPI sözleşmesiyle hizala", "author_label": "refactor"}
+{"id": "Yusufygc/Proje_Yonetim_Platformu@51c6de122dcc", "repo": "eğitim örneği", "message": "alt kayıtlar ProjectSubitemsViewModel'e taşındı, yüklemeler arka plana alındı", "author_label": "refactor"}
+{"id": "tucibeyin/teqlif@dd2062660916", "repo": "eğitim örneği", "message": "teqlif_agent SELECT grant — cleaner WHERE koşulları için", "author_label": "fix"}
+{"id": "yavuzsayinbulut/folyo@59b2abe88b43", "repo": "eğitim örneği", "message": "şikayet, topluluk kuralları ve moderasyon paneli", "author_label": "feat"}
+{"id": "YosemiteSam6/turkiye-iptv-m3u-m3u8@c393bd566217", "repo": "eğitim örneği", "message": "Canlı kanallar ve veri tabanı güncellendi [skip ci]", "author_label": "chore"}
+{"id": "rose-omer/cs-clip@f998c42589c8", "repo": "eğitim örneği", "message": "her push ve PR'da testler (Windows + Linux) ve ruff", "author_label": "chore"}
+{"id": "Sinan-Ince/365-gun-yazilim@c8ed28a16127", "repo": "eğitim örneği", "message": "bot için CLAUDE.md prosedürü ve .bot/ ignore", "author_label": "chore"}
+{"id": "DenizOner/DogruAdres@eaf8c94f7dfc", "repo": "eğitim örneği", "message": "Owner için geçici mağaza arası ve güvenli geri açma (#296)", "author_label": "feat"}
+{"id": "Kkocaoglan/EngineeringDesignProject@744f0abb8705", "repo": "eğitim örneği", "message": "kesinti deneyimi, sembol kapalılık uyarısı ve REPLAY bandı (2.10) (#60)", "author_label": "feat"}
+{"id": "Buraksyn0/ReceiptIQ@21b914af258f", "repo": "eğitim örneği", "message": "TagsScreen için CRUD ve silme onayı testleri ekle", "author_label": "test"}
+{"id": "turanberker/paze-pilates@2a4980db21ca", "repo": "eğitim örneği", "message": "paket aktiflik değişimi için ayrı servis metotları", "author_label": "refactor"}
+{"id": "RealMrNovember/Hadal@cdf14fb4041e", "repo": "eğitim örneği", "message": "HADAL Oyun Kılavuzu, veri kaynağı ve üretici", "author_label": "docs"}
+{"id": "AykanYilmz/AI-Based-Plant-Health-Auto-Treatment-System@81b7666ac951", "repo": "eğitim örneği", "message": "PostgreSQL entegrasyon testleri ve Python pipeline için pytest", "author_label": "test"}
+{"id": "cnkzlyr/uyap-termux-pro@5d5627ebbfd8", "repo": "eğitim örneği", "message": "kaynak deposunda dosya mühürleri MUHURSUZ yer tutucusuna çevrildi", "author_label": "chore"}
+{"id": "gokhansk1989/motorya-frontend@46a22df1f2cb", "repo": "eğitim örneği", "message": "Sentry client'a gurultu filtresi (DSN aktive edildi)", "author_label": "chore"}
+{"id": "quantro11/AISCAN@c030581bcf38", "repo": "eğitim örneği", "message": "guvenlik ve egitim-hatti regresyon testleri", "author_label": "test"}
+{"id": "kamilsaim/beebook@1769c027e230", "repo": "eğitim örneği", "message": "iOS uygulamasina hazirlik - Apple ile Giris, guvenli alan, paylasimla yedek (v2.6.11)", "author_label": "feat"}
+{"id": "merbay-erp/zee@2568445d7022", "repo": "eğitim örneği", "message": "K-190 elmas içe alım düzeltmesinin beyanlarını bağla", "author_label": "docs"}
+{"id": "erdemci07/derin-ogrenme-egitim-dinamikleri@5131545f3c01", "repo": "eğitim örneği", "message": "Colab icin torch harici gereksinimler eklendi", "author_label": "chore"}
+{"id": "senacakmak6161/yazilim-gelistirme-proje1@0a97ac302b68", "repo": "eğitim örneği", "message": "kabul testlerini uygulama ve tasarımla entegre et", "author_label": "test"}
+{"id": "sudekazan/ev_arkadasligi@38604d44a84f", "repo": "eğitim örneği", "message": "odeselimapp projesi için takma ad ve iOS URL şeması", "author_label": "chore"}
+{"id": "kkaanozturk/firewall-dev@32b95c88e150", "repo": "eğitim örneği", "message": "sirket adini Kalkan Bilisim ve Egitim Teknolojileri A.S. olarak guncelle", "author_label": "refactor"}
+{"id": "Internet-Kahve/akar-app@7ae10c8a4e96", "repo": "eğitim örneği", "message": "mobil istemciler için CORS izinlerini ekle", "author_label": "fix"}
+{"id": "meaytac/yurt-lojman-yonetim-sistemi@22572b06313a", "repo": "eğitim örneği", "message": "e-posta ile dogrulama adimi tamamen kaldirildi", "author_label": "refactor"}
+{"id": "volkanGRGN/KKTC-hackathon@fa0fc5269f7c", "repo": "eğitim örneği", "message": "animasyon notu — noktalar pop ile", "author_label": "docs"}
+{"id": "goktug01-dev/ieee-hub@aedddf6d6a4f", "repo": "eğitim örneği", "message": "Spark icin GitHub Actions ve Gmail bildirimleri ekle", "author_label": "feat"}
+{"id": "ardaarslan47/qa-hub@0b2d1dbefe70", "repo": "eğitim örneği", "message": "case'i case sayfasından düzenleme", "author_label": "feat"}
+{"id": "ozcangok/oto-servis@91f9233cfc99", "repo": "eğitim örneği", "message": "Midscene tabanli opt-in AI E2E paketi eklendi", "author_label": "test"}
+{"id": "Alphie01/mudafaa@c202c78ccbd9", "repo": "eğitim örneği", "message": "monorepo iskeleti, dokümanlar ve tasarım referansı", "author_label": "chore"}
+{"id": "hakkisabah/yourkiosk@78144cf1ba6b", "repo": "eğitim örneği", "message": "yayın betiği pager hatası + dağıtım doğrulaması (#30)", "author_label": "fix"}
+{"id": "Miracgunduz/digger@7313bcaf8aa3", "repo": "eğitim örneği", "message": "intern-opportunity-tracker ile ilişkiyi açıkla", "author_label": "docs"}
+{"id": "bahattinyunus/turkiye-kampus-rehberi@773ae5b279b6", "repo": "eğitim örneği", "message": "ilk olusturulan 3 gorsel yuksek cozunurluklu ve estetik grafiklerle yenilendi", "author_label": "refactor"}
+{"id": "sudekazan/ev_arkadasligi@8c03fcba0cfc", "repo": "eğitim örneği", "message": "Claude Code için CLAUDE.md proje notu", "author_label": "docs"}
+{"id": "03sahin/ekipmeet@963280ebee48", "repo": "eğitim örneği", "message": "release R8 için WebRTC ProGuard kuralları ve EAS yükleme arşivinin küçültülmesi", "author_label": "fix"}
+{"id": "Alperzturan/AgTabanliTeknolojilerveUygulamalariProje@b8ef7374e6e1", "repo": "eğitim örneği", "message": "backendden verileri alma ile bilgileri yerleştirme gerçekleştirildi", "author_label": "feat"}
+{"id": "zulficon/fixCampus-mobile@841d662cec46", "repo": "eğitim örneği", "message": "guncel main ile ilanlarim filtresini ve profil baglantisini birlestir", "author_label": "feat"}
+{"id": "arisdo-29/waterbus@cd6c1c082321", "repo": "eğitim örneği", "message": "pop-up xac nhan, ve uu dai, VNPay, hoan tien va JS soat ve (#81)", "author_label": "feat"}
+{"id": "turer73/bilge-arena@3e0db18a8b2f", "repo": "eğitim örneği", "message": "/p/[code] ve OG karti yalniz sunucunun imzaladigi degerleri gosterir (#700)", "author_label": "fix"}
+{"id": "bunyaminkeles/analizus@cb65aec6aa0a", "repo": "eğitim örneği", "message": "admin'e giden ilan/teklif e-postalarında intl için € yerine TL yazıyordu", "author_label": "fix"}
+{"id": "Ercaner1988/archify-graft-rs@e931a942e89d", "repo": "eğitim örneği", "message": "amac katmani tasarim notu ve olculmus zemin", "author_label": "docs"}
+{"id": "kemit-ee/ljvis-2@b9b590c9b3d6", "repo": "eğitim örneği", "message": "ülejäänud community Table'id TEDI-Ready Table'ile", "author_label": "feat"}
+{"id": "unifesspa-edu-br/uniplus-developers@597e8ea5bddf", "repo": "eğitim örneği", "message": "restringe quem vê o motivo e a justificativa da decisão", "author_label": "docs"}
+{"id": "tsudev-org/tsudev-trafficmonitor@f5702aa3430e", "repo": "eğitim örneği", "message": "muc Cai bang lenh (Scoop) o trang Tai ve (#55)", "author_label": "feat"}
+{"id": "bariskekecoglu/reaktor-semalari@bdf5b80b34d9", "repo": "eğitim örneği", "message": "modern egitim arayuzu ve kullanici deneyimi gelistirmeleri", "author_label": "refactor"}
+{"id": "buraksipahi058-svg/beyaztakim@76fd7b580303", "repo": "eğitim örneği", "message": "ortak dosyalar, kişi dosyaları ve ekip kuralları eklendi (#1)", "author_label": "chore"}
+{"id": "ekonometrist61-create/hupo-classic@a22136b542fc", "repo": "eğitim örneği", "message": "0.7.2 - hikâye yayın adımı yalnız insan onayına bakar", "author_label": "chore"}
+{"id": "semihbuyukozkan/fuzzy-cognitive-diagnosis@49a14ab6db5b", "repo": "eğitim örneği", "message": "makale okuması, E1 yorumu ve yakınsama bulguları", "author_label": "docs"}
+{"id": "ExiledVisage/Olive_App_Api_Java@89e831b080a9", "repo": "eğitim örneği", "message": "JPA ve Java kalibina tasindi (B2)", "author_label": "refactor"}
+{"id": "Dostko/Gakko@afa2bff0fb3a", "repo": "eğitim örneği", "message": "iki checkpoint arasında geçiş kaydı (adbc092 sonrası)", "author_label": "chore"}
+{"id": "beshN/renkflowV2@dedf315a4f8f", "repo": "eğitim örneği", "message": "iki rastlantısal entegrasyon testini deterministik yap", "author_label": "test"}
+{"id": "mekan37/yeedoy@b53f60688cdc", "repo": "eğitim örneği", "message": "chains/compare/sadakat/yemek_gunlugu için data layer eklendi (B39)", "author_label": "refactor"}
+{"id": "barkeser2002/matematigin-mantigi@c0849e2cda4e", "repo": "eğitim örneği", "message": "ses girişi -f wav ile açılsın (ffmpeg 9.0.2 düz WAV'ı tanımıyor)", "author_label": "fix"}
+{"id": "ArionBlackrose/claude-isg@3591eb00e2ad", "repo": "eğitim örneği", "message": "kritik iş mantığı için vitest ile birim testleri eklendi", "author_label": "test"}
+{"id": "BRSTKL/TR-Energy-Analyst@9b2e3eb07a35", "repo": "eğitim örneği", "message": "Codex ile paralel çalışma kaldırıldı", "author_label": "chore"}
+{"id": "Ankora-Linux/Ankora@489959fbbf85", "repo": "eğitim örneği", "message": "HARDWARE.md rehberi ekle, README ve dogrulama testlerini guncelle", "author_label": "docs"}
+{"id": "yufisu/stickercut@93e6161fe7e0", "repo": "eğitim örneği", "message": "Pages dalı için tekrar yayınlama komutu", "author_label": "chore"}
+{"id": "derinmilletc-dev/KA-STRADE@b14529a19de4", "repo": "eğitim örneği", "message": "Kais asistan backend testleri (gerçek bağımlılık, yalnız yeni hatalarda kırmızı)", "author_label": "chore"}
+{"id": "keminbtepe/KPSS-ODAK@9ff6cb949173", "repo": "eğitim örneği", "message": "Kitap temalı kapak, bölüm başlıkları ve son eklenenler", "author_label": "docs"}
+{"id": "AykanYilmz/AI-Based-Plant-Health-Auto-Treatment-System@b21b2927ab40", "repo": "eğitim örneği", "message": "jest-expo ile birim testleri", "author_label": "test"}
+{"id": "SametDrs/Launchly@10e95f277241", "repo": "eğitim örneği", "message": "bekleyen Enter iptali ve kısayol çakışması davranışını düzelt", "author_label": "fix"}
+{"id": "olcayalkan/NotDefteri@ae811a348923", "repo": "eğitim örneği", "message": "Linux editöründe art arda özellik kullanımı için stres testi", "author_label": "test"}
+{"id": "mskaymaz/MSKLabsDesk@b83925df78e7", "repo": "eğitim örneği", "message": "oturum sonu durum ozeti ve yarin icin baslangic yol haritasi [27.10.2026 - 17:05]", "author_label": "docs"}
+{"id": "asaldanli/LGS@95677ec66702", "repo": "eğitim örneği", "message": "index.html'i index.html + style.css + app.js olarak böl, ölü kodu temizle", "author_label": "refactor"}
+{"id": "Javerto/fatura-ayiklayici@f7406c3ddfe7", "repo": "eğitim örneği", "message": "Gözden geçirmede alanın değeri PDF'te işaretleniyor", "author_label": "feat"}
+{"id": "Talipbl/eCommerce@f2426cc26041", "repo": "eğitim örneği", "message": "senkron ekranı ve dashboard", "author_label": "feat"}
+{"id": "rkcoestar38/diyabet-asistani@594095a66faa", "repo": "eğitim örneği", "message": "entry ve backup modullerini ayir, tipleri logic/types altina tasi", "author_label": "refactor"}
+{"id": "colgecen/FastShi@f1be5ff4aabc", "repo": "eğitim örneği", "message": "ö ve ç parmak eşleşmesi düzeltildi", "author_label": "fix"}
+{"id": "adelchi91/job_search@47bb631aa5fb", "repo": "eğitim örneği", "message": "ticket #3 narrow location scope to Ile-de-France and remote Europe", "author_label": "chore"}
+{"id": "keremtulu44/Question-note@9b83a17a7cf4", "repo": "eğitim örneği", "message": "workflow'u push ile otomatik tetiklenecek sekilde ayarla", "author_label": "test"}
+{"id": "Tamimswid/word-learn@3ceb311bef6a", "repo": "eğitim örneği", "message": "ses, dalga animasyonu ve çeviri paketlerini ekle", "author_label": "chore"}
+{"id": "msdemir79/ProERP@014cfb622148", "repo": "eğitim örneği", "message": "sürümü 1.2.0'a çıkar (masaüstü v1.2.0 ile eşitle)", "author_label": "chore"}
+{"id": "BayramSevim/cargo-app@c81061554dab", "repo": "eğitim örneği", "message": "gunluk sube raporu, groupingBy ile sehir ve durum kirilimi", "author_label": "feat"}
+{"id": "enesilbay/StudyLounge@9b1b49b4dec3", "repo": "eğitim örneği", "message": "geri bildirim dugmesi adi 'Gonder' ile karismasin; e2e Yonetim basligi", "author_label": "fix"}
+{"id": "HodeTech/Yorunge@bf652f668073", "repo": "eğitim örneği", "message": "Sonar farkı için son kaynak referansını arşivle", "author_label": "docs"}
+{"id": "Yusufygc/CalismaKaynaklari_Yonetim_Platformu@ae3c29308feb", "repo": "eğitim örneği", "message": "ThumbnailWorker'da SSRF korumasi yok + TLS kapaliydi", "author_label": "fix"}
+{"id": "yigiterturk-dev/gelecekfinans@ca6ec5d9319e", "repo": "eğitim örneği", "message": "Publisher Center için 512px logo, kullanılmayan vercel.svg kaldırıldı", "author_label": "chore"}
+{"id": "GunduzTolga/Cortex@66c5e9bf6a31", "repo": "eğitim örneği", "message": "eski motor dosyası Windows'ta da aynı baytlarla yazılıyor", "author_label": "test"}
+{"id": "AykanYilmz/AI-Based-Plant-Health-Auto-Treatment-System@22529af71536", "repo": "eğitim örneği", "message": "hesap silme (backend + profil ekranı)", "author_label": "feat"}
+{"id": "sinangym/GoymenERP@10f48d6ae31e", "repo": "eğitim örneği", "message": "EK57 — API-40/UI-70b müşteri iade faturası kararları (#1056)", "author_label": "docs"}
+{"id": "eren3421/SoftIto-Mobile-4donem-egitim@b11bd82bf69f", "repo": "eğitim örneği", "message": "kodlar eklendi ve modüllere ayrıldı", "author_label": "refactor"}
+{"id": "HakanKoco/UX-DOCTOR-CHROME@31976c1f61cb", "repo": "eğitim örneği", "message": "başsız Chrome ile tarayıcı test düzeni (npm run test:browser)", "author_label": "test"}
+{"id": "ThinkGOtr/testingprobe@66628fc4659f", "repo": "eğitim örneği", "message": "canlı platform (GCP + gerçek Jira/Xray/GitHub) için tık tık demo senaryosu", "author_label": "docs"}
+{"id": "frknylmzkng/AccountingApp@d93658498c3f", "repo": "eğitim örneği", "message": "şifreli yedekleme regresyonlarını güncelle", "author_label": "test"}
+{"id": "fatihsinankara/bvlog@70b38c7bcc8f", "repo": "eğitim örneği", "message": "v1.3.0 surum yukseltmesi ve dagitim paketi", "author_label": "chore"}
+{"id": "mert-carli/BerbeRandevu2@92fb8cd07a9b", "repo": "eğitim örneği", "message": "mesai saatleri ve randevu tarih/saat secicilerinde tasma ve cakisma duzeltildi", "author_label": "fix"}
+{"id": "falssp/terreiro-gestao@dbf00313451e", "repo": "eğitim örneği", "message": "mover GAS para ile-ase-vodun/", "author_label": "refactor"}
+{"id": "kyrox-studio/kyrox-core@3cf08c80c15a", "repo": "eğitim örneği", "message": "uçtan uca ölü kod — yalnız testten çağrılan tanımlar ve kullanılmayan importlar (#53)", "author_label": "chore"}
+{"id": "iamalperr/clinicbridge-panel@36ad1e9a488b", "repo": "eğitim örneği", "message": "iyzico icin hakkimizda, fiyatlandirma, teslimat-iade ve mesafeli satis sayfalari", "author_label": "feat"}
+{"id": "Enis-Sahide/proje1-web@0c46fb189782", "repo": "eğitim örneği", "message": "kutular ve cart renkler kaldirildi kurumsal net siyah ve koyu tonlara gecildi", "author_label": "refactor"}
+{"id": "kutleloove/HattEDA@ff5b82333ad4", "repo": "eğitim örneği", "message": "editör etkileşimleri için regresyon kapsamı", "author_label": "test"}
+{"id": "ali-demirPro/demir-kit-sdlc@6385ec2d53ed", "repo": "eğitim örneği", "message": "push komutu HEAD ile (namespaced branch)", "author_label": "docs"}
+{"id": "firatoltulu/AhtapotAgentHq@53626123fd01", "repo": "eğitim örneği", "message": "docs/plan kaldırıldı, atıflar temizlendi", "author_label": "docs"}
+{"id": "infovirex-alt/.github.io@87eaabee8ab6", "repo": "eğitim örneği", "message": "ArsenalBahis ve MilanBahis logolarından kulüp armalarını kırp", "author_label": "fix"}
+{"id": "firatbadur/ihaletakip-api@38425c38530f", "repo": "eğitim örneği", "message": "ek sözleşmesi (mobil) ve CLAUDE.md \"Ekler\" bölümü", "author_label": "docs"}
+{"id": "senacakmak6161/yazilim-gelistirme-proje1@3beeb9f92c0e", "repo": "eğitim örneği", "message": "tekrar eden testleri birleştir, README'deki eksik davranışları test et", "author_label": "test"}
+{"id": "sinangym/GoymenERP@7e0036ca2373", "repo": "eğitim örneği", "message": "AI-6 modül port ve veri sınıfı girdileri (plan §5a) (#1084)", "author_label": "docs"}
+{"id": "furkanisikay/namazakisi@70c5a34a238e", "repo": "eğitim örneği", "message": "Dagbani saat ve TV sesli süresi JS ile aynı sırada", "author_label": "fix"}

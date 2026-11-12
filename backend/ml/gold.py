@@ -1,6 +1,8 @@
 """Elle etiketlenecek Türkçe "altın" küme ve değerlendirmesi.
 
     py -m ml.gold sample     # test repolarından 100 mesaj -> ml/data/tr_gold_pool.jsonl
+    py -m ml.gold sample-train  # eğitim repolarından 200 kısa mesaj -> tr_train_pool.jsonl
+    py -m ml.label --train   # eğitim mesajlarını etiketle (insan etiketli eğitim verisi)
     py -m ml.label --tr      # kör etiketleme (önek ve repo gösterilmez)
     py -m ml.label --own     # kendi 33 commit'in
     py -m ml.gold evaluate   # kural / model / hibrit, tanımlarımıza göre
@@ -42,6 +44,46 @@ def sample() -> list[dict]:
             for r in picked]
 
 
+TRAIN_POOL = DATA_DIR / "tr_train_pool.jsonl"
+TRAIN_LABELS = DATA_DIR / "tr_train_labels.jsonl"
+TRAIN_SAMPLE = 200
+MIN_LEN, MAX_LEN = 15, 90
+
+
+def is_clear(headline: str) -> bool:
+    """Etiketlemesi kolay tek satır: makul uzunluk, çoğu harf, yalnız sürüm/numara değil."""
+    letters = sum(ch.isalpha() for ch in headline)
+    return (MIN_LEN <= len(headline) <= MAX_LEN
+            and letters / len(headline) >= 0.6
+            and len(headline.split()) >= 3)
+
+
+def sample_train() -> list[dict]:
+    """İnsan etiketiyle EĞİTİM verisi: yalnız eğitim repolarından, kısa ve anlaşılır ilk satırlar.
+
+    Test kümesi (tr_gold_*) değişmez; yeni sistem onunla, öncekiyle adil biçimde kıyaslanır.
+    Kolay mesaj seçimi yalnızca eğitim tarafındadır; testte yapılsaydı sonuç şişerdi.
+    """
+    train, _ = split(load())
+    rng = random.Random(SEED + 1)
+    by_label: dict[str, list[dict]] = {}
+    for r in train:
+        headline = r["text"].splitlines()[0].strip()
+        if is_clear(headline):
+            by_label.setdefault(r["label"], []).append({**r, "headline": headline})
+    per_class = TRAIN_SAMPLE // len(CLASSES)
+    picked = []
+    for label in CLASSES:
+        pool = by_label.get(label, [])
+        picked += rng.sample(pool, min(per_class, len(pool)))
+    # Az örnekli sınıf (test) yüzünden eksik kalanı diğer sınıflardan rastgele tamamla.
+    rest = [r for label in CLASSES for r in by_label.get(label, []) if r not in picked]
+    picked += rng.sample(rest, TRAIN_SAMPLE - len(picked))
+    rng.shuffle(picked)
+    return [{"id": r["id"], "repo": "eğitim örneği", "message": r["headline"], "author_label": r["label"]}
+            for r in picked]
+
+
 def predictions(texts: list[str], model) -> dict[str, list[str]]:
     """Karşılaştırılan sistemlerin tahminleri (eşik yok: model hep en olası sınıfı söyler)."""
     rules = [classify_rules(t) for t in texts]
@@ -77,6 +119,14 @@ def main() -> None:
         write_jsonl(GOLD_POOL, rows)
         print(f"{len(rows)} mesaj -> {GOLD_POOL}")
         print("yazar öneki dağılımı:", dict(Counter(r["author_label"] for r in rows)))
+        return
+    if cmd == "sample-train":
+        rows = sample_train()
+        write_jsonl(TRAIN_POOL, rows)
+        print(f"{len(rows)} mesaj -> {TRAIN_POOL}")
+        print("yazar öneki dağılımı:", dict(Counter(r["author_label"] for r in rows)))
+        lens = sorted(len(r["message"]) for r in rows)
+        print(f"uzunluk: en kısa {lens[0]}, medyan {lens[len(lens) // 2]}, en uzun {lens[-1]}")
         return
     if cmd != "evaluate":
         raise SystemExit("kullanım: py -m ml.gold sample | evaluate")

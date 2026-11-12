@@ -1,5 +1,5 @@
 """Altın küme örnekleme ve değerlendirme testleri (küçük modelle, ağ yok)."""
-from ml.gold import evaluate_set, predictions, sample
+from ml.gold import evaluate_set, is_clear, predictions, sample, sample_train
 from ml.train import char_model, load, split
 
 TRAIN = [("profil sayfası", "feat"), ("sepet sayfası", "feat"), ("ödeme sayfası", "feat"),
@@ -19,6 +19,24 @@ def test_sample_comes_only_from_test_repos_and_is_blind():
     assert all(r["repo"] == "türkçe örnek" for r in rows)  # repo adı gizli
     # Yazarın öneki metinde yok (yalnızca değerlendirme için ayrı alanda).
     assert all(not r["message"].lower().startswith(r["author_label"] + ":") for r in rows)
+
+
+def test_training_sample_never_touches_test_repos_or_gold():
+    rows = sample_train()
+    train, test = split(load())
+    train_ids = {r["id"] for r in train}
+    gold_ids = {r["id"] for r in sample()}
+    assert len(rows) == 200
+    assert all(r["id"] in train_ids for r in rows)  # yalnız eğitim repoları
+    assert not ({r["id"] for r in rows} & gold_ids)  # test kümesiyle çakışma yok
+    assert all(is_clear(r["message"]) and "\n" not in r["message"] for r in rows)
+
+
+def test_is_clear():
+    assert is_clear("giriş ekranındaki hata düzeltildi")
+    assert not is_clear("v1.2.3")  # çok kısa / harf az
+    assert not is_clear("düzeltme")  # tek kelime
+    assert not is_clear("x " * 60)  # çok uzun
 
 
 def test_predictions_compare_systems():

@@ -1,5 +1,6 @@
 """Komut satırında commit mesajı etiketleme aracı (kılavuz: docs/etiketler.md).
 
+    py -m ml.label --train  # eğitim mesajları: tr_train_pool.jsonl -> tr_train_labels.jsonl
     py -m ml.label --tr     # Türkçe altın küme: tr_gold_pool.jsonl -> tr_gold_labels.jsonl
     py -m ml.label --own    # kendi commit'lerin: own.jsonl -> own_labels.jsonl (repoya girmez)
     py -m ml.label          # (eski) İngilizce havuz: pool.jsonl -> labels.jsonl
@@ -133,8 +134,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Commit mesajı etiketle (docs/etiketler.md)")
     parser.add_argument("--own", action="store_true", help="kendi commit'lerini etiketle")
     parser.add_argument("--tr", action="store_true", help="Türkçe altın kümeyi etiketle")
+    parser.add_argument("--train", action="store_true", help="eğitim mesajlarını etiketle")
     args = parser.parse_args()
-    if args.tr:
+    if args.train:
+        run(DATA_DIR / "tr_train_pool.jsonl", DATA_DIR / "tr_train_labels.jsonl", target=None,
+            resume="py -m ml.label --train")
+    elif args.tr:
         run(DATA_DIR / "tr_gold_pool.jsonl", DATA_DIR / "tr_gold_labels.jsonl", target=None,
             resume="py -m ml.label --tr")
     elif args.own:

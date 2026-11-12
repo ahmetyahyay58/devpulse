@@ -14,7 +14,7 @@ from app import github_oauth
 from app.auth import create_session_token
 from app.config import settings
 from app.db import SessionLocal
-from app.sync.demo_client import DEMO_FILE, DemoClient
+from app.sync.demo_client import DemoClient, demo_path
 from app.sync.github_client import GitHubError, LiveGitHubClient
 from app.sync.runner import upsert_user
 from app.sync.source import Profile
@@ -83,4 +83,4 @@ def github_login(body: GitHubLogin) -> LoginResult:
 
 @router.post("/demo", response_model=LoginResult)
 def demo_login() -> LoginResult:
-    return _login(DemoClient(DEMO_FILE).fetch_profile(), github_token=None)
+    return _login(DemoClient(demo_path()).fetch_profile(), github_token=None)

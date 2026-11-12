@@ -23,5 +23,8 @@ class Settings(BaseSettings):
     jwt_secret: str | None = None
     jwt_ttl_days: int = 7
 
+    # Demo kullanıcının veri dosyası; boşsa backend/demo/demo_user.json (testler küçük dosya verir).
+    demo_file: str | None = None
+
 
 settings = Settings()

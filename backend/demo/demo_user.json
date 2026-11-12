@@ -1,37 +1,5007 @@
 {
-  "_not": "Sentetik demo verisi. Gerçek bir kişiye ya da repoya ait değildir.",
-  "profile": {"node_id": "DEMO_USER_1", "login": "demo-gelistirici", "created_at": "2024-03-01T09:00:00Z"},
-  "repos": [
+ "_not": "Sentetik demo verisi (app/sync/demo_generator.py ile üretildi). Gerçek bir kişiye ait değildir; ML başarısını kanıtlamaz, yalnızca kodun çalıştığını gösterir.",
+ "_seed": 20261112,
+ "anchor_date": "2026-11-12",
+ "_injected": [
+  {
+   "type": "burst",
+   "start": "2026-10-03",
+   "end": "2026-10-05",
+   "repo": "flutter-sayac",
+   "note": "3 günlük hackathon: günde 18-25 commit, 20:00'de başlayıp gece yarısını geçen tek uzun oturum, satır sayısı 3 kat."
+  }
+ ],
+ "profile": {
+  "node_id": "DEMO_USER_1",
+  "login": "demo-gelistirici",
+  "created_at": "2024-03-01T09:00:00Z"
+ },
+ "repos": [
+  {
+   "node_id": "DEMO_REPO_hava-durumu-api",
+   "name": "hava-durumu-api",
+   "is_owner": true,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "Python",
+   "description": "Şehir bazlı hava durumu servisi",
+   "has_readme": true,
+   "license_spdx": "MIT",
+   "topics": [
+    "fastapi",
+    "weather"
+   ],
+   "created_at": "2026-05-16T12:29:00Z",
+   "pushed_at": "2026-11-12T14:31:00Z",
+   "commits": [
     {
-      "node_id": "DEMO_REPO_1", "name": "hava-durumu-api", "is_owner": true, "is_fork": false,
-      "is_private": false, "primary_language": "Python", "description": "Basit hava durumu servisi",
-      "has_readme": true, "license_spdx": "MIT", "topics": ["fastapi", "weather"],
-      "created_at": "2025-09-01T10:00:00Z", "pushed_at": "2026-10-20T21:15:00Z",
-      "commits": [
-        {"oid": "d000000000000000000000000000000000000001", "authored_at": "2025-09-01T10:05:00Z", "message": "init: proje iskeleti", "additions": 120, "deletions": 0, "changed_files": 6, "is_coauthored": false},
-        {"oid": "d000000000000000000000000000000000000002", "authored_at": "2025-09-03T22:40:00Z", "message": "feat: şehir bazlı sorgu", "additions": 85, "deletions": 12, "changed_files": 3, "is_coauthored": false},
-        {"oid": "d000000000000000000000000000000000000003", "authored_at": "2025-09-04T23:10:00Z", "message": "fix: boş şehir adında 500 hatası", "additions": 9, "deletions": 2, "changed_files": 1, "is_coauthored": false},
-        {"oid": "d000000000000000000000000000000000000004", "authored_at": "2026-10-20T21:15:00Z", "message": "docs: README kurulum adımları\n\nCo-authored-by: demo-ortak <demo@example.invalid>", "additions": 30, "deletions": 4, "changed_files": 1, "is_coauthored": true}
-      ]
+     "oid": "f3b6793459149cac8b9b0ac619b0dc10c5d3d921",
+     "authored_at": "2026-05-17T12:29:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 3,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
     },
     {
-      "node_id": "DEMO_REPO_2", "name": "notlar", "is_owner": true, "is_fork": false,
-      "is_private": false, "primary_language": null, "description": null,
-      "has_readme": false, "license_spdx": null, "topics": [],
-      "created_at": "2026-02-10T08:00:00Z", "pushed_at": "2026-02-11T08:30:00Z",
-      "commits": [
-        {"oid": "d000000000000000000000000000000000000005", "authored_at": "2026-02-10T08:01:00Z", "message": "ilk not", "additions": 10, "deletions": 0, "changed_files": 1, "is_coauthored": false},
-        {"oid": "d000000000000000000000000000000000000006", "authored_at": "2026-02-11T08:30:00Z", "message": "notları düzenle", "additions": 4, "deletions": 3, "changed_files": 1, "is_coauthored": false}
-      ]
+     "oid": "f6a64b97ee2f8aa3108d0e0648fcbdafff63dd2c",
+     "authored_at": "2026-05-17T12:42:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 101,
+     "deletions": 6,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e09d635f36b2cb3c6c54048f590367c828b47e6f",
+     "authored_at": "2026-05-17T12:48:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 22,
+     "deletions": 10,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d0f05d6615f9c6bd7467fb39fb350c7255c37e8b",
+     "authored_at": "2026-05-18T07:21:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 167,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "737828e89cb6fed2dc360ccae7be2a28e6802147",
+     "authored_at": "2026-05-18T07:27:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 10,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "af81755ea651cafeb1c0b0d39fb4b1e5840b7e96",
+     "authored_at": "2026-05-19T13:37:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 16,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6c27c3689b66f2322250bb1ce216157a1d864b9d",
+     "authored_at": "2026-05-20T06:05:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 13,
+     "deletions": 7,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "856c8eb5fc1f20c6163e4f8a61b32a05573f2db8",
+     "authored_at": "2026-05-20T06:18:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 76,
+     "deletions": 0,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9196f7350d6aeb80a5862a916a93e95c729d82a8",
+     "authored_at": "2026-05-20T06:48:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 51,
+     "deletions": 21,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a5ad8857090b6e19dacac6a1a303d554fb8a10fb",
+     "authored_at": "2026-05-20T07:05:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 159,
+     "deletions": 13,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "17f8fa9c425cd2666530a8ac8ac79c22ec80fb8c",
+     "authored_at": "2026-05-20T10:51:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 102,
+     "deletions": 9,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "77fd8b5ee3d04e728c42a569b13c0d9f113e4269",
+     "authored_at": "2026-05-20T11:10:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 166,
+     "deletions": 13,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4cf9e84154cb7bd71ca317fb55740000a26036e2",
+     "authored_at": "2026-05-20T11:55:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 76,
+     "deletions": 9,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "86cd80a93aa05aede0ea592b4be893a805de0ba1",
+     "authored_at": "2026-05-20T12:03:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 6,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a254f31f738f31f46929d8bfa96b395a78067a36",
+     "authored_at": "2026-05-22T10:54:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 88,
+     "deletions": 21,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1039d1a44be67a1d6049de1087d24fe9b35cf6a4",
+     "authored_at": "2026-05-23T12:51:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 71,
+     "deletions": 20,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "217fe0ce8939d0c771237382464a54c332ba663e",
+     "authored_at": "2026-05-23T13:17:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 80,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "bac07e2734e54e5baffe7c8415eb99fc22a3522b",
+     "authored_at": "2026-05-23T13:53:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 27,
+     "deletions": 0,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "72117d98e7acb13200d3a7a42eac89f91f03f1b3",
+     "authored_at": "2026-05-24T08:02:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 135,
+     "deletions": 2,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d57858909d3b74f69af6a3da53cb859ac1ba5a15",
+     "authored_at": "2026-05-24T08:21:00Z",
+     "message": "Ci ayarı",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "22861b7713641ef66e9b9db5d006935f7ffc022d",
+     "authored_at": "2026-05-27T07:23:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e787114f1738226f12f1664d72032e6b16bedd47",
+     "authored_at": "2026-05-27T07:48:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 10,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f342537fa7ba7ba9ba498375d158685b89f7834c",
+     "authored_at": "2026-05-28T08:52:00Z",
+     "message": "feat: karanlık tema\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 99,
+     "deletions": 19,
+     "changed_files": 4,
+     "is_coauthored": true
+    },
+    {
+     "oid": "1ee936c53527ed283b652baf741ae781468d6928",
+     "authored_at": "2026-05-28T14:33:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 57,
+     "deletions": 15,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "059704d505794c6fb1a06c70ceaf993d208933bc",
+     "authored_at": "2026-06-01T08:52:00Z",
+     "message": "chore: CI ayarı\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 4,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": true
+    },
+    {
+     "oid": "91f3bf4ad3a918d6da1948f8628542d2cc826683",
+     "authored_at": "2026-06-01T09:07:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 40,
+     "deletions": 1,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "50892ef93d4e163ff27321e2b4a33d35b8deb2fe",
+     "authored_at": "2026-06-01T09:18:00Z",
+     "message": "fix: yanlış saat dilimi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 11,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": true
+    },
+    {
+     "oid": "9bea466aadf8731091c7c1896d828cc90d833eef",
+     "authored_at": "2026-06-01T09:57:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 76,
+     "deletions": 31,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fa793e0ed47d45d2078d712e3a8f065a1658211b",
+     "authored_at": "2026-06-01T13:27:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 113,
+     "deletions": 38,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dc4bfc2afb56d89ed89a874a1708f2114de9333d",
+     "authored_at": "2026-06-01T14:01:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 62,
+     "deletions": 26,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b6a5b42fe752f33104b15e5dc758afb3b47d9e64",
+     "authored_at": "2026-06-02T17:55:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 178,
+     "deletions": 68,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "62e12a77d4d5c913153ed350d757d9fb0f8e781c",
+     "authored_at": "2026-06-03T07:17:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 157,
+     "deletions": 42,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f79b7402db3984181466ac454f745ef0a66a3335",
+     "authored_at": "2026-06-08T06:33:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 104,
+     "deletions": 11,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "14a90bfaedfeed9184513389729a113b639d8920",
+     "authored_at": "2026-06-08T06:51:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 91,
+     "deletions": 32,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d9f1432effceb7f999ca40e606565316e8a05052",
+     "authored_at": "2026-06-08T07:23:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 13,
+     "deletions": 5,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "70670e5669718e5d9c90329615fda98a817e7432",
+     "authored_at": "2026-06-09T12:22:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 164,
+     "deletions": 10,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9966c10cde60654c2405a605ae441bb52fcca79c",
+     "authored_at": "2026-06-09T12:30:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 59,
+     "deletions": 25,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d604274afe3fcb5e6f8c4e7372156f493fee245b",
+     "authored_at": "2026-06-09T13:06:00Z",
+     "message": "Readme kurulum adımları",
+     "additions": 22,
+     "deletions": 6,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "de03b21b0d85ba090c7ced8d37951fb0bb15245a",
+     "authored_at": "2026-06-10T10:13:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 78,
+     "deletions": 28,
+     "changed_files": 2,
+     "is_coauthored": true
+    },
+    {
+     "oid": "34725d414cd522db6851a37fb5b4fd20a37f20c9",
+     "authored_at": "2026-06-10T10:18:00Z",
+     "message": "Birim testleri eklendi",
+     "additions": 55,
+     "deletions": 10,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4c8e59360963de933669967e42865f5c0a018009",
+     "authored_at": "2026-06-10T10:44:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 8,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fa003735f01b165fa03ae10aff99bb60fb0c76fe",
+     "authored_at": "2026-06-11T13:48:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 128,
+     "deletions": 41,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "961d88c2e19c8e03f03296007e0d01bb1cb02329",
+     "authored_at": "2026-06-17T09:13:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 162,
+     "deletions": 18,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4bc16c9a3205887ef35a341b20a705ef8f5d11a3",
+     "authored_at": "2026-06-17T09:26:00Z",
+     "message": "Api örnekleri",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6a40a32671e472c7e7ff913d2ad6dd79c08fa34a",
+     "authored_at": "2026-06-17T09:39:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 175,
+     "deletions": 52,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "eafb768800bf9f2d3eb81d008da736a7d4b00e08",
+     "authored_at": "2026-06-17T17:51:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 58,
+     "deletions": 12,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "aa8eb27667710c718190de715e49067d2791588f",
+     "authored_at": "2026-06-18T15:51:00Z",
+     "message": "test: uç durum testi",
+     "additions": 31,
+     "deletions": 8,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d3ec270833d17f4359296c5d69d984ab59fe0143",
+     "authored_at": "2026-06-19T11:57:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 38,
+     "deletions": 8,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d00a69d0fc5b893177d314e9382f7572c42e6d1b",
+     "authored_at": "2026-06-19T12:31:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 7,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3f2b394115492c52e38ddc61ca8b1eafab70969e",
+     "authored_at": "2026-06-19T13:35:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 23,
+     "deletions": 0,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "70d2248762ad477f85cad3ed63083dc5d64cbe9c",
+     "authored_at": "2026-06-19T14:19:00Z",
+     "message": "Yeni uç nokta eklendi",
+     "additions": 81,
+     "deletions": 37,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6a9e1a3e1863a46b9672efaa6069b570977fe458",
+     "authored_at": "2026-06-24T10:58:00Z",
+     "message": "Sayfalama eklendi",
+     "additions": 77,
+     "deletions": 5,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "58dd11e44877768712dae92adecbc0377a5b4bcb",
+     "authored_at": "2026-06-24T11:06:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 23,
+     "deletions": 2,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fd97295bc47dc6882620501dcdfd3637a187e3fa",
+     "authored_at": "2026-06-25T14:37:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e6d877649e6cef2ebe008222fe99a9ee7d184179",
+     "authored_at": "2026-06-25T15:11:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 19,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "66db1c9c308c00a34cb3a70255798424dd12ea48",
+     "authored_at": "2026-07-02T20:48:00Z",
+     "message": "Yanlış saat dilimi",
+     "additions": 2,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "65bb5011c670d472f8c5d7a9401481a2ee14f1df",
+     "authored_at": "2026-07-09T07:13:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 111,
+     "deletions": 42,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "37cb2cc74d9278e0a5c21b1a93d9fb444e68d9c3",
+     "authored_at": "2026-07-09T07:31:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 63,
+     "deletions": 10,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "82807cfa308f637acff35ed4a457a7cea88765b3",
+     "authored_at": "2026-07-13T10:34:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 79,
+     "deletions": 7,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f7535395d8d5e73fed1e7dd8bd6f67d220bfa4a0",
+     "authored_at": "2026-07-13T10:43:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 58,
+     "deletions": 29,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7184f2b3aedab392e551b0e603c80faa793b9ff8",
+     "authored_at": "2026-07-13T10:48:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 10,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b4191358040d7b2692aeb18d2bcf1a30b21b389a",
+     "authored_at": "2026-07-13T11:12:00Z",
+     "message": "fix: tarih biçimi hatası\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 19,
+     "deletions": 4,
+     "changed_files": 6,
+     "is_coauthored": true
+    },
+    {
+     "oid": "1e9805dbad8ffe9d7abe12d8bc0ba0bdae529ade",
+     "authored_at": "2026-07-13T11:20:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 71,
+     "deletions": 19,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "83f7071411bc0a9b12e2ad65e7fb183c9718adac",
+     "authored_at": "2026-07-13T11:27:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dbc13515fadea40040a3215a0f74cfeaa303a3e8",
+     "authored_at": "2026-07-15T10:11:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 33,
+     "deletions": 20,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5679931b29792cc8328c51ddc74c82e30af6e604",
+     "authored_at": "2026-07-15T10:27:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 9,
+     "deletions": 2,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "47c5d619407a68af742df776343d2cce448d3ea0",
+     "authored_at": "2026-07-15T11:08:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 7,
+     "deletions": 0,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b3a20948e9905421fb7353d7317c8b06735dba89",
+     "authored_at": "2026-07-16T17:51:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 13,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d19c46a743399d5ff7d82d3bd181ee1a622b2319",
+     "authored_at": "2026-07-16T18:03:00Z",
+     "message": "Bağımlılıklar güncellendi",
+     "additions": 7,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "391cb64e17d9d567a10c2eaa7e1fb626ef0ce29f",
+     "authored_at": "2026-07-16T18:30:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 80,
+     "deletions": 28,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "612c6a7b71dbcaa1aa7b51f7759b94cfee2d042e",
+     "authored_at": "2026-07-16T19:07:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b960f277dc232aa6b59fc3ea2f9e470b15e58bc0",
+     "authored_at": "2026-07-21T13:19:00Z",
+     "message": "test: uç durum testi",
+     "additions": 17,
+     "deletions": 3,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "bee87d0c77efac186f7ee09ad2271e6629ae267c",
+     "authored_at": "2026-07-24T14:00:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 109,
+     "deletions": 12,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "67c0be99f518a074dbd7bef5ba9d6a8dff6c452c",
+     "authored_at": "2026-07-28T06:58:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3855b955ff6741a4e24afe50c1f605b512684244",
+     "authored_at": "2026-07-28T07:39:00Z",
+     "message": "Arama özelliği",
+     "additions": 199,
+     "deletions": 30,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d5a38682fa518971401ccf4a0fb3f725d9c3ac21",
+     "authored_at": "2026-07-28T07:48:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 114,
+     "deletions": 41,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a91089a2c25e2c861eadf2a2e73965685bc5665f",
+     "authored_at": "2026-07-28T07:59:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 6,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "88d3e25bfd140be44150424ae817a89b792814ea",
+     "authored_at": "2026-07-28T14:10:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 77,
+     "deletions": 15,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "91f4a9eb6ab6895abe0727259042811f31b4e53e",
+     "authored_at": "2026-07-28T14:29:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 142,
+     "deletions": 13,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ccf8b35a91f639304f40c0cc70b22dc092b49722",
+     "authored_at": "2026-07-31T15:21:00Z",
+     "message": "Sahte istemci ile test",
+     "additions": 12,
+     "deletions": 2,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2469e37cb2033b603289c29d5bf5ec7a26186125",
+     "authored_at": "2026-07-31T15:43:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 17,
+     "deletions": 8,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c34d9b4690979b058548c716f1c7875b1f7bbdca",
+     "authored_at": "2026-07-31T15:56:00Z",
+     "message": "docs: yorum satırları güncellendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 32,
+     "deletions": 8,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "47ff596a4c6beef9d00f70f3530065f22b47ed99",
+     "authored_at": "2026-08-02T06:20:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 40,
+     "deletions": 4,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "08ac719aadc40efa3d6fa6a5ee9f329106b8298f",
+     "authored_at": "2026-08-02T06:40:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 6,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ad31769265ea51aa55e2dc02ebc6af495c8ad0bd",
+     "authored_at": "2026-08-02T07:19:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 33,
+     "deletions": 5,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3331ca167a8dffec63abea8ce5184d4b22c3a973",
+     "authored_at": "2026-08-06T09:57:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "23664a526d53ff497c3cf409bd005469f0a8a23c",
+     "authored_at": "2026-08-06T10:04:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 106,
+     "deletions": 19,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "986c211c59d04d724f1378b071268028bab761bc",
+     "authored_at": "2026-08-06T10:34:00Z",
+     "message": "Yorum satırları güncellendi",
+     "additions": 31,
+     "deletions": 15,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d1390d762057421f187b331f919f3c3ee4390cf4",
+     "authored_at": "2026-08-06T10:50:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 38,
+     "deletions": 1,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f2ece0e41ff60886df7ddfb49091cc3204d6ba37",
+     "authored_at": "2026-08-07T14:14:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 5,
+     "deletions": 1,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "50f9167377a693cb785455f741b37a2454062e47",
+     "authored_at": "2026-08-07T14:44:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 16,
+     "deletions": 3,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f046ac1ec6267a256941b4926edb0c32002b2ae6",
+     "authored_at": "2026-08-07T15:13:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 13,
+     "deletions": 3,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8374188bb01c93ddb707d6beef511ac60fd9c7df",
+     "authored_at": "2026-08-07T15:33:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 183,
+     "deletions": 23,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e9bf8dc81424f10ed2429e2930c0592889353609",
+     "authored_at": "2026-08-11T11:06:00Z",
+     "message": "Sayfalama eklendi",
+     "additions": 115,
+     "deletions": 52,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b6ddf3f57510d55afdb16460ead816eeee3f667c",
+     "authored_at": "2026-08-11T11:37:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 24,
+     "deletions": 9,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9d7e632d21582d47e81b8ea10dbd958816bcbdc1",
+     "authored_at": "2026-08-11T12:02:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 26,
+     "deletions": 7,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "99a54338c1f8cb3f7a98c3bfde0f9a4034db2590",
+     "authored_at": "2026-08-11T15:15:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 139,
+     "deletions": 45,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c79fa79f99228c70c7702aead80b8e49f8b8806b",
+     "authored_at": "2026-08-11T15:34:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 61,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7ab8d91607fd49b435457a246aee6c2239cd27ee",
+     "authored_at": "2026-08-11T15:50:00Z",
+     "message": "Api örnekleri",
+     "additions": 41,
+     "deletions": 7,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "68d68e28d87bbd0d6cdb7bc3f74b1387cbbcfc2e",
+     "authored_at": "2026-08-19T07:28:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 40,
+     "deletions": 4,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "850d3f86584d89d3731915f562a410683aa298c3",
+     "authored_at": "2026-08-19T08:12:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 66,
+     "deletions": 4,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7ae903e3d30dec2bcee572856534d83ea4338ba8",
+     "authored_at": "2026-08-22T09:03:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 96,
+     "deletions": 22,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "78deab3084970f939f7077e15fe162e228ff3f49",
+     "authored_at": "2026-08-24T19:36:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8b3df8dd41f29788d17339286f5b8ed0ea7bc734",
+     "authored_at": "2026-08-24T19:48:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 23,
+     "deletions": 11,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "52611276eb000ada0819c503f0e8ab5fa571a6e4",
+     "authored_at": "2026-08-27T11:15:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 16,
+     "deletions": 8,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f8649f29de165cfa1cf9eab079b8154f878d7230",
+     "authored_at": "2026-08-27T11:53:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 91,
+     "deletions": 21,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2da78e7b11a7becca149793df117de1bc199c6a2",
+     "authored_at": "2026-08-27T11:56:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 12,
+     "deletions": 5,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "31c54722b9a7774ee60fbe0eb05af698085a03ae",
+     "authored_at": "2026-08-27T12:22:00Z",
+     "message": "Kullanıcı ayarları sayfası",
+     "additions": 133,
+     "deletions": 74,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "531a649a38874c5c0fc72930561cee8a4f62d85f",
+     "authored_at": "2026-08-29T19:26:00Z",
+     "message": "fix: bellek sızıntısı giderildi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 11,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "ac29656b14fe7cc11f13edba4c2249b4af9408c9",
+     "authored_at": "2026-08-29T19:40:00Z",
+     "message": "Tekrarlanan kod azaltıldı",
+     "additions": 11,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6aa1f7cf10b54b1f5e5a1b16d95c183b71aaf2f5",
+     "authored_at": "2026-08-29T19:52:00Z",
+     "message": "Yorum satırları güncellendi",
+     "additions": 40,
+     "deletions": 2,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b3dc24a2c3c86b20364c65a60ddc826f662cec92",
+     "authored_at": "2026-09-01T11:50:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 12,
+     "deletions": 1,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0a6d55a107cc5ee12a2a3bbb6f3665f91d197dbc",
+     "authored_at": "2026-09-01T12:07:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 18,
+     "deletions": 7,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9eae39f0d5a76d181885c8702d470a698f9488a9",
+     "authored_at": "2026-09-01T12:22:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 13,
+     "deletions": 3,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ca0c1ed5badcf817f6bd8f948378a26d989d7969",
+     "authored_at": "2026-09-02T14:05:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 6,
+     "deletions": 2,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0892efa3565beffb8759a92a45cfdc81857f14db",
+     "authored_at": "2026-09-02T14:44:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 144,
+     "deletions": 2,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9871c77d0613997fc63b98b72b5226d5acf587b1",
+     "authored_at": "2026-09-02T15:27:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 28,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "74b2f11b9a9378ee91bd3837ae7e3246cd904a4d",
+     "authored_at": "2026-09-03T13:41:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 18,
+     "deletions": 7,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "af245f3bbdd190485f2e2d61a9d683afe687fabd",
+     "authored_at": "2026-09-03T14:04:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ad6b25928da85178146fcb49092051ce3c4e9a75",
+     "authored_at": "2026-09-04T07:14:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 9,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cbe6fda31ab10f36996516d422be9e0553f018f1",
+     "authored_at": "2026-09-04T07:55:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 34,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "93dafca45431c1a9a8686484374b64a2ec32783b",
+     "authored_at": "2026-09-04T08:10:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 31,
+     "deletions": 14,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4714785c4ad3a143b8d970a0b372e80959368e15",
+     "authored_at": "2026-09-07T11:30:00Z",
+     "message": "Önbellek desteği",
+     "additions": 139,
+     "deletions": 60,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a8e9fad82d8ecda1fb6381509ba865ba95e9fa0e",
+     "authored_at": "2026-09-08T07:26:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 13,
+     "deletions": 5,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dc9d4388a27d844c9898cfde0160146fd192f3e7",
+     "authored_at": "2026-09-08T07:52:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 16,
+     "deletions": 6,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "26d97d12c99b67e966aa0dbf6d9e92d785fb407f",
+     "authored_at": "2026-09-08T08:03:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 163,
+     "deletions": 14,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8438a7a2c9405fbc31355382794e62f33a66993e",
+     "authored_at": "2026-09-08T08:20:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 38,
+     "deletions": 9,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fdfdc6a62624f0c83aefd7e7fbabeb30d0642fcc",
+     "authored_at": "2026-09-15T07:12:00Z",
+     "message": "Servis katmanı ayrıldı",
+     "additions": 119,
+     "deletions": 40,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "74e5ad0370be7b321063ac4c4b3bbba41e147d47",
+     "authored_at": "2026-09-15T07:18:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 7,
+     "deletions": 2,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9076ef1c5cb27259bdc316f741b0f7d77c13da2d",
+     "authored_at": "2026-09-17T07:17:00Z",
+     "message": "Readme kurulum adımları",
+     "additions": 14,
+     "deletions": 1,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5362e8a30acd43245d19c004836c68284c70bda5",
+     "authored_at": "2026-09-17T07:49:00Z",
+     "message": "Eksik doğrulama",
+     "additions": 17,
+     "deletions": 7,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "810840aa9c7cc06d279e0d22d5adb3ffe22b3838",
+     "authored_at": "2026-09-17T08:09:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 6,
+     "deletions": 1,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b4b3a5f05628da9d45d0ae82aeaba22f084da5eb",
+     "authored_at": "2026-09-17T08:49:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 18,
+     "deletions": 6,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0bceec5d9ec4e58ea7b593240eb09023d0cf0883",
+     "authored_at": "2026-09-18T15:17:00Z",
+     "message": "Eksik doğrulama",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0c42bd206e06cfb32f3adc014242300536380088",
+     "authored_at": "2026-09-18T15:25:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 26,
+     "deletions": 2,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0d671b11596a9c8928223ca79f6f1c572dfaa8be",
+     "authored_at": "2026-09-20T08:47:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 8,
+     "deletions": 1,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "696187acf84d8d8831c1812482086d65b035a6f0",
+     "authored_at": "2026-09-20T18:01:00Z",
+     "message": "test: uç durum testi",
+     "additions": 18,
+     "deletions": 3,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "554df4181ad9d9e22f6e5b5d2b99e85d0050edd8",
+     "authored_at": "2026-09-20T18:13:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 18,
+     "deletions": 7,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8d054bf3f9d9f78a79c4034407a318b8020c6f89",
+     "authored_at": "2026-09-20T18:31:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 12,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c4265c39f5a2bb21474bbeddf4b72ed082d71234",
+     "authored_at": "2026-09-20T18:42:00Z",
+     "message": "Servis katmanı ayrıldı",
+     "additions": 79,
+     "deletions": 28,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7229255ae581f030744ae333b8eb9a52fff1f338",
+     "authored_at": "2026-09-20T19:17:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 30,
+     "deletions": 8,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6aaf8b19cb1e8d6f056ec2e5bf4b9fa9094f7dfe",
+     "authored_at": "2026-09-21T07:21:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 36,
+     "deletions": 10,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d0f39dcd277dc227f090a8a0266c58e3b33f8679",
+     "authored_at": "2026-09-21T07:55:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 56,
+     "deletions": 4,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4c3916115f9bbde77d08b7e3d4ffa15041b3229f",
+     "authored_at": "2026-09-23T08:36:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 35,
+     "deletions": 10,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "76952a0f11b59924fc73b28ba209504d94102186",
+     "authored_at": "2026-09-23T14:13:00Z",
+     "message": "test: uç durum testi",
+     "additions": 24,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0b2d93ac49e9e6ab57fe86b06d8ff895f839c1d3",
+     "authored_at": "2026-09-23T20:56:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 95,
+     "deletions": 53,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1f4c79c660d705a0c271285ef1e7bb564aeb1fc9",
+     "authored_at": "2026-09-23T21:01:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 58,
+     "deletions": 13,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f973c2018c34f48029f29d33ec757385929390ed",
+     "authored_at": "2026-09-25T11:07:00Z",
+     "message": "Kullanıcı ayarları sayfası",
+     "additions": 102,
+     "deletions": 15,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "61a0546f1b86766dfa7cc9e1af5f81e8539e63fa",
+     "authored_at": "2026-09-25T11:28:00Z",
+     "message": "test: uç durum testi",
+     "additions": 35,
+     "deletions": 13,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1ee54e11446dceaeae9816e7bf578058fb95d6a4",
+     "authored_at": "2026-09-28T06:32:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 23,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2ea4d7a52ba1f76a4c75fd4ec7439c313ccbdf5a",
+     "authored_at": "2026-09-28T07:01:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 10,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0bb55668ad55187ab8520857da199e5d05a35d33",
+     "authored_at": "2026-09-28T07:44:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 22,
+     "deletions": 6,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0e860fcb6dbd4bcd5dec03ffc6def23ebf15eadd",
+     "authored_at": "2026-09-28T08:12:00Z",
+     "message": "Bağımlılıklar güncellendi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0e60f525d84431c81f8d424079bd547af92a9045",
+     "authored_at": "2026-10-01T08:09:00Z",
+     "message": "Sahte istemci ile test",
+     "additions": 83,
+     "deletions": 39,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f375108cc8509cd73faa43bcaa3a21f978626c66",
+     "authored_at": "2026-10-07T12:05:00Z",
+     "message": "Uç durum testi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 66,
+     "deletions": 9,
+     "changed_files": 7,
+     "is_coauthored": true
+    },
+    {
+     "oid": "a1546320700ae4fae4dc7935a1d5f43d93c8de30",
+     "authored_at": "2026-10-07T12:12:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 13,
+     "deletions": 8,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3dbe9afe6f23acaa0b425d0666e8e8318bad8dc7",
+     "authored_at": "2026-10-07T12:24:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 135,
+     "deletions": 15,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0fd698a67fd90d500f8ac0d145fed5c66267c3c8",
+     "authored_at": "2026-10-07T12:30:00Z",
+     "message": "Sahte istemci ile test",
+     "additions": 88,
+     "deletions": 17,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3884afa326546168763bbfd145e2df5b2cbc67c7",
+     "authored_at": "2026-10-07T12:31:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 13,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "63566159d347dd0a170bb2dc5a5c9fdf3b2c2880",
+     "authored_at": "2026-10-12T06:18:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 25,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f1b40f19b8d4524e9defcb3c56cbd6561d9340a6",
+     "authored_at": "2026-10-12T06:38:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 150,
+     "deletions": 24,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0e551cf6264b8a71485f81fbf7b9e06c76686ec5",
+     "authored_at": "2026-10-12T07:17:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 20,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "966dd9a7efeb12256b149890ad017894428d5e66",
+     "authored_at": "2026-10-12T07:31:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 65,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ed3583b9372dffd644c29a0f1a3f4a091e3cbcfc",
+     "authored_at": "2026-10-12T07:47:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 50,
+     "deletions": 19,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3a2c069086af6f95741004a2e7d165c99ef3ff9f",
+     "authored_at": "2026-10-19T07:03:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 3,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f4374549a484a720daa1ec2b2c0048319a3d703f",
+     "authored_at": "2026-10-19T07:11:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ac571fd663c333cd14431de03d8063cc639b656f",
+     "authored_at": "2026-10-19T07:47:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 105,
+     "deletions": 12,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0e6ee9246a317de3e706ae4c14f492a8a9d7c7be",
+     "authored_at": "2026-10-19T07:54:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 11,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2154ca7ea83f9eb2f7506e282ac8014631165be6",
+     "authored_at": "2026-10-26T06:45:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 59,
+     "deletions": 9,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e9f1d61862ada902f6d99f209acd61423e22ecf7",
+     "authored_at": "2026-10-26T07:21:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5bad4ef25fed0c17656b38bfed0e648e77d17146",
+     "authored_at": "2026-10-26T07:41:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 80,
+     "deletions": 28,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "71573e6f497da01fed51d47f0463850001164217",
+     "authored_at": "2026-10-26T08:03:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 14,
+     "deletions": 3,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a1a5faf340996bfdff200319170f2d323f91a9af",
+     "authored_at": "2026-10-26T08:40:00Z",
+     "message": "Arama özelliği",
+     "additions": 118,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "390a557935609db3a70530cd7c7f2b6d31f81382",
+     "authored_at": "2026-10-26T14:33:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 131,
+     "deletions": 58,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1901bc2fe5059b97cc24588ee34dfc86eb6faef2",
+     "authored_at": "2026-10-26T14:54:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 17,
+     "deletions": 8,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3d052fbb6fe214bfef3ecdcc66cc68d133d6f4f0",
+     "authored_at": "2026-10-26T15:25:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 60,
+     "deletions": 25,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "522cc74d8bc7ad03b016dac3c7bb6250e401921b",
+     "authored_at": "2026-10-30T06:21:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 141,
+     "deletions": 20,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "bc8b91faa68893ca83607c2a5761abba4deaa1cd",
+     "authored_at": "2026-10-30T06:47:00Z",
+     "message": "Bağımlılıklar güncellendi",
+     "additions": 0,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6597528d72839f56e6f09620fb2f592793a811c2",
+     "authored_at": "2026-10-30T06:58:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8c9894f6cb2fa3d402fadb64d84e40b749fb1f0b",
+     "authored_at": "2026-10-30T07:10:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 46,
+     "deletions": 7,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d25197d1547ac7d0455ffdec6937a159933d37d0",
+     "authored_at": "2026-10-30T07:49:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 43,
+     "deletions": 6,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f3fa89a9e9758744c06c8f3fc91ff1c62975abf6",
+     "authored_at": "2026-10-30T10:10:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 52,
+     "deletions": 4,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7a5473f6087e084ca1e2c4e8e964e8f1092970e8",
+     "authored_at": "2026-10-30T10:19:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 12,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b6a3a7c4bec217032d024496289f62b7644d8e27",
+     "authored_at": "2026-10-31T09:52:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 68,
+     "deletions": 15,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "10e59b166ae412090a8549f0f85183af087589e5",
+     "authored_at": "2026-10-31T16:35:00Z",
+     "message": "Yeni uç nokta eklendi",
+     "additions": 71,
+     "deletions": 34,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "415f369cdffe931adc82db5d92cb1ce4f605f81d",
+     "authored_at": "2026-10-31T17:14:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 22,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b3e36a6347c9d0c8a2d079a18eb703c5afc55956",
+     "authored_at": "2026-10-31T17:57:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 14,
+     "deletions": 6,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "156d38897f31a092ed9dae1adf742fded98f832a",
+     "authored_at": "2026-11-02T09:33:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7d39c7a5d0fb7ca75c8e45e83f1d82672dc7eef5",
+     "authored_at": "2026-11-02T12:16:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 76,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8ca5926fd0215d0fea68f8b79a533b82f32825dc",
+     "authored_at": "2026-11-02T12:53:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 28,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "528ee1fd524bd23cad88af18602689ca24d06617",
+     "authored_at": "2026-11-02T13:32:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 75,
+     "deletions": 19,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "79e8018103eaa47f53c9f20083c93ac9cf018ee9",
+     "authored_at": "2026-11-04T19:07:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 60,
+     "deletions": 15,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fe593891d054fcade515d01e0085dd3ab4b3e5a6",
+     "authored_at": "2026-11-04T19:32:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 38,
+     "deletions": 19,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "87a7477bfab2ddd100bfbadbfd86f6f4dfeae3f8",
+     "authored_at": "2026-11-04T19:45:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 0,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "16a6945cdae9c4db93f43c1e0ecaac916507cc94",
+     "authored_at": "2026-11-04T20:09:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "22f01599f872cb8ca66c007ba83d7f69c0a44a3f",
+     "authored_at": "2026-11-05T13:19:00Z",
+     "message": "Bağımlılıklar güncellendi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7a29e0edb4d954c438a54ffae0cf6bfd0b368614",
+     "authored_at": "2026-11-05T14:04:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dff90f52ba2ba58a6bc3e3a94b3764695362fd64",
+     "authored_at": "2026-11-09T13:49:00Z",
+     "message": "Arama özelliği",
+     "additions": 184,
+     "deletions": 24,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e64e10f917ed1f6c7fd0760efd0b9ca342168461",
+     "authored_at": "2026-11-11T17:26:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 115,
+     "deletions": 44,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dca6fcf2c6c8b45d2c330b0fe3837ca30613f883",
+     "authored_at": "2026-11-12T12:49:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 151,
+     "deletions": 46,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f738275a1f04467e3c6da8b93edb464d166981c8",
+     "authored_at": "2026-11-12T13:08:00Z",
+     "message": "Yanlış saat dilimi",
+     "additions": 18,
+     "deletions": 2,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "63b9653d3829325eb25e6d2d77825b430f30b2f1",
+     "authored_at": "2026-11-12T13:33:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 30,
+     "deletions": 10,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e0c7550aae10a60090c389dde0ae147b6fe5b88e",
+     "authored_at": "2026-11-12T13:37:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 25,
+     "deletions": 11,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dba594ef59d3579e48e5bf801e42d35027832f0e",
+     "authored_at": "2026-11-12T13:57:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 7,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5e83c7be5b17b68df05b22293dd5fdb7c59e0272",
+     "authored_at": "2026-11-12T14:04:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 18,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3310164f74687e7a344328759a48766c7ff63cbb",
+     "authored_at": "2026-11-12T14:28:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c8bdec01a3d2e8c693f2acef4e92a187f97389da",
+     "authored_at": "2026-11-12T14:31:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 12,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
     }
-  ],
-  "calendar": [
-    {"day": "2025-09-01", "count": 1},
-    {"day": "2025-09-03", "count": 1},
-    {"day": "2025-09-04", "count": 1},
-    {"day": "2026-02-10", "count": 1},
-    {"day": "2026-02-11", "count": 1},
-    {"day": "2026-03-05", "count": 2},
-    {"day": "2026-10-20", "count": 2}
-  ]
+   ]
+  },
+  {
+   "node_id": "DEMO_REPO_kisisel-blog",
+   "name": "kisisel-blog",
+   "is_owner": true,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "TypeScript",
+   "description": "Kişisel blog sitesi",
+   "has_readme": true,
+   "license_spdx": null,
+   "topics": [],
+   "created_at": "2026-06-14T11:20:00Z",
+   "pushed_at": "2026-10-22T19:01:00Z",
+   "commits": [
+    {
+     "oid": "ae5f17af97c95da67da5e18bc79f81593e951a77",
+     "authored_at": "2026-06-15T11:20:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 16,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6a16f03008dee17c952a37d570081b84552a359f",
+     "authored_at": "2026-06-15T11:32:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 37,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "99bc1c88dc09f23dae336c40f559d3f2dcf7e3ac",
+     "authored_at": "2026-06-15T11:48:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 14,
+     "deletions": 3,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "10c93b21d0e3bb98eb1ca323ed03224aa5034c48",
+     "authored_at": "2026-06-18T12:59:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 34,
+     "deletions": 8,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e389fba02515280d255c7b5858a1a57ee65337c2",
+     "authored_at": "2026-06-18T13:12:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 164,
+     "deletions": 46,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2f0f76a4a55fc160372d015f3f09d23cd27a9f8e",
+     "authored_at": "2026-06-18T13:55:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 13,
+     "deletions": 2,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b2829d426a6512fc8fa5011218203d2ed7d3d9cb",
+     "authored_at": "2026-06-18T14:02:00Z",
+     "message": "Servis katmanı ayrıldı\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 45,
+     "deletions": 6,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "e3a77f79f45d23d6e2d12c654595ec5caa9a251b",
+     "authored_at": "2026-06-18T14:25:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 48,
+     "deletions": 18,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e578bd7c603afbf144168f3a0425df2132934865",
+     "authored_at": "2026-06-24T06:53:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 184,
+     "deletions": 17,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ab49039d7efe42ecae063060431c07cc7d9a65c2",
+     "authored_at": "2026-06-26T06:14:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 47,
+     "deletions": 17,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0740a7d7ea1ad47e73a2bd1b7e8624ef9e97716b",
+     "authored_at": "2026-06-26T06:37:00Z",
+     "message": "chore: CI ayarı\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": true
+    },
+    {
+     "oid": "cb38632d093576017905d4a6b4a4c86adcec0486",
+     "authored_at": "2026-06-30T08:09:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 202,
+     "deletions": 7,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "70bbe29756c04aae2f024055078f35ba8738ebf3",
+     "authored_at": "2026-06-30T08:26:00Z",
+     "message": "test: uç durum testi",
+     "additions": 67,
+     "deletions": 18,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e9f9a4f10f926f4a8f2c0ed99695303a86dcc05f",
+     "authored_at": "2026-06-30T08:34:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 22,
+     "deletions": 4,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b8fa14256ff27360f0b579676a28c4f950b91172",
+     "authored_at": "2026-06-30T08:56:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 14,
+     "deletions": 7,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b26cc2d1f6b79803dd3dbfd19cb46588d45f8791",
+     "authored_at": "2026-07-06T07:08:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 12,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "62321b55a6948b512f418ba5cb1e8603bf81b3ba",
+     "authored_at": "2026-07-06T07:26:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 14,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "54dcefcba069ff14f97282d97c550c8da0d07df7",
+     "authored_at": "2026-07-06T07:38:00Z",
+     "message": "Sahte istemci ile test",
+     "additions": 17,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9449035a9ae9331997fc1c85fe902a8dd0062b70",
+     "authored_at": "2026-07-06T08:15:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 12,
+     "deletions": 4,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "11aec63de0ce88a22f71af976da6a9b3d92141f4",
+     "authored_at": "2026-07-06T08:20:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 31,
+     "deletions": 4,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5df2dd8a065216fece126937e6c57219e108db76",
+     "authored_at": "2026-07-14T08:26:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 15,
+     "deletions": 4,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b8abe1440db76f5bdf425984bdad661e1acb22cb",
+     "authored_at": "2026-07-14T08:46:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 35,
+     "deletions": 9,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "554e3a2176fd111669d9d7601a890df8077917d0",
+     "authored_at": "2026-07-14T09:07:00Z",
+     "message": "Yanlış saat dilimi",
+     "additions": 0,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "63e4b1eec65861d1c42e2704b044111ab508cc8a",
+     "authored_at": "2026-07-19T06:00:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3446dcbefb6d7ff9604b899befa556be8708596a",
+     "authored_at": "2026-07-19T06:28:00Z",
+     "message": "Gitignore güncellendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 6,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": true
+    },
+    {
+     "oid": "3f3babaa6d97876d051cb114d1a01edb15c261cf",
+     "authored_at": "2026-07-19T15:22:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 23,
+     "deletions": 13,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3473705ce80a851c5bfcbb97597c16cacdc9d83f",
+     "authored_at": "2026-07-26T12:39:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 10,
+     "deletions": 3,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cc213da19a5bcc18d44733f5e5c5e3554a810b53",
+     "authored_at": "2026-07-26T13:01:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 29,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "054ce8c9e98403a9ca018955a9c6234cc6e47b66",
+     "authored_at": "2026-07-26T20:17:00Z",
+     "message": "Birim testleri eklendi",
+     "additions": 68,
+     "deletions": 41,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ff82a35d03843d5ff4cf3be4e158ac34c191f111",
+     "authored_at": "2026-07-31T06:46:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 7,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "90f279c8f7db7d72e25174e647cc42560aae3474",
+     "authored_at": "2026-07-31T07:30:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 16,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e478e56636b979779cfd39f09b8a8ecae6974913",
+     "authored_at": "2026-07-31T07:41:00Z",
+     "message": "Birim testleri eklendi",
+     "additions": 7,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "84672ebc2b5e62cb79469a347849ddf66da8c974",
+     "authored_at": "2026-08-03T10:54:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 0,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "448e2b05a8ebc7e3225b3bdfd872e879ed9e1f7a",
+     "authored_at": "2026-08-03T11:28:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fde8ef61c3064d958fd29d84fd6539c7e0339c19",
+     "authored_at": "2026-08-07T18:18:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 122,
+     "deletions": 28,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e6c4a2ae4500843f45715b6c7035eecf669aab20",
+     "authored_at": "2026-08-07T18:42:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 22,
+     "deletions": 7,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "770c52529bb29e558f0ba3187075b1df21ba28dc",
+     "authored_at": "2026-08-13T13:23:00Z",
+     "message": "Gitignore güncellendi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ab79ec65d39202ee80f0e33c69def152192e78e0",
+     "authored_at": "2026-08-17T11:41:00Z",
+     "message": "feat: arama özelliği\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 110,
+     "deletions": 33,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "c56695853a60f1d3e357b94f4c6cc6eb94076754",
+     "authored_at": "2026-08-21T15:58:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 27,
+     "deletions": 5,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8ae9fd99fdc25803a9dc78af329d0a83ca9b6898",
+     "authored_at": "2026-08-21T16:29:00Z",
+     "message": "Ci ayarı",
+     "additions": 9,
+     "deletions": 2,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "98b743756b97abce470b5245bf1987a3e82f2fb4",
+     "authored_at": "2026-08-21T16:36:00Z",
+     "message": "test: uç durum testi",
+     "additions": 86,
+     "deletions": 20,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9da60b6741e2be1f753052dd11aef779a518fbb9",
+     "authored_at": "2026-08-23T18:08:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 56,
+     "deletions": 15,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0abbcbec35fb261334dfb02ef1406ce2e16d1549",
+     "authored_at": "2026-08-23T18:34:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 104,
+     "deletions": 3,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "36a361b2f6371d5deb39159b0171e606236f7a7c",
+     "authored_at": "2026-08-23T18:54:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 102,
+     "deletions": 43,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a3c023d4df5b1b6dfc6d712a18235b9008131f87",
+     "authored_at": "2026-08-28T09:22:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 29,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1ee120f2331b035f262d0e894a8e73a915084e70",
+     "authored_at": "2026-08-28T09:43:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 45,
+     "deletions": 12,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e1eca3a98e903bfb40a087f29a264dcbe6b72686",
+     "authored_at": "2026-08-30T06:57:00Z",
+     "message": "Yorum satırları güncellendi",
+     "additions": 19,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "be4de0a1afa6f124e467a93481e0cbca95117f59",
+     "authored_at": "2026-08-30T07:29:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 94,
+     "deletions": 39,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "bd64f285215cdcd967b06c1760055691a1385237",
+     "authored_at": "2026-08-30T07:52:00Z",
+     "message": "Sayfalama eklendi",
+     "additions": 168,
+     "deletions": 29,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d464ed3d9292e07f57f2bd2dc276f82b66cede26",
+     "authored_at": "2026-08-30T08:30:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 102,
+     "deletions": 24,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2b4e89278d8fd13029475335844f00fa71fc813d",
+     "authored_at": "2026-08-31T08:46:00Z",
+     "message": "Bellek sızıntısı giderildi",
+     "additions": 11,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9af326d17a5ebe8c94fcb447c16a0a6792e239c3",
+     "authored_at": "2026-08-31T09:21:00Z",
+     "message": "Bellek sızıntısı giderildi",
+     "additions": 5,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7d0dd6b3c45a41772e73b5a536f9729f23461141",
+     "authored_at": "2026-09-02T10:33:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 34,
+     "deletions": 5,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d1409760bec0c41031a192c9b41c4ece11e46046",
+     "authored_at": "2026-09-02T11:16:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 9,
+     "deletions": 4,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "25e8b4af6ba59c6eb5b021181a603e15827665e3",
+     "authored_at": "2026-09-02T11:35:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 84,
+     "deletions": 30,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7a851f0be53f1dda4c3ca0d6cfd257b8054a1618",
+     "authored_at": "2026-09-14T11:57:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4afbaadb8e6831e9280fa3423bfcb8e5f003b045",
+     "authored_at": "2026-09-14T12:14:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 115,
+     "deletions": 16,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "aa0bffa12a40d29e42597ce0fa9a5e8454aadd88",
+     "authored_at": "2026-09-16T12:56:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "65a525b6503d908b7e3d4043fe653663c86d2275",
+     "authored_at": "2026-09-16T13:41:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 14,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a22a2b6c7786ff5b2b37a8efeb32665f54cb70e7",
+     "authored_at": "2026-09-16T13:54:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 7,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "def4e6652c1dc7d63becdd5bffab646c829562bd",
+     "authored_at": "2026-09-17T12:31:00Z",
+     "message": "docs: yorum satırları güncellendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 13,
+     "deletions": 3,
+     "changed_files": 5,
+     "is_coauthored": true
+    },
+    {
+     "oid": "40b9b27a336022aeb4347be62b6848744ce2b21e",
+     "authored_at": "2026-09-20T10:18:00Z",
+     "message": "Birim testleri eklendi",
+     "additions": 23,
+     "deletions": 10,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fab3d0bed0fcf3f7430ec961efecba23feca5756",
+     "authored_at": "2026-09-20T10:38:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 53,
+     "deletions": 23,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8e0a5b611281803189a83bed48ff1a7a2d463dee",
+     "authored_at": "2026-09-20T11:23:00Z",
+     "message": "Api örnekleri",
+     "additions": 52,
+     "deletions": 15,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1473d701e6d54e4b97114af6f96d3960e12d31c3",
+     "authored_at": "2026-09-25T07:55:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 139,
+     "deletions": 35,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "41798a5b8ea5a32fba580046612f939bc0fedca2",
+     "authored_at": "2026-09-25T08:31:00Z",
+     "message": "Bağımlılıklar güncellendi",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e155c739a6b09d4eb4cdf55cbde5b241431cf2e2",
+     "authored_at": "2026-09-25T09:06:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 9,
+     "deletions": 2,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0c12cd374b3980e4cbc35bbeff6e5f6df8e2a72b",
+     "authored_at": "2026-09-29T08:01:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 95,
+     "deletions": 18,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "848f490bfd6ba9cea5527d91653984aba7055852",
+     "authored_at": "2026-09-29T08:09:00Z",
+     "message": "Eksik doğrulama",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "98162da726d3045e4b99d7a1030cf89eefb7d349",
+     "authored_at": "2026-10-06T10:48:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 6,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "45ec56b01cc1cff6a7c74c7732638eb0005459b3",
+     "authored_at": "2026-10-06T19:20:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 20,
+     "deletions": 4,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2d3683967512e703da4b890cdae078529a828362",
+     "authored_at": "2026-10-06T19:40:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 1,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "337cfd89b1ac1c9f4680e8da1fa1ddbf7a6007e8",
+     "authored_at": "2026-10-06T20:00:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 151,
+     "deletions": 37,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "361b93800f5b0188c1ba78f68e7bec653dbcb2aa",
+     "authored_at": "2026-10-06T20:06:00Z",
+     "message": "Yorum satırları güncellendi",
+     "additions": 5,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1d6090a01360f956af8d0fbf529ba72b82dcd5e4",
+     "authored_at": "2026-10-12T12:47:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 122,
+     "deletions": 31,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "18435432f0b108d75e71082572ab0a8cfb7fa196",
+     "authored_at": "2026-10-15T10:43:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 0,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8eb7594d9878e196cb512150980f07a0ca35e38f",
+     "authored_at": "2026-10-15T10:53:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 99,
+     "deletions": 23,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3e103aa9654ac8f31e96d913c43f9ce6198bfccd",
+     "authored_at": "2026-10-15T11:30:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 95,
+     "deletions": 31,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c308fc8a471248559cc03849c4b5012270b95925",
+     "authored_at": "2026-10-15T11:37:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 14,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "85b75c5ade50832b4704c5887d4f20e8bb2cc8aa",
+     "authored_at": "2026-10-19T06:49:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 7,
+     "deletions": 1,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "48296ce9a5b8f554e376aeaa8beffc1a217ba614",
+     "authored_at": "2026-10-19T07:13:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 18,
+     "deletions": 4,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0d7e25aa817b9a820eb17f3291bac157ef6a6e03",
+     "authored_at": "2026-10-19T07:39:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 14,
+     "deletions": 9,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "03b2b47d96544352d8b920edbb3d1235bc563511",
+     "authored_at": "2026-10-20T14:44:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 21,
+     "deletions": 7,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "15b71c01cb310f519441a24e92ed7b1e9cf41aa4",
+     "authored_at": "2026-10-20T14:56:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 13,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f5404cb428d6704ffdc0f3858d57613266e50add",
+     "authored_at": "2026-10-22T18:33:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8df492aab3e09eeaadf87b4724bf5211370131a4",
+     "authored_at": "2026-10-22T18:44:00Z",
+     "message": "Arama özelliği",
+     "additions": 28,
+     "deletions": 8,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0a7dc48f6d6f21db6d805b02303cb9a587e81abf",
+     "authored_at": "2026-10-22T19:01:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 76,
+     "deletions": 17,
+     "changed_files": 4,
+     "is_coauthored": false
+    }
+   ]
+  },
+  {
+   "node_id": "DEMO_REPO_algoritma-notlari",
+   "name": "algoritma-notlari",
+   "is_owner": true,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "Python",
+   "description": null,
+   "has_readme": true,
+   "license_spdx": null,
+   "topics": [],
+   "created_at": "2026-05-18T11:33:00Z",
+   "pushed_at": "2026-09-09T12:01:00Z",
+   "commits": [
+    {
+     "oid": "2363998c05e04fb9057bdbee2072f5d90e0559a3",
+     "authored_at": "2026-05-19T11:33:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 70,
+     "deletions": 19,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "119f23b819159b47d58c561f3e61f67fc2637b13",
+     "authored_at": "2026-05-19T12:05:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 142,
+     "deletions": 21,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d6339be61435eade96d45a1f3e8c47c91f5e464f",
+     "authored_at": "2026-05-19T12:26:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 78,
+     "deletions": 34,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "99fa11ec1983430003c95c266337c63f42b5da4e",
+     "authored_at": "2026-05-23T12:29:00Z",
+     "message": "Api örnekleri",
+     "additions": 18,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "061439b175e6cfd2b4110221696786e91d0df7e8",
+     "authored_at": "2026-05-23T13:02:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 10,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "024637c2b4af4a50e0afdc4704c9e6da9e7cd91c",
+     "authored_at": "2026-05-23T13:24:00Z",
+     "message": "Readme kurulum adımları",
+     "additions": 38,
+     "deletions": 5,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b7eb0d576c7fea8f940873b283384882a44532b0",
+     "authored_at": "2026-05-23T13:42:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "95e4b8517641509af82d1e3f3a0b79656c4edabf",
+     "authored_at": "2026-05-25T20:44:00Z",
+     "message": "Servis katmanı ayrıldı",
+     "additions": 54,
+     "deletions": 22,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "819fcee68db869c75fc5edd5524205002fd38608",
+     "authored_at": "2026-05-25T21:07:00Z",
+     "message": "test: uç durum testi",
+     "additions": 31,
+     "deletions": 0,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "80a86a52a5511266af86092ecb2a49a0a203cc6f",
+     "authored_at": "2026-05-25T21:52:00Z",
+     "message": "Karanlık tema",
+     "additions": 35,
+     "deletions": 10,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ca042ba537460432df06f755f3f5a233c3912789",
+     "authored_at": "2026-06-01T12:26:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 51,
+     "deletions": 13,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fc7eab0ef33f7e58db204be929e9b038936a738b",
+     "authored_at": "2026-06-01T13:08:00Z",
+     "message": "Eksik doğrulama",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "55d27ac96ea317ab7d1660f253fb2a0f189126aa",
+     "authored_at": "2026-06-01T13:25:00Z",
+     "message": "Karanlık tema",
+     "additions": 51,
+     "deletions": 12,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "94a8c41afdd084c993d32719c184152243910a5f",
+     "authored_at": "2026-06-01T13:46:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 32,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "38ecc01c4fe5e37a5ecbfcd571107af6716267a6",
+     "authored_at": "2026-06-01T14:27:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 26,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2024978981cd9338f915aa163a5957f28dbeb88f",
+     "authored_at": "2026-06-03T07:09:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 44,
+     "deletions": 19,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "05cf7fea26acff52f69d57f52ad9b3d2e0e2c8b7",
+     "authored_at": "2026-06-03T07:28:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 22,
+     "deletions": 6,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0a5ff48343aa900adffc3c67d1b4e2798b805d85",
+     "authored_at": "2026-06-03T07:33:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 82,
+     "deletions": 28,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fd771b8605f210b81caf956528017d6126770c59",
+     "authored_at": "2026-06-05T12:12:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 58,
+     "deletions": 16,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9f21b1a3ae437b3369af5b439373c4a45eb81a57",
+     "authored_at": "2026-06-05T12:40:00Z",
+     "message": "Önbellek desteği",
+     "additions": 39,
+     "deletions": 11,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "68d94b7f25fd649fda40d422fa4f37c9f099fedd",
+     "authored_at": "2026-06-16T08:49:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 27,
+     "deletions": 10,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "087423d9b45d5424b32f8a11e4ef1a73458c945d",
+     "authored_at": "2026-06-16T13:28:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 181,
+     "deletions": 27,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f9386d48884f9de2d713884fc5bbd7f5cc416c6e",
+     "authored_at": "2026-06-16T17:35:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 7,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ef84c5f1f5b1fcdfe3e3bbb49b90df9fadea09ba",
+     "authored_at": "2026-06-16T17:54:00Z",
+     "message": "Önbellek desteği",
+     "additions": 63,
+     "deletions": 3,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d31f9b49b41a866a8510e09fec7ba9442bcdae8c",
+     "authored_at": "2026-06-17T15:40:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 65,
+     "deletions": 2,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "53f83f43539bc37125bfec8139e6d4d9d43b02ab",
+     "authored_at": "2026-06-23T13:30:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 7,
+     "deletions": 2,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a85ef8d9b81dc93f56fb4636dc2be802fdce6d76",
+     "authored_at": "2026-06-23T13:50:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 24,
+     "deletions": 11,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fb48d99a93dba46a1f184bf30cf27e6b2bb17a6c",
+     "authored_at": "2026-06-23T14:34:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 29,
+     "deletions": 4,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cde164c908fd0c269925e8a5e0ada9e21c05030a",
+     "authored_at": "2026-06-23T15:02:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 10,
+     "deletions": 4,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "577d5c697809744ea5dab39d6bc44dad5b1900f9",
+     "authored_at": "2026-06-23T15:08:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 80,
+     "deletions": 7,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "09ce3f5c30433413ab49478548b586088e3cefad",
+     "authored_at": "2026-07-08T13:11:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 11,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "74c3d47a75ffeba9b33064f54b505bbb6efe406d",
+     "authored_at": "2026-07-10T07:58:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 19,
+     "deletions": 7,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "261a984763a1870946f9c81807bd22db85eeb6c9",
+     "authored_at": "2026-07-10T08:03:00Z",
+     "message": "Api örnekleri",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cb708f5a1c8c84664adc543fe57c72a806a1085f",
+     "authored_at": "2026-07-10T13:55:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 124,
+     "deletions": 7,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d7423b8776ed5204c745f17baf0c50cdcf621e91",
+     "authored_at": "2026-07-10T14:38:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 65,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "78c3484211e357d61628e6855d0df2b83d4ef67a",
+     "authored_at": "2026-07-14T07:04:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 14,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "815c1fa0242e2adf1864bd64a110eb9a5a74f082",
+     "authored_at": "2026-07-14T07:45:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 69,
+     "deletions": 8,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "813e46d204c7042b70e40056c29f7ba64ffb5c23",
+     "authored_at": "2026-07-16T12:19:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 185,
+     "deletions": 62,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "26681ea552ad5fba99055f958767b5b5de1deac2",
+     "authored_at": "2026-07-16T12:42:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 22,
+     "deletions": 10,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ded3f363083419be70e4a60e795f3946d42c598f",
+     "authored_at": "2026-07-17T15:08:00Z",
+     "message": "Karanlık tema",
+     "additions": 62,
+     "deletions": 9,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b58869db2288e16259a3ad79e39d11077716486b",
+     "authored_at": "2026-07-17T15:28:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 24,
+     "deletions": 6,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0606f1ec59df7378c2e650f6d6f96e844ac9d142",
+     "authored_at": "2026-07-17T15:54:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 62,
+     "deletions": 18,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a30c00387862ab9706c0dbca9099af11f05cdc55",
+     "authored_at": "2026-07-17T16:38:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 51,
+     "deletions": 13,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1fe14536b87458142f1d2e891e7ab24b48177881",
+     "authored_at": "2026-07-18T10:07:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 68,
+     "deletions": 8,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b4b9ddd6ac640675ccb7c95cc86900d3af6b0de0",
+     "authored_at": "2026-07-18T10:12:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 6,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b04a4dceeb1c48400951adb548ce527d02cb70b9",
+     "authored_at": "2026-07-18T10:18:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 54,
+     "deletions": 18,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "af1446e6a3de7e85c4de8af0f9c8461162f68f6b",
+     "authored_at": "2026-07-18T10:43:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 11,
+     "deletions": 4,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "653166c05a4cae244ea25efc655317b1ed4a68c9",
+     "authored_at": "2026-07-18T11:09:00Z",
+     "message": "Sayfalama eklendi",
+     "additions": 25,
+     "deletions": 12,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c447027d14951a7b2959be07da6024dadcfc4967",
+     "authored_at": "2026-07-19T12:10:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 53,
+     "deletions": 25,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9cb8233418120c5ae2ebe51f870861c3569248c8",
+     "authored_at": "2026-07-22T17:18:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 3,
+     "deletions": 1,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fea0f9c0187fd93bc28ae3bd73dd98809f118ec3",
+     "authored_at": "2026-07-22T17:24:00Z",
+     "message": "Uç durum testi",
+     "additions": 73,
+     "deletions": 37,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "341adf14d1ca74257b717593f49865b406d41bdc",
+     "authored_at": "2026-08-03T11:28:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 104,
+     "deletions": 10,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0435e928cc324ca9a1b7f3cfeafb92bdfae92819",
+     "authored_at": "2026-08-03T11:41:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 71,
+     "deletions": 37,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4d68ed84bc66493646480932c263888a1f738562",
+     "authored_at": "2026-08-31T13:16:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 39,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d75ad7a8f87cfb5a4b76595c3f6005c326ea8eab",
+     "authored_at": "2026-08-31T13:49:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 13,
+     "deletions": 4,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0fb417f24b3b52890ef95d634f3af835ada0568a",
+     "authored_at": "2026-08-31T13:54:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 70,
+     "deletions": 22,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "748b09ff44c2c926a6b0515e37bf75a1e252aa4a",
+     "authored_at": "2026-08-31T14:29:00Z",
+     "message": "fix: boş girdide çökme düzeltildi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 17,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "f79cfcc4f5e8979dd7aa58339bbdd1d46eec4e8c",
+     "authored_at": "2026-08-31T15:13:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 143,
+     "deletions": 34,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d45f9523c3e765cf5ad13fadf1f0710d4670b505",
+     "authored_at": "2026-09-01T06:30:00Z",
+     "message": "Yeni uç nokta eklendi",
+     "additions": 84,
+     "deletions": 21,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "36522cb97e50f9654619f326313e4e2bb8b0e76a",
+     "authored_at": "2026-09-01T07:10:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 7,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5e044ae4ea5425718397f6a5ac0d13acc93a9ee0",
+     "authored_at": "2026-09-01T07:36:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 57,
+     "deletions": 3,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "670d9e134d3c52e51581b56313ed9df42ea47a88",
+     "authored_at": "2026-09-01T07:51:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 10,
+     "deletions": 2,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "05ad7b832a3c3da7f3da1cec228907d35da9784e",
+     "authored_at": "2026-09-01T08:20:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 119,
+     "deletions": 20,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "75ee0ec0b60ea2115fadf8c0b70c230dfc61fe6d",
+     "authored_at": "2026-09-01T18:45:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 5,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5fa8e72070eec2c9419cbd6cd66a47cd98187da2",
+     "authored_at": "2026-09-01T19:03:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 27,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0a478786f4dd1aa77e5b603afe8d64b84731d2b0",
+     "authored_at": "2026-09-02T12:47:00Z",
+     "message": "Uç durum testi",
+     "additions": 18,
+     "deletions": 0,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "25b40163e473f6177b05f1d4754c48656ea31c7e",
+     "authored_at": "2026-09-07T17:03:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 9,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e35388d7d4462c11ea9eb4aee672c63b8023bdce",
+     "authored_at": "2026-09-07T17:46:00Z",
+     "message": "Yeni uç nokta eklendi",
+     "additions": 122,
+     "deletions": 32,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a2d24a93ea3cfdb76f6ad9291936b67249f2a291",
+     "authored_at": "2026-09-09T12:01:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 9,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    }
+   ]
+  },
+  {
+   "node_id": "DEMO_REPO_flutter-sayac",
+   "name": "flutter-sayac",
+   "is_owner": true,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "Dart",
+   "description": null,
+   "has_readme": false,
+   "license_spdx": null,
+   "topics": [],
+   "created_at": "2026-09-29T11:33:00Z",
+   "pushed_at": "2026-10-05T21:39:00Z",
+   "commits": [
+    {
+     "oid": "c82e7128e5e8cc946019502759fddac6a8659d3c",
+     "authored_at": "2026-09-30T11:33:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 5,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "099b3bbf431c63a34d390c819b16b812b3acf04e",
+     "authored_at": "2026-10-03T17:25:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 49,
+     "deletions": 18,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5332ee8e5a56bb3e7026440f0f503734d9ea761a",
+     "authored_at": "2026-10-03T17:37:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 6,
+     "deletions": 2,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f3b30b8f21c81d7a372d0286c2cf7669b5acc774",
+     "authored_at": "2026-10-03T17:55:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 154,
+     "deletions": 38,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "49dcd4b455136174fd0126741798b592486e8f9e",
+     "authored_at": "2026-10-03T17:58:00Z",
+     "message": "Yeni uç nokta eklendi",
+     "additions": 279,
+     "deletions": 3,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "af1fe6041c970092e6a1ecbebcb0465d2982955f",
+     "authored_at": "2026-10-03T18:05:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 73,
+     "deletions": 17,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0d5e4be2bcbbfda6f6f075af555a11d3ccfef881",
+     "authored_at": "2026-10-03T18:40:00Z",
+     "message": "Sayfalama eklendi",
+     "additions": 428,
+     "deletions": 158,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "96379669506381a662f8e5b8d9a63143c7b20e1f",
+     "authored_at": "2026-10-03T18:43:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 429,
+     "deletions": 140,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b96059aaa793fefad4780a3b79d555de0c3e0aa8",
+     "authored_at": "2026-10-03T19:04:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 418,
+     "deletions": 4,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c275b5306a0942a08ba228d27896f8f4bfb19d88",
+     "authored_at": "2026-10-03T19:10:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 47,
+     "deletions": 23,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6c879cee6d776a4109d2c37726cf66ef5a5d3734",
+     "authored_at": "2026-10-03T19:13:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 15,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "257c008ff4d763428d6b9283e473e273b7f84d4d",
+     "authored_at": "2026-10-03T19:17:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 229,
+     "deletions": 48,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "32291e29d5568fd71eac79791d9d5553107bb949",
+     "authored_at": "2026-10-03T19:25:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 66,
+     "deletions": 9,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0787c08d1f1fab588ede57051343e9dc137c8981",
+     "authored_at": "2026-10-03T19:48:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 22,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ac18776d15d31cbf360641aaf0b7d2e20c42d04e",
+     "authored_at": "2026-10-03T19:59:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3776e33c4bc3893ff9e2058ee5e8439018f23099",
+     "authored_at": "2026-10-03T20:27:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 374,
+     "deletions": 145,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7a3fafd4c4ea5a90d586e9be8cb694560d417bff",
+     "authored_at": "2026-10-03T21:10:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 329,
+     "deletions": 6,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f58e199d0e2e103f4760e7206f6daad9d10934b1",
+     "authored_at": "2026-10-03T21:23:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 238,
+     "deletions": 140,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fc4e1530616bc73a477cf984cf0dbce378f168db",
+     "authored_at": "2026-10-03T21:41:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d92bb7257fbdedcb2af8832abe5d7d11848f9691",
+     "authored_at": "2026-10-04T17:28:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 68,
+     "deletions": 6,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "abbe562225f984f540aa9df783375c65ef067605",
+     "authored_at": "2026-10-04T17:39:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 14,
+     "deletions": 5,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9a6d7e90c7d069cdf43fe8bbadcca510da443a30",
+     "authored_at": "2026-10-04T17:52:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 24,
+     "deletions": 4,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1b7a437aa702cc26d28d10b1ff5ef4c35f81c95f",
+     "authored_at": "2026-10-04T18:10:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 5,
+     "deletions": 0,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "79e901711d4d4b15834f3942a8f03e87ba40c652",
+     "authored_at": "2026-10-04T18:16:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 103,
+     "deletions": 37,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "084bc25248f68a47d16bf0194e9eb8bd4f19b0f6",
+     "authored_at": "2026-10-04T18:28:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 245,
+     "deletions": 23,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "88b0f03873a60b54a742232f6877a0cad8215cdd",
+     "authored_at": "2026-10-04T18:38:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 60,
+     "deletions": 5,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b781d1c0e07475dad59794ba3fd254ef0906a6af",
+     "authored_at": "2026-10-04T18:40:00Z",
+     "message": "Sahte istemci ile test",
+     "additions": 107,
+     "deletions": 45,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c20d48173da9a9d6f2a4ccae39529e143532dfdb",
+     "authored_at": "2026-10-04T19:07:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 119,
+     "deletions": 21,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a413c03caf385417083146be384401725435332c",
+     "authored_at": "2026-10-04T19:08:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 43,
+     "deletions": 7,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fc9a7f0d6917d3caa9af0fd267ab38dd9aecae33",
+     "authored_at": "2026-10-04T19:25:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 476,
+     "deletions": 129,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8ec0ab11cbc0735071859c32aef589bdd2a4ba72",
+     "authored_at": "2026-10-04T19:36:00Z",
+     "message": "Karanlık tema",
+     "additions": 427,
+     "deletions": 147,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b815be6d8fbf7804f78a3b133787734ba53be6f7",
+     "authored_at": "2026-10-04T19:48:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 133,
+     "deletions": 4,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1203b59da0915e528856fa0c335a6e4880a9224f",
+     "authored_at": "2026-10-04T19:51:00Z",
+     "message": "Readme kurulum adımları",
+     "additions": 129,
+     "deletions": 26,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4997daa00f9a50c03eab33e0abee2db889540c2c",
+     "authored_at": "2026-10-04T19:58:00Z",
+     "message": "test: uç durum testi",
+     "additions": 277,
+     "deletions": 87,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "4bd6df23b47b6da13753fd8188dfb8aed726e70f",
+     "authored_at": "2026-10-04T20:04:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 52,
+     "deletions": 7,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c7b67c084d67edefb636288b1a94dc2440cfa30d",
+     "authored_at": "2026-10-04T20:24:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 381,
+     "deletions": 80,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "efc954d10ff2c37ae8a9f45806fe8c00ac25438d",
+     "authored_at": "2026-10-04T20:28:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 8,
+     "deletions": 4,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cdc22fc3a6a9ff5ce17bde614762e456acc6b20d",
+     "authored_at": "2026-10-04T20:52:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 55,
+     "deletions": 16,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "111010d7c476dd242db050f2b46a3ab27452357d",
+     "authored_at": "2026-10-04T20:55:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 43,
+     "deletions": 10,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "15f5bf2a14bc3a2aec4314988cb4adf2bdb9f35c",
+     "authored_at": "2026-10-04T21:28:00Z",
+     "message": "Boş girdide çökme düzeltildi",
+     "additions": 24,
+     "deletions": 5,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0e4ef14877fa4aee326807dec5dca01213118c5d",
+     "authored_at": "2026-10-04T21:30:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 20,
+     "deletions": 4,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d4582d4a7bb9e51b1547efaadc2255fffb8c4d15",
+     "authored_at": "2026-10-04T22:01:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 406,
+     "deletions": 163,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2533c9fbeafeda059f641f81c660894d5b377572",
+     "authored_at": "2026-10-04T22:28:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 172,
+     "deletions": 24,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0d4722ed3fcbdf0ebf78f377e62f49bfe65a2633",
+     "authored_at": "2026-10-04T22:32:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 78,
+     "deletions": 20,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a61f5961048ec119ab9125871ce60e4147053328",
+     "authored_at": "2026-10-05T17:23:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 83,
+     "deletions": 1,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "606b30e2dadad28080803a046bd7b2cc09cf8ef5",
+     "authored_at": "2026-10-05T17:35:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 15,
+     "deletions": 5,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5739e479917d61fc160dbc68d60a4d6fed1a61d0",
+     "authored_at": "2026-10-05T17:49:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 172,
+     "deletions": 64,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "5f34acdc154f03266a8930ce8ff7c896fa2bbf09",
+     "authored_at": "2026-10-05T17:53:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 490,
+     "deletions": 88,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "caa2460364ed53d04d98eb1a6c05ea558ddd4cf0",
+     "authored_at": "2026-10-05T17:59:00Z",
+     "message": "Tarih biçimi hatası",
+     "additions": 38,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "044eaaf703033e77649338db8b5aee0f97590874",
+     "authored_at": "2026-10-05T18:18:00Z",
+     "message": "Arama özelliği",
+     "additions": 386,
+     "deletions": 87,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d04e2f4379fde6dedc7b90ff953898092097be27",
+     "authored_at": "2026-10-05T18:33:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 425,
+     "deletions": 208,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3255697a367dfea273a2accf6db8f6cf533a4bab",
+     "authored_at": "2026-10-05T18:47:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 40,
+     "deletions": 13,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d2baefec6c48f307b769a850b6e5978e87c98ec1",
+     "authored_at": "2026-10-05T18:59:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 40,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ad1ce812fc6bdcb5342c4241a05aff764cae7d03",
+     "authored_at": "2026-10-05T19:02:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 20,
+     "deletions": 4,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "07a2862bc336a92d35707ae1d325071cbfc2bc34",
+     "authored_at": "2026-10-05T19:13:00Z",
+     "message": "Yorum satırları güncellendi",
+     "additions": 55,
+     "deletions": 12,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f07e4958900f77017fec26123027e544dd2547f7",
+     "authored_at": "2026-10-05T19:57:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 10,
+     "deletions": 2,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d0153fbb2bf1699b042e85059147e834e7843f3e",
+     "authored_at": "2026-10-05T19:59:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 113,
+     "deletions": 14,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "14a9d8dd79a85e2ef3b3ed82c157bbebc68913fc",
+     "authored_at": "2026-10-05T20:23:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 177,
+     "deletions": 50,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "148aa99ebee115d6273889d1dbe2bbdc8e9f93f7",
+     "authored_at": "2026-10-05T20:25:00Z",
+     "message": "test: uç durum testi",
+     "additions": 118,
+     "deletions": 8,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0f196bd694f37e93ca2fed77c314fc6e98002b4f",
+     "authored_at": "2026-10-05T20:39:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 45,
+     "deletions": 9,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c419ca223ac76172a36222af18dc255e3f2b0743",
+     "authored_at": "2026-10-05T20:52:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 11,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "03374dc2bdfee590d3f5ffe8c71d362ce5688915",
+     "authored_at": "2026-10-05T21:04:00Z",
+     "message": "Bellek sızıntısı giderildi",
+     "additions": 78,
+     "deletions": 12,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d4559462086f8282a139323ee528e1ecc4b1bf62",
+     "authored_at": "2026-10-05T21:23:00Z",
+     "message": "fix: boş girdide çökme düzeltildi",
+     "additions": 10,
+     "deletions": 3,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b2db92bdad29a1c88abdf4087bfd4a8d29d0c22c",
+     "authored_at": "2026-10-05T21:35:00Z",
+     "message": "Api örnekleri",
+     "additions": 18,
+     "deletions": 4,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6823a49080228a609ed3a7e9ba501f897df0a344",
+     "authored_at": "2026-10-05T21:35:00Z",
+     "message": "Eksik doğrulama",
+     "additions": 2,
+     "deletions": 0,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f7bfad7a39354cb46bf3250d456073b974a26ea5",
+     "authored_at": "2026-10-05T21:39:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 161,
+     "deletions": 98,
+     "changed_files": 7,
+     "is_coauthored": false
+    }
+   ]
+  },
+  {
+   "node_id": "DEMO_REPO_dotfiles",
+   "name": "dotfiles",
+   "is_owner": true,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "Shell",
+   "description": "Geliştirme ortamı ayarları",
+   "has_readme": true,
+   "license_spdx": null,
+   "topics": [
+    "dotfiles",
+    "zsh"
+   ],
+   "created_at": "2026-05-15T10:46:00Z",
+   "pushed_at": "2026-11-11T07:40:00Z",
+   "commits": [
+    {
+     "oid": "9e741b3ac63ef7ac7d3326c59f22d6c0e3e9e219",
+     "authored_at": "2026-05-16T10:46:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 6,
+     "deletions": 3,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9ac1bd0cebd5631c7a25a7676ad69a26f1f7636e",
+     "authored_at": "2026-05-16T11:18:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 21,
+     "deletions": 2,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "08463938ad4dff735e50fac25877e2cbb08c78d3",
+     "authored_at": "2026-05-16T11:44:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 91,
+     "deletions": 7,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1bc167fee2567dace298597665de94c4a6cd080b",
+     "authored_at": "2026-05-16T12:07:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 133,
+     "deletions": 32,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fb9c40bc0cbb019ac74f443271ec823439fc5540",
+     "authored_at": "2026-05-16T12:47:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 27,
+     "deletions": 11,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9b25c1ec4ba1daa839e0393a4ec38c0ca5072be4",
+     "authored_at": "2026-05-19T18:29:00Z",
+     "message": "Servis katmanı ayrıldı",
+     "additions": 24,
+     "deletions": 8,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "12d66cad1e018668c711d37938b590cc1fde932f",
+     "authored_at": "2026-05-22T09:57:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 5,
+     "deletions": 1,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "1236f3aa45757983b6c27c76ecb7437e002bccbd",
+     "authored_at": "2026-05-22T10:28:00Z",
+     "message": "Arama özelliği",
+     "additions": 147,
+     "deletions": 11,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "87abff4e23d072552da69f0baa4023cd9c3b62af",
+     "authored_at": "2026-05-22T10:53:00Z",
+     "message": "chore: bağımlılıklar güncellendi",
+     "additions": 4,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "df1e8aafbc2b967cdb82136fa5a345d7008f8930",
+     "authored_at": "2026-05-22T11:13:00Z",
+     "message": "test: uç durum testi",
+     "additions": 7,
+     "deletions": 0,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dc0c47c35dc3848e369a0d66839a91ee2ed3706d",
+     "authored_at": "2026-06-05T14:21:00Z",
+     "message": "feat: sayfalama eklendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 29,
+     "deletions": 2,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "09ff0af199e58c3ddea5919f95870053937c462f",
+     "authored_at": "2026-06-11T11:02:00Z",
+     "message": "Karanlık tema",
+     "additions": 62,
+     "deletions": 17,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "40220e17919f5ca9c50e9fa46d558059225e0d20",
+     "authored_at": "2026-06-11T11:43:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 18,
+     "deletions": 3,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "07208d51fa1d88be2b87ca612f3922c5a76c8d3b",
+     "authored_at": "2026-06-12T12:55:00Z",
+     "message": "Ci ayarı",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f4ba74bb3e50cee09b9366855c8c062f7fc918be",
+     "authored_at": "2026-06-12T13:32:00Z",
+     "message": "chore: CI ayarı",
+     "additions": 9,
+     "deletions": 3,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cec26311517759b0f941a49768028e3c64024db9",
+     "authored_at": "2026-06-12T13:48:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 20,
+     "deletions": 6,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e4199989e5442cb50bd666ebed65572c9ea9211b",
+     "authored_at": "2026-06-12T13:58:00Z",
+     "message": "refactor: isimler düzeltildi",
+     "additions": 45,
+     "deletions": 3,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c2df99dc5a15c07df03411dc70c05db9946b5a38",
+     "authored_at": "2026-06-12T14:08:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 3,
+     "deletions": 0,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e18cea85b223ab1254f94e59a6b4f86cb4613739",
+     "authored_at": "2026-06-18T15:58:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 15,
+     "deletions": 7,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b61cc8883a6b4b8d73f17aba92bdf513529915f4",
+     "authored_at": "2026-06-18T16:29:00Z",
+     "message": "Kullanıcı ayarları sayfası",
+     "additions": 38,
+     "deletions": 8,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b681f7c21270f1161b123b76f0c4c68192a1a88e",
+     "authored_at": "2026-06-18T16:48:00Z",
+     "message": "refactor: tekrarlanan kod azaltıldı",
+     "additions": 22,
+     "deletions": 8,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "3d75ab8271f4574f3c78d0ad610d6aed5c1bd7eb",
+     "authored_at": "2026-06-18T16:55:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 37,
+     "deletions": 17,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0800bce8b7db5c93704b12cd7d583b4199bcb2aa",
+     "authored_at": "2026-06-18T17:08:00Z",
+     "message": "docs: API örnekleri",
+     "additions": 15,
+     "deletions": 5,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a0f0b106392f58aef4ef5f9b2a40dfd840c28cc5",
+     "authored_at": "2026-06-23T09:49:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 39,
+     "deletions": 3,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "dc7f8fcfc7ccc66a35b98dfc4aae83fe6a493f63",
+     "authored_at": "2026-06-23T10:13:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 46,
+     "deletions": 25,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "e05c03e8d092a09ac98b63a47b101c1139967171",
+     "authored_at": "2026-06-26T18:36:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 181,
+     "deletions": 60,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "9b6cfe899370819cef1bbb1a9e42484dbf14bd63",
+     "authored_at": "2026-06-26T18:42:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 170,
+     "deletions": 56,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "088d57e0d5e2dfcf00588083348f11d6494a3870",
+     "authored_at": "2026-06-26T19:26:00Z",
+     "message": "fix: bellek sızıntısı giderildi",
+     "additions": 6,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f281c8eaca1f0c20e78b5dced244d0f96b459517",
+     "authored_at": "2026-06-26T19:53:00Z",
+     "message": "refactor: servis katmanı ayrıldı",
+     "additions": 75,
+     "deletions": 17,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ee8abab846ae1264eeb9db349b6a97801d105a8f",
+     "authored_at": "2026-07-07T08:41:00Z",
+     "message": "Karanlık tema",
+     "additions": 190,
+     "deletions": 74,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "29173ff00ef6d1980ddee6101e16b03175826e8b",
+     "authored_at": "2026-07-07T09:17:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 28,
+     "deletions": 3,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "406d8b25795cdc8e42ba19b974761a7be2728814",
+     "authored_at": "2026-07-07T09:51:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 15,
+     "deletions": 1,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a4634619f41d3a1bab34ff237ae277a3a374c249",
+     "authored_at": "2026-07-07T10:10:00Z",
+     "message": "fix: yanlış saat dilimi",
+     "additions": 19,
+     "deletions": 2,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8fec612bdc16287d5db76842901c1cd772de006b",
+     "authored_at": "2026-07-12T14:02:00Z",
+     "message": "Gitignore güncellendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 4,
+     "deletions": 1,
+     "changed_files": 7,
+     "is_coauthored": true
+    },
+    {
+     "oid": "e23f2cf451f728d8c63461b1e8717b3760c5b284",
+     "authored_at": "2026-07-12T14:13:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 27,
+     "deletions": 3,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ef1f9c2b2d4926e94a3c614f94e285c5b6744548",
+     "authored_at": "2026-07-12T14:46:00Z",
+     "message": "docs: yorum satırları güncellendi",
+     "additions": 53,
+     "deletions": 2,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "97eb8e34bd624ed75e7606829d019b5693d6023e",
+     "authored_at": "2026-07-12T15:26:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 60,
+     "deletions": 17,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "cee620e1795e23ea8db37eac269e94fb774962ed",
+     "authored_at": "2026-08-01T11:14:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 93,
+     "deletions": 9,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6bf1dcbfcbe240022d97bb5d33c418ab440f8933",
+     "authored_at": "2026-08-05T12:18:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 118,
+     "deletions": 72,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "d9e3dc24f516142ab4703816df28d40e7fc8bedf",
+     "authored_at": "2026-08-14T12:51:00Z",
+     "message": "test: uç durum testi",
+     "additions": 100,
+     "deletions": 21,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "7185734556051111aa72e1580ef42faef350e903",
+     "authored_at": "2026-08-14T13:32:00Z",
+     "message": "docs: README kurulum adımları",
+     "additions": 17,
+     "deletions": 8,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "bcc4fe75ce2b10867bbcbea81c8d4abf365e583a",
+     "authored_at": "2026-08-14T13:39:00Z",
+     "message": "Önbellek desteği",
+     "additions": 100,
+     "deletions": 26,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a4f16bb288099ef7106c1a4c02ed700de9033e7b",
+     "authored_at": "2026-08-22T12:19:00Z",
+     "message": "Birim testleri eklendi",
+     "additions": 69,
+     "deletions": 13,
+     "changed_files": 7,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0837d76548692033c3e03dd3e3eb53c549346f17",
+     "authored_at": "2026-08-22T12:31:00Z",
+     "message": "fix: tarih biçimi hatası",
+     "additions": 20,
+     "deletions": 8,
+     "changed_files": 5,
+     "is_coauthored": false
+    },
+    {
+     "oid": "fa65bf8debb5e2704f600240b52e70936c08add2",
+     "authored_at": "2026-08-22T12:49:00Z",
+     "message": "test: birim testleri eklendi",
+     "additions": 44,
+     "deletions": 6,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "780af57faa1cc988a6fd9e771ba0c70127ef4ab5",
+     "authored_at": "2026-09-15T12:50:00Z",
+     "message": "Isimler düzeltildi",
+     "additions": 81,
+     "deletions": 17,
+     "changed_files": 2,
+     "is_coauthored": false
+    },
+    {
+     "oid": "c67fe3ae7a1f533f43b0611b24d46c0333095705",
+     "authored_at": "2026-09-15T13:00:00Z",
+     "message": "feat: karanlık tema\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 41,
+     "deletions": 10,
+     "changed_files": 6,
+     "is_coauthored": true
+    },
+    {
+     "oid": "de67ed8f655055e14b57a6ff7bdd5032f1126cc9",
+     "authored_at": "2026-10-28T14:15:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 67,
+     "deletions": 2,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2409d8b1cb196eaea7f0b5cf111a37e806b60071",
+     "authored_at": "2026-10-29T10:19:00Z",
+     "message": "chore: gitignore güncellendi",
+     "additions": 12,
+     "deletions": 4,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "8b365971e5af137698702054e7029faab8088595",
+     "authored_at": "2026-10-29T10:56:00Z",
+     "message": "feat: kullanıcı ayarları sayfası",
+     "additions": 36,
+     "deletions": 10,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "0610164e79e92491305234b367c05ad18e6a524c",
+     "authored_at": "2026-10-29T11:24:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 118,
+     "deletions": 17,
+     "changed_files": 3,
+     "is_coauthored": false
+    },
+    {
+     "oid": "a77e414d1693e461dea9917c8be6148d8947e533",
+     "authored_at": "2026-11-11T06:50:00Z",
+     "message": "feat: karanlık tema",
+     "additions": 42,
+     "deletions": 9,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "6e87b3204de488d4678f2012c79bdb24c9fe6b8d",
+     "authored_at": "2026-11-11T07:11:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 59,
+     "deletions": 23,
+     "changed_files": 1,
+     "is_coauthored": false
+    },
+    {
+     "oid": "ceabafbef49d4a9c29c681a6b144108b18c1ece8",
+     "authored_at": "2026-11-11T07:40:00Z",
+     "message": "test: sahte istemci ile test",
+     "additions": 52,
+     "deletions": 21,
+     "changed_files": 7,
+     "is_coauthored": false
+    }
+   ]
+  },
+  {
+   "node_id": "DEMO_REPO_awesome-turkce",
+   "name": "awesome-turkce",
+   "is_owner": true,
+   "is_fork": true,
+   "is_private": false,
+   "primary_language": "Markdown",
+   "description": "Türkçe kaynak listesi (fork)",
+   "has_readme": true,
+   "license_spdx": "CC0-1.0",
+   "topics": [],
+   "created_at": "2026-11-10T21:00:00Z",
+   "pushed_at": "2026-11-11T21:00:00Z",
+   "commits": []
+  },
+  {
+   "node_id": "DEMO_REPO_acik-kaynak-kutuphane",
+   "name": "acik-kaynak-kutuphane",
+   "is_owner": false,
+   "is_fork": false,
+   "is_private": false,
+   "primary_language": "Python",
+   "description": "Katkı yapılan açık kaynak proje",
+   "has_readme": true,
+   "license_spdx": "Apache-2.0",
+   "topics": [
+    "library"
+   ],
+   "created_at": "2026-09-09T20:19:00Z",
+   "pushed_at": "2026-10-28T16:47:00Z",
+   "commits": [
+    {
+     "oid": "fd5325dcbb5c8899bb8667a12c8c666ac64a09fc",
+     "authored_at": "2026-09-10T20:19:00Z",
+     "message": "feat: arama özelliği",
+     "additions": 77,
+     "deletions": 13,
+     "changed_files": 6,
+     "is_coauthored": false
+    },
+    {
+     "oid": "b26710c7615160f79a5a6aec167cf2a332b7ac67",
+     "authored_at": "2026-09-10T20:51:00Z",
+     "message": "feat: yeni uç nokta eklendi",
+     "additions": 179,
+     "deletions": 45,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "f51bb83b03e798baf282e6f62e2c0e063eb9cfd4",
+     "authored_at": "2026-09-28T11:23:00Z",
+     "message": "fix: eksik doğrulama",
+     "additions": 7,
+     "deletions": 0,
+     "changed_files": 8,
+     "is_coauthored": false
+    },
+    {
+     "oid": "092db7d2fb8b08f8e77c75bc3846f50d6d1b5ccf",
+     "authored_at": "2026-09-28T12:04:00Z",
+     "message": "feat: yeni uç nokta eklendi\n\nCo-authored-by: demo-ortak <demo@example.invalid>",
+     "additions": 86,
+     "deletions": 37,
+     "changed_files": 8,
+     "is_coauthored": true
+    },
+    {
+     "oid": "d0b560a4ad2086e3f779f32ba85430a5ec711f4a",
+     "authored_at": "2026-10-28T16:02:00Z",
+     "message": "feat: sayfalama eklendi",
+     "additions": 35,
+     "deletions": 1,
+     "changed_files": 4,
+     "is_coauthored": false
+    },
+    {
+     "oid": "2c86a8c282d7cad9651211a4d4c853f36f88e826",
+     "authored_at": "2026-10-28T16:47:00Z",
+     "message": "feat: önbellek desteği",
+     "additions": 62,
+     "deletions": 15,
+     "changed_files": 1,
+     "is_coauthored": false
+    }
+   ]
+  }
+ ],
+ "calendar": [
+  {
+   "day": "2026-05-16",
+   "count": 5
+  },
+  {
+   "day": "2026-05-17",
+   "count": 3
+  },
+  {
+   "day": "2026-05-18",
+   "count": 2
+  },
+  {
+   "day": "2026-05-19",
+   "count": 5
+  },
+  {
+   "day": "2026-05-20",
+   "count": 8
+  },
+  {
+   "day": "2026-05-22",
+   "count": 5
+  },
+  {
+   "day": "2026-05-23",
+   "count": 7
+  },
+  {
+   "day": "2026-05-24",
+   "count": 2
+  },
+  {
+   "day": "2026-05-25",
+   "count": 1
+  },
+  {
+   "day": "2026-05-26",
+   "count": 2
+  },
+  {
+   "day": "2026-05-27",
+   "count": 2
+  },
+  {
+   "day": "2026-05-28",
+   "count": 2
+  },
+  {
+   "day": "2026-06-01",
+   "count": 11
+  },
+  {
+   "day": "2026-06-02",
+   "count": 1
+  },
+  {
+   "day": "2026-06-03",
+   "count": 7
+  },
+  {
+   "day": "2026-06-05",
+   "count": 4
+  },
+  {
+   "day": "2026-06-08",
+   "count": 3
+  },
+  {
+   "day": "2026-06-09",
+   "count": 3
+  },
+  {
+   "day": "2026-06-10",
+   "count": 3
+  },
+  {
+   "day": "2026-06-11",
+   "count": 3
+  },
+  {
+   "day": "2026-06-12",
+   "count": 5
+  },
+  {
+   "day": "2026-06-15",
+   "count": 3
+  },
+  {
+   "day": "2026-06-16",
+   "count": 6
+  },
+  {
+   "day": "2026-06-17",
+   "count": 5
+  },
+  {
+   "day": "2026-06-18",
+   "count": 11
+  },
+  {
+   "day": "2026-06-19",
+   "count": 4
+  },
+  {
+   "day": "2026-06-23",
+   "count": 10
+  },
+  {
+   "day": "2026-06-24",
+   "count": 3
+  },
+  {
+   "day": "2026-06-25",
+   "count": 2
+  },
+  {
+   "day": "2026-06-26",
+   "count": 6
+  },
+  {
+   "day": "2026-06-28",
+   "count": 1
+  },
+  {
+   "day": "2026-06-30",
+   "count": 4
+  },
+  {
+   "day": "2026-07-02",
+   "count": 1
+  },
+  {
+   "day": "2026-07-06",
+   "count": 5
+  },
+  {
+   "day": "2026-07-07",
+   "count": 4
+  },
+  {
+   "day": "2026-07-08",
+   "count": 1
+  },
+  {
+   "day": "2026-07-09",
+   "count": 4
+  },
+  {
+   "day": "2026-07-10",
+   "count": 4
+  },
+  {
+   "day": "2026-07-12",
+   "count": 6
+  },
+  {
+   "day": "2026-07-13",
+   "count": 6
+  },
+  {
+   "day": "2026-07-14",
+   "count": 5
+  },
+  {
+   "day": "2026-07-15",
+   "count": 3
+  },
+  {
+   "day": "2026-07-16",
+   "count": 6
+  },
+  {
+   "day": "2026-07-17",
+   "count": 4
+  },
+  {
+   "day": "2026-07-18",
+   "count": 5
+  },
+  {
+   "day": "2026-07-19",
+   "count": 4
+  },
+  {
+   "day": "2026-07-21",
+   "count": 1
+  },
+  {
+   "day": "2026-07-22",
+   "count": 2
+  },
+  {
+   "day": "2026-07-24",
+   "count": 1
+  },
+  {
+   "day": "2026-07-26",
+   "count": 3
+  },
+  {
+   "day": "2026-07-28",
+   "count": 6
+  },
+  {
+   "day": "2026-07-31",
+   "count": 6
+  },
+  {
+   "day": "2026-08-01",
+   "count": 1
+  },
+  {
+   "day": "2026-08-02",
+   "count": 4
+  },
+  {
+   "day": "2026-08-03",
+   "count": 6
+  },
+  {
+   "day": "2026-08-05",
+   "count": 1
+  },
+  {
+   "day": "2026-08-06",
+   "count": 4
+  },
+  {
+   "day": "2026-08-07",
+   "count": 6
+  },
+  {
+   "day": "2026-08-11",
+   "count": 6
+  },
+  {
+   "day": "2026-08-13",
+   "count": 1
+  },
+  {
+   "day": "2026-08-14",
+   "count": 5
+  },
+  {
+   "day": "2026-08-17",
+   "count": 3
+  },
+  {
+   "day": "2026-08-19",
+   "count": 2
+  },
+  {
+   "day": "2026-08-21",
+   "count": 3
+  },
+  {
+   "day": "2026-08-22",
+   "count": 4
+  },
+  {
+   "day": "2026-08-23",
+   "count": 3
+  },
+  {
+   "day": "2026-08-24",
+   "count": 2
+  },
+  {
+   "day": "2026-08-27",
+   "count": 4
+  },
+  {
+   "day": "2026-08-28",
+   "count": 2
+  },
+  {
+   "day": "2026-08-29",
+   "count": 5
+  },
+  {
+   "day": "2026-08-30",
+   "count": 6
+  },
+  {
+   "day": "2026-08-31",
+   "count": 7
+  },
+  {
+   "day": "2026-09-01",
+   "count": 10
+  },
+  {
+   "day": "2026-09-02",
+   "count": 7
+  },
+  {
+   "day": "2026-09-03",
+   "count": 2
+  },
+  {
+   "day": "2026-09-04",
+   "count": 3
+  },
+  {
+   "day": "2026-09-07",
+   "count": 5
+  },
+  {
+   "day": "2026-09-08",
+   "count": 4
+  },
+  {
+   "day": "2026-09-09",
+   "count": 1
+  },
+  {
+   "day": "2026-09-10",
+   "count": 2
+  },
+  {
+   "day": "2026-09-14",
+   "count": 2
+  },
+  {
+   "day": "2026-09-15",
+   "count": 6
+  },
+  {
+   "day": "2026-09-16",
+   "count": 4
+  },
+  {
+   "day": "2026-09-17",
+   "count": 5
+  },
+  {
+   "day": "2026-09-18",
+   "count": 2
+  },
+  {
+   "day": "2026-09-20",
+   "count": 9
+  },
+  {
+   "day": "2026-09-21",
+   "count": 2
+  },
+  {
+   "day": "2026-09-23",
+   "count": 3
+  },
+  {
+   "day": "2026-09-24",
+   "count": 1
+  },
+  {
+   "day": "2026-09-25",
+   "count": 7
+  },
+  {
+   "day": "2026-09-28",
+   "count": 6
+  },
+  {
+   "day": "2026-09-29",
+   "count": 2
+  },
+  {
+   "day": "2026-09-30",
+   "count": 1
+  },
+  {
+   "day": "2026-10-01",
+   "count": 4
+  },
+  {
+   "day": "2026-10-03",
+   "count": 15
+  },
+  {
+   "day": "2026-10-04",
+   "count": 23
+  },
+  {
+   "day": "2026-10-05",
+   "count": 22
+  },
+  {
+   "day": "2026-10-06",
+   "count": 10
+  },
+  {
+   "day": "2026-10-07",
+   "count": 5
+  },
+  {
+   "day": "2026-10-12",
+   "count": 6
+  },
+  {
+   "day": "2026-10-14",
+   "count": 1
+  },
+  {
+   "day": "2026-10-15",
+   "count": 4
+  },
+  {
+   "day": "2026-10-19",
+   "count": 7
+  },
+  {
+   "day": "2026-10-20",
+   "count": 2
+  },
+  {
+   "day": "2026-10-22",
+   "count": 5
+  },
+  {
+   "day": "2026-10-26",
+   "count": 8
+  },
+  {
+   "day": "2026-10-28",
+   "count": 6
+  },
+  {
+   "day": "2026-10-29",
+   "count": 3
+  },
+  {
+   "day": "2026-10-30",
+   "count": 7
+  },
+  {
+   "day": "2026-10-31",
+   "count": 4
+  },
+  {
+   "day": "2026-11-02",
+   "count": 4
+  },
+  {
+   "day": "2026-11-04",
+   "count": 4
+  },
+  {
+   "day": "2026-11-05",
+   "count": 2
+  },
+  {
+   "day": "2026-11-09",
+   "count": 3
+  },
+  {
+   "day": "2026-11-11",
+   "count": 4
+  },
+  {
+   "day": "2026-11-12",
+   "count": 8
+  }
+ ]
 }

@@ -6,7 +6,7 @@ Tekrar çalıştırılabilir: kullanıcı ve repolar güncellenir (upsert), comm
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -124,6 +124,15 @@ def _sync_repo_commits(
     # Yalnızca tüm sayfalar başarıyla çekildikten sonra işaretlenir; yarıda kesilirse
     # (hata, rollback) işaret yazılmaz ve repo bir sonraki senkronda yeniden çekilir.
     db.execute(update(Repo).where(Repo.id == repo_id).values(commits_synced_pushed_at=repo.pushed_at))
+
+
+def clear_synced_data(user_id: int) -> None:
+    """Kullanıcının senkronla gelen verisini (repolar -> commit'ler, takvim) siler; hesap ve
+    senkron geçmişi kalır. Yalnızca tarihleri kaydırılan demo kullanıcı için kullanılır."""
+    with SessionLocal() as db:
+        db.execute(delete(Repo).where(Repo.user_id == user_id))  # commit'ler CASCADE ile gider
+        db.execute(delete(ContributionDay).where(ContributionDay.user_id == user_id))
+        db.commit()
 
 
 def start_sync(

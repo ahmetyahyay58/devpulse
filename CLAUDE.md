@@ -46,7 +46,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Anomali (önce basit yöntem: medyan/MAD; Isolation Forest kıyas için).
 - Oturum (sabit 2 saatlik boşluk eşiği; kural, ML değil).
 - Üç durumlu veri yeterliliği: "Yeterli veri yok", "Düşük güven", "Normal".
-- Basit sentetik demo kullanıcı (aynı kod yolundan geçer: veri çekme katmanının canlı ve demo istemcisi aynı arayüzü uygular).
+- Basit sentetik demo kullanıcı (aynı kod yolundan geçer: veri çekme katmanının canlı ve demo istemcisi aynı arayüzü uygular). (Yapıldı: `backend/demo/demo_user.json` elle düzenlenmez, `py -m app.sync.demo_generator` ile deterministik üretilir; tarihler okunurken bugüne kaydırılır. Enjekte anomali `_injected` alanında. Testler küçük `tests/fixtures/demo_small.json` kullanır.)
 - Veri silme ve aydınlatma metni.
 
 Zaman kalırsa: değişim noktası, tek şablonlu CV ve PDF, Teknoloji sayfası (yalnız dil dağılımı), rozetler, LLM yorumu ve "Neden?", Model Laboratuvarı, basit yıllık özet.

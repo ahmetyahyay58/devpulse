@@ -17,9 +17,15 @@ from sqlalchemy import select
 from app.auth import current_user
 from app.db import SessionLocal
 from app.models import SyncJob, User
-from app.sync.demo_client import DEMO_FILE, DemoClient
+from app.sync.demo_client import DemoClient, demo_path
 from app.sync.github_client import GitHubError, LiveGitHubClient
-from app.sync.runner import SyncAlreadyRunning, WrongAccount, execute_sync, start_sync
+from app.sync.runner import (
+    SyncAlreadyRunning,
+    WrongAccount,
+    clear_synced_data,
+    execute_sync,
+    start_sync,
+)
 from app.sync.source import GitHubSource, Profile
 
 log = logging.getLogger("uvicorn.error")
@@ -73,7 +79,7 @@ class SyncJobOut(BaseModel):
 
 def _source_for(user: User, req: SyncRequest) -> GitHubSource:
     if user.github_node_id.startswith(DEMO_NODE_PREFIX):
-        return DemoClient(DEMO_FILE)
+        return DemoClient(demo_path())
     if not req.github_token:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "GitHub token'ı gerekli.")
     return LiveGitHubClient(req.github_token)
@@ -92,6 +98,9 @@ def start(
 ) -> SyncStarted:
     source = _source_for(user, req)
     try:
+        if isinstance(source, DemoClient) and source.replaces_existing:
+            # Demo tarihleri bugüne kaydırılıyor: eski demo verisi silinip yeniden yazılır.
+            clear_synced_data(user.id)
         job_id, profile = start_sync(source, req.timezone, expected_node_id=user.github_node_id)
     except WrongAccount as exc:
         raise HTTPException(status.HTTP_403_FORBIDDEN, str(exc)) from None

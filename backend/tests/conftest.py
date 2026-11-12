@@ -14,6 +14,9 @@ os.environ["GITHUB_TOKEN"] = ""  # testler gerçek GitHub'a asla gitmez
 os.environ["JWT_SECRET"] = "test-jwt-secret-yalnizca-testlerde-kullanilir-32b"
 os.environ["GITHUB_CLIENT_ID"] = "test-client-id"
 os.environ["GITHUB_CLIENT_SECRET"] = "test-client-secret"
+# Testler küçük, elle yazılmış demo dosyasını kullanır (2 repo, 6 commit; tarih kaydırması yok).
+SMALL_DEMO = Path(__file__).resolve().parent / "fixtures" / "demo_small.json"
+os.environ["DEMO_FILE"] = str(SMALL_DEMO)
 
 import psycopg  # noqa: E402
 import pytest  # noqa: E402

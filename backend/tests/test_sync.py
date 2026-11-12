@@ -10,7 +10,7 @@ from app.models import Commit, ContributionDay, Repo, SyncJob, User
 from app.sync.demo_client import DemoClient
 from app.sync.runner import run_sync
 
-DEMO_FILE = Path(__file__).resolve().parent.parent / "demo" / "demo_user.json"
+DEMO_FILE = Path(__file__).resolve().parent / "fixtures" / "demo_small.json"
 
 
 def _count(db, model) -> int:

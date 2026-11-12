@@ -26,7 +26,8 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - ML: scikit-learn (ve gerekirse ruptures).
 - GitHub verisi: GraphQL API. Giriş: GitHub OAuth, yetki kodu akışı + PKCE; kod-token değişimi backend'de yapılır, client secret asla uygulamada durmaz.
 - Token kullanıcının telefonunda güvenli depoda durur; sunucu yalnızca senkron sırasında kullanır, kalıcı saklamaz.
-- Telefon backend'e kendi oturum belirteciyle (ör. JWT) bağlanır. (Ayrıntısı açık karar.)
+- Telefon backend'e kendi oturum belirteciyle bağlanır: HS256 JWT, 7 gün, yenileme yok; içinde yalnız kullanıcı id'si (sub). Süre dolunca GitHub ile yeniden giriş. (Uygulandı; onaylanırsa açık karardan çıkar.)
+- Giriş uç noktaları: `GET /auth/config`, `POST /auth/github` (kod + PKCE verifier → GitHub token'ı telefona + JWT), `POST /auth/demo`. OAuth kapsamı `read:user` (yalnız herkese açık veri). `/sync` JWT ister; gönderilen GitHub token'ı oturumdaki hesaba ait değilse 403.
 - LLM: ana yol şablon cümlelerdir; LLM isteğe bağlı ektir. LLM'e yalnızca hesaplanmış toplu sayılar gider; kullanıcı adı, repo adı, commit mesajı, kod gitmez.
 
 ## Doğrulanmış bulgular (11 Kasım 2026, geliştiricinin kendi hesabıyla)
@@ -81,6 +82,6 @@ Kesildi: repo kümeleme, mülakat ve hedef koçu, iki dilli CV ve 5 şablon, "So
 ## Açık kararlar (kodlamadan önce netleşmeli)
 - Teslim tarihi: ocak ortası mı, mayıs mı? (danışmana sorulacak)
 - MVP listesinin onayı.
-- Backend nerede çalışacak (yerel makine + aynı Wi-Fi ya da bulut) ve oturum belirteci tasarımı.
+- Backend nerede çalışacak (yerel makine + aynı Wi-Fi ya da bulut). Oturum belirteci için öneri uygulandı (bkz. Teknik kararlar), onay bekliyor.
 - Değerlendirme verisi: gerçek test kullanıcısı olacak mı, kim, hangi onayla?
 - Ortak yazar commit'leri sayılacak mı?

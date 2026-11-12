@@ -1,43 +1,38 @@
-"""Senkron uç noktaları.
+"""Senkron uç noktaları (oturum belirteci gerekir).
 
 POST /sync            senkronu başlatır, iş numarasını hemen döner (202)
-GET  /sync/jobs/{id}  işin durumunu ve ilerlemesini döner
+GET  /sync/jobs/{id}  kendi senkron işinin durumunu ve ilerlemesini döner
 
 Token kuralı (CLAUDE.md): GitHub token'ı yalnızca istek gövdesinde gelir, arka plan
 görevi bitene kadar bellekte durur; veritabanına ya da loglara yazılmaz.
-
-Not: Kimlik doğrulama (JWT) 3. aşamada eklenecek; o zamana kadar bu uç noktalar
-yalnızca yerel geliştirme içindir.
 """
 import logging
 from datetime import datetime
-from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
 
-from app.config import settings
+from app.auth import current_user
 from app.db import SessionLocal
-from app.models import SyncJob
-from app.sync.demo_client import DemoClient
+from app.models import SyncJob, User
+from app.sync.demo_client import DEMO_FILE, DemoClient
 from app.sync.github_client import GitHubError, LiveGitHubClient
-from app.sync.runner import SyncAlreadyRunning, execute_sync, start_sync
+from app.sync.runner import SyncAlreadyRunning, WrongAccount, execute_sync, start_sync
 from app.sync.source import GitHubSource, Profile
 
 log = logging.getLogger("uvicorn.error")
 router = APIRouter(prefix="/sync", tags=["senkron"])
 
-DEMO_FILE = Path(__file__).resolve().parent.parent.parent / "demo" / "demo_user.json"
+DEMO_NODE_PREFIX = "DEMO_"  # demo kullanıcının sahte GitHub kimliği bununla başlar
 
 
 class SyncRequest(BaseModel):
     github_token: str | None = Field(
-        default=None, description="Kullanıcının GitHub token'ı; saklanmaz."
+        default=None, description="Kullanıcının GitHub token'ı; saklanmaz. Demo'da gerekmez."
     )
     timezone: str | None = Field(default=None, examples=["Europe/Istanbul"])
     full: bool = False
-    demo: bool = Field(default=False, description="Gerçek GitHub yerine sentetik demo kullanıcı")
 
     @field_validator("timezone")
     @classmethod
@@ -75,14 +70,12 @@ class SyncJobOut(BaseModel):
     finished_at: datetime | None
 
 
-def _source_for(req: SyncRequest) -> GitHubSource:
-    if req.demo:
+def _source_for(user: User, req: SyncRequest) -> GitHubSource:
+    if user.github_node_id.startswith(DEMO_NODE_PREFIX):
         return DemoClient(DEMO_FILE)
-    # Geçici: OAuth gelene kadar istek token'ı yoksa .env'deki GITHUB_TOKEN kullanılır.
-    token = req.github_token or settings.github_token
-    if not token:
+    if not req.github_token:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "GitHub token'ı gerekli.")
-    return LiveGitHubClient(token)
+    return LiveGitHubClient(req.github_token)
 
 
 def _run_in_background(job_id: int, source: GitHubSource, profile: Profile, full: bool) -> None:
@@ -93,10 +86,14 @@ def _run_in_background(job_id: int, source: GitHubSource, profile: Profile, full
 
 
 @router.post("", status_code=status.HTTP_202_ACCEPTED, response_model=SyncStarted)
-def start(req: SyncRequest, background: BackgroundTasks) -> SyncStarted:
-    source = _source_for(req)
+def start(
+    req: SyncRequest, background: BackgroundTasks, user: User = Depends(current_user)
+) -> SyncStarted:
+    source = _source_for(user, req)
     try:
-        job_id, profile = start_sync(source, req.timezone)
+        job_id, profile = start_sync(source, req.timezone, expected_node_id=user.github_node_id)
+    except WrongAccount as exc:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, str(exc)) from None
     except SyncAlreadyRunning as exc:
         raise HTTPException(
             status.HTTP_409_CONFLICT, {"message": str(exc), "job_id": exc.job_id}
@@ -111,10 +108,11 @@ def start(req: SyncRequest, background: BackgroundTasks) -> SyncStarted:
 
 
 @router.get("/jobs/{job_id}", response_model=SyncJobOut)
-def job_status(job_id: int) -> SyncJobOut:
+def job_status(job_id: int, user: User = Depends(current_user)) -> SyncJobOut:
     with SessionLocal() as db:
         job = db.get(SyncJob, job_id)
-        if job is None:
+        # Başkasının işi de "yok" gibi görünür: varlığını bile sızdırmayız.
+        if job is None or job.user_id != user.id:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Böyle bir senkron işi yok.")
         # Adımlar: her repo + en sonda takvim (+1). Böylece %100 yalnızca iş bitince görünür.
         progress = job.repos_done / (job.repos_total + 1) if job.repos_total is not None else None

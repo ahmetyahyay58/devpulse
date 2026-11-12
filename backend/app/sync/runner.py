@@ -25,11 +25,16 @@ class SyncAlreadyRunning(Exception):
         self.job_id = job_id
 
 
+class WrongAccount(Exception):
+    def __init__(self):
+        super().__init__("GitHub token'ı oturumdaki kullanıcıya ait değil.")
+
+
 def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def _upsert_user(db: Session, profile: Profile, tz: str | None) -> int:
+def upsert_user(db: Session, profile: Profile, tz: str | None) -> int:
     values = {"github_node_id": profile.node_id, "github_login": profile.login}
     if tz:  # saat dilimi gönderilmediyse eskisini silme
         values["timezone"] = tz
@@ -121,14 +126,20 @@ def _sync_repo_commits(
     db.execute(update(Repo).where(Repo.id == repo_id).values(commits_synced_pushed_at=repo.pushed_at))
 
 
-def start_sync(source: GitHubSource, tz: str | None = None) -> tuple[int, Profile]:
+def start_sync(
+    source: GitHubSource, tz: str | None = None, expected_node_id: str | None = None
+) -> tuple[int, Profile]:
     """Hızlı kısım (tek istek): profili çeker, kullanıcıyı yazar, işi 'pending' açar.
 
+    expected_node_id verilirse token'ın bu hesaba ait olduğu doğrulanır (WrongAccount).
     Aynı kullanıcı için süren bir iş varsa SyncAlreadyRunning fırlatır.
     """
     with SessionLocal() as db:
         profile = source.fetch_profile()
-        user_id = _upsert_user(db, profile, tz)
+        # Kontrol, veritabanına bir şey yazılmadan ÖNCE yapılır.
+        if expected_node_id is not None and profile.node_id != expected_node_id:
+            raise WrongAccount()
+        user_id = upsert_user(db, profile, tz)
         _check_not_running(db, user_id)
         job = SyncJob(user_id=user_id, status="pending")
         db.add(job)

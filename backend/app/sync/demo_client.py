@@ -13,6 +13,9 @@ from pathlib import Path
 from app.sync.source import CalendarDay, CommitData, Profile, RepoData, RequestStat
 
 
+DEMO_FILE = Path(__file__).resolve().parent.parent.parent / "demo" / "demo_user.json"
+
+
 def _dt(value: str | None) -> datetime | None:
     return datetime.fromisoformat(value) if value else None
 

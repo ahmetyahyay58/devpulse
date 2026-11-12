@@ -11,6 +11,9 @@ SERVER = "devpulse:devpulse@localhost:5432"
 TEST_DB = "devpulse_test"
 os.environ["DATABASE_URL"] = f"postgresql+psycopg://{SERVER}/{TEST_DB}"
 os.environ["GITHUB_TOKEN"] = ""  # testler gerçek GitHub'a asla gitmez
+os.environ["JWT_SECRET"] = "test-jwt-secret-yalnizca-testlerde-kullanilir-32b"
+os.environ["GITHUB_CLIENT_ID"] = "test-client-id"
+os.environ["GITHUB_CLIENT_SECRET"] = "test-client-secret"
 
 import psycopg  # noqa: E402
 import pytest  # noqa: E402
@@ -62,3 +65,37 @@ def db():
 @pytest.fixture
 def alembic_config() -> Config:
     return Config(str(ALEMBIC_INI))
+
+
+@pytest.fixture
+def api():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    return TestClient(app)
+
+
+@pytest.fixture
+def demo_auth(api) -> dict:
+    """Demo kullanıcı olarak giriş yapılmış istek başlığı."""
+    token = api.post("/auth/demo").json()["session_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+def login_as():
+    """login_as("U_me", "ben") -> o GitHub kimliğiyle giriş yapmış kullanıcının başlığı."""
+    from app.auth import create_session_token
+    from app.sync.runner import upsert_user
+    from app.sync.source import Profile
+
+    def _login(node_id: str, login: str) -> dict:
+        from datetime import datetime, timezone
+
+        with SessionLocal() as db:
+            user_id = upsert_user(db, Profile(node_id, login, datetime.now(timezone.utc)), None)
+            db.commit()
+        return {"Authorization": f"Bearer {create_session_token(user_id)}"}
+
+    return _login

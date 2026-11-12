@@ -57,7 +57,12 @@ class _DevPulseAppState extends State<DevPulseApp> {
         onLoggedIn: (s) => setState(() => _session = s),
       );
     }
-    return HomeScreen(session: session, healthApi: widget.healthApi, onLogout: _logout);
+    return HomeScreen(
+      session: session,
+      api: widget.auth.api,
+      healthApi: widget.healthApi,
+      onLogout: _logout,
+    );
   }
 
   @override

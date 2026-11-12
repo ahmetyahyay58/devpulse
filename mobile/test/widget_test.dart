@@ -6,6 +6,7 @@ import 'package:devpulse/auth/auth_service.dart';
 import 'package:devpulse/auth/session_store.dart';
 import 'package:devpulse/main.dart';
 import 'package:devpulse/screens/health_card.dart';
+import 'package:devpulse/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -58,6 +59,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('GitHub ile giriş yap'), findsOneWidget);
     expect(await store.read(), isNull);
+  });
+
+  // --- Senkron kartı ----------------------------------------------------------------
+
+  testWidgets('senkron kartı: "Verimi çek" senkronu başlatır ve özeti gösterir', (tester) async {
+    final backend = FakeBackend();
+    final api = ApiClient(baseUrl: 'http://test', client: backend.client);
+    await tester.pumpWidget(MaterialApp(
+      home: HomeScreen(
+        session: const Session(sessionToken: 'jwt', githubToken: 'gho', userId: 1, login: 'ben'),
+        api: api,
+        healthApi: HealthApi(baseUrl: 'http://test', client: backend.client),
+        onLogout: () {},
+        timezone: () async => 'Europe/Istanbul',
+        pollInterval: Duration.zero,
+      ),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Henüz verin çekilmedi'), findsOneWidget);
+
+    await tester.tap(find.text('Verimi çek'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Son senkron:'), findsOneWidget);
+    expect(find.text('Yeni commit'), findsOneWidget);
+    expect(find.text('6'), findsOneWidget);
+    expect(find.text('Yeniden senkronla'), findsOneWidget);
   });
 
   // --- Sunucu durumu kartı ----------------------------------------------------------

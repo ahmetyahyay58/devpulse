@@ -132,6 +132,20 @@ def test_stale_running_job_does_not_block(api, db, demo_auth):
     assert "Yarıda kaldı" in stale.error
 
 
+def test_latest_job(api, demo_auth, login_as):
+    assert api.get("/sync/jobs/latest", headers=demo_auth).status_code == 404  # henüz yok
+
+    api.post("/sync", json={}, headers=demo_auth)
+    second = api.post("/sync", json={}, headers=demo_auth).json()["job_id"]
+    latest = api.get("/sync/jobs/latest", headers=demo_auth).json()
+    assert latest["id"] == second
+    assert latest["repos_skipped"] == 2  # ikinci senkronda push yoktu
+
+    # Başka kullanıcı demo kullanıcının işini "en son iş" olarak görmez.
+    other = login_as("U_someone_else", "baskasi")
+    assert api.get("/sync/jobs/latest", headers=other).status_code == 404
+
+
 def test_unknown_job_returns_404(api, demo_auth):
     assert api.get("/sync/jobs/999", headers=demo_auth).status_code == 404
 

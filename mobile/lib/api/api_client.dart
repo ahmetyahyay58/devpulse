@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 
 /// Backend'den gelen hata: durum kodu ve FastAPI'nin "detail" mesajı.
 class ApiException implements Exception {
-  ApiException(this.statusCode, this.message);
+  ApiException(this.statusCode, this.message, [this.detail]);
   final int statusCode;
   final String message;
+  final Object? detail; // FastAPI "detail" alanının ham hali (ör. 409'da {"job_id": ...})
 
   bool get isUnauthorized => statusCode == 401;
 
@@ -44,7 +45,7 @@ class ApiClient {
     if (resp.statusCode >= 400) {
       final detail = body is Map ? body['detail'] : null;
       final message = detail is Map ? detail['message'] : detail;
-      throw ApiException(resp.statusCode, '${message ?? 'Sunucu ${resp.statusCode} döndü'}');
+      throw ApiException(resp.statusCode, '${message ?? 'Sunucu ${resp.statusCode} döndü'}', detail);
     }
     return body as Map<String, dynamic>;
   }

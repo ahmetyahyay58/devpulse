@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy import select
 
 from app.auth import current_user
 from app.db import SessionLocal
@@ -107,6 +108,31 @@ def start(
     return SyncStarted(job_id=job_id, status="pending")
 
 
+def _job_out(job: SyncJob) -> SyncJobOut:
+    # Adımlar: her repo + en sonda takvim (+1). Böylece %100 yalnızca iş bitince görünür.
+    progress = job.repos_done / (job.repos_total + 1) if job.repos_total is not None else None
+    if job.status == "done":
+        progress = 1.0
+    return SyncJobOut(
+        progress=progress,
+        **{k: getattr(job, k) for k in SyncJobOut.model_fields if k != "progress"},
+    )
+
+
+# Not: "/jobs/latest", "/jobs/{job_id}"den ÖNCE tanımlanmalı; yoksa "latest" bir
+# iş numarası sanılır ve sayıya çevrilemediği için 422 döner.
+@router.get("/jobs/latest", response_model=SyncJobOut)
+def latest_job(user: User = Depends(current_user)) -> SyncJobOut:
+    """Kullanıcının en son senkron işi: uygulama açılınca son durumu göstermek için."""
+    with SessionLocal() as db:
+        job = db.scalar(
+            select(SyncJob).where(SyncJob.user_id == user.id).order_by(SyncJob.id.desc()).limit(1)
+        )
+        if job is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Henüz senkron yapılmadı.")
+        return _job_out(job)
+
+
 @router.get("/jobs/{job_id}", response_model=SyncJobOut)
 def job_status(job_id: int, user: User = Depends(current_user)) -> SyncJobOut:
     with SessionLocal() as db:
@@ -114,11 +140,4 @@ def job_status(job_id: int, user: User = Depends(current_user)) -> SyncJobOut:
         # Başkasının işi de "yok" gibi görünür: varlığını bile sızdırmayız.
         if job is None or job.user_id != user.id:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Böyle bir senkron işi yok.")
-        # Adımlar: her repo + en sonda takvim (+1). Böylece %100 yalnızca iş bitince görünür.
-        progress = job.repos_done / (job.repos_total + 1) if job.repos_total is not None else None
-        if job.status == "done":
-            progress = 1.0
-        return SyncJobOut(
-            progress=progress,
-            **{k: getattr(job, k) for k in SyncJobOut.model_fields if k != "progress"},
-        )
+        return _job_out(job)

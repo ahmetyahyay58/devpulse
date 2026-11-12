@@ -44,3 +44,25 @@ def exchange_code(
     if "error" in body:
         raise OAuthError(f"{body['error']}: {body.get('error_description', '')}".strip(": "))
     return body["access_token"]
+
+
+def revoke_grant(access_token: str, transport: httpx.BaseTransport | None = None) -> bool:
+    """Kullanıcının DevPulse'a verdiği GitHub iznini tamamen kaldırır (token'lar da geçersizleşir).
+
+    GitHub API: DELETE /applications/{client_id}/grant, client_id:client_secret ile Basic Auth.
+    Başarılıysa True; hata olursa False (silme işlemini engellemez).
+    """
+    if not (settings.github_client_id and settings.github_client_secret):
+        return False
+    try:
+        with httpx.Client(timeout=15, transport=transport) as http:
+            resp = http.request(
+                "DELETE",
+                f"https://api.github.com/applications/{settings.github_client_id}/grant",
+                auth=(settings.github_client_id, settings.github_client_secret),
+                headers={"Accept": "application/vnd.github+json", "User-Agent": "devpulse"},
+                json={"access_token": access_token},
+            )
+        return resp.status_code == 204
+    except httpx.HTTPError:
+        return False

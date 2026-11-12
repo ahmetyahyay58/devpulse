@@ -84,6 +84,17 @@ class AuthService {
     }));
   }
 
+  /// Sunucudaki tüm verileri siler, sonra telefondaki oturumu (token'lar dahil) siler.
+  /// [revokeGitHub]: GitHub'daki DevPulse iznini de kaldır. Silinen satır sayılarını döner.
+  Future<Map<String, dynamic>> deleteAccount({required bool revokeGitHub}) async {
+    final session = await store.read();
+    final result = await api.delete('/me', {
+      if (revokeGitHub && session?.githubToken != null) 'github_token': session!.githubToken,
+    });
+    await logout();
+    return result;
+  }
+
   Future<void> logout() async {
     api.sessionToken = null;
     await store.clear();

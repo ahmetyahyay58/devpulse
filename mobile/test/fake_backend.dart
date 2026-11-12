@@ -98,6 +98,20 @@ class FakeBackend {
   late final client = MockClient((request) async {
     requests.add(request);
     final path = request.url.path;
+    if (path == '/privacy') {
+      return http.Response.bytes(
+        utf8.encode('# DevPulse Aydınlatma Metni\n\n## Saklanmayan veriler\n- E-posta adresin.\n'),
+        200,
+        headers: {'content-type': 'text/plain; charset=utf-8'},
+      );
+    }
+    if (path == '/me' && request.method == 'DELETE') {
+      final hasToken = (jsonDecode(request.body) as Map).containsKey('github_token');
+      return _json({
+        'deleted': {'repos': 4, 'commits': 33, 'contribution_days': 1047, 'sync_jobs': 12},
+        'github_grant_revoked': hasToken ? true : null,
+      });
+    }
     if (path == '/projects') {
       projectsCalls++;
       return _json(projects);

@@ -43,9 +43,28 @@ class _DevPulseAppState extends State<DevPulseApp> {
     });
   }
 
+  // Ekran değişse de bildirim gösterebilmek için uygulama düzeyinde tutulur.
+  final _messenger = GlobalKey<ScaffoldMessengerState>();
+
   Future<void> _logout() async {
     await widget.auth.logout();
     setState(() => _session = null);
+  }
+
+  /// Veri silindikten sonra (oturum zaten silindi): giriş ekranı + özet bildirimi.
+  void _onDeleted(Map<String, dynamic> result) {
+    setState(() => _session = null);
+    final d = (result['deleted'] as Map).cast<String, int>();
+    final revoked = switch (result['github_grant_revoked']) {
+      true => ' GitHub izni kaldırıldı.',
+      false => ' GitHub izni kaldırılamadı; GitHub ayarlarından kaldırabilirsin.',
+      _ => '',
+    };
+    _messenger.currentState?.showSnackBar(SnackBar(
+      duration: const Duration(seconds: 8),
+      content: Text('Verilerin silindi: ${d['repos']} repo, ${d['commits']} commit, '
+          '${d['contribution_days']} takvim günü, ${d['sync_jobs']} senkron kaydı.$revoked'),
+    ));
   }
 
   Widget _home() {
@@ -62,6 +81,8 @@ class _DevPulseAppState extends State<DevPulseApp> {
       api: widget.auth.api,
       healthApi: widget.healthApi,
       onLogout: _logout,
+      auth: widget.auth,
+      onDeleted: _onDeleted,
     );
   }
 
@@ -70,6 +91,7 @@ class _DevPulseAppState extends State<DevPulseApp> {
     return MaterialApp(
       title: 'DevPulse',
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: _messenger,
       // Yalnızca koyu tema; renkler tek bir "tohum" renkten türetilir.
       themeMode: ThemeMode.dark,
       darkTheme: ThemeData(

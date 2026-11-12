@@ -40,6 +40,20 @@ class ApiClient {
         body: jsonEncode(body ?? {}),
       ));
 
+  Future<Map<String, dynamic>> delete(String path, [Map<String, dynamic>? body]) async =>
+      _decode(await _http.delete(
+        Uri.parse('$baseUrl$path'),
+        headers: _headers,
+        body: jsonEncode(body ?? {}),
+      ));
+
+  /// JSON olmayan (düz metin) cevaplar için, ör. /privacy.
+  Future<String> getText(String path) async {
+    final resp = await _http.get(Uri.parse('$baseUrl$path'), headers: _headers);
+    if (resp.statusCode >= 400) throw ApiException(resp.statusCode, 'Sunucu ${resp.statusCode} döndü');
+    return utf8.decode(resp.bodyBytes);
+  }
+
   Map<String, dynamic> _decode(http.Response resp) {
     final body = resp.body.isEmpty ? <String, dynamic>{} : jsonDecode(utf8.decode(resp.bodyBytes));
     if (resp.statusCode >= 400) {

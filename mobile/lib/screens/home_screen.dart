@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../api/health_api.dart';
 import '../api/sync_api.dart';
+import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_section.dart';
@@ -10,6 +11,7 @@ import '../projects/projects_controller.dart';
 import '../projects/projects_view.dart';
 import '../sync/sync_card.dart';
 import '../sync/sync_controller.dart';
+import 'account_screen.dart';
 import 'health_card.dart';
 
 /// Giriş sonrası ana ekran: alt gezinme çubuğuyla Genel Bakış ve Projeler sekmeleri.
@@ -20,6 +22,8 @@ class HomeScreen extends StatefulWidget {
     required this.api,
     required this.healthApi,
     required this.onLogout,
+    this.auth,
+    this.onDeleted,
     this.timezone,
     this.pollInterval = const Duration(milliseconds: 1500),
   });
@@ -28,6 +32,8 @@ class HomeScreen extends StatefulWidget {
   final ApiClient api;
   final HealthApi healthApi;
   final VoidCallback onLogout;
+  final AuthService? auth; // verilirse Hesap ekranı (veri silme) açılabilir
+  final ValueChanged<Map<String, dynamic>>? onDeleted;
   final TimezoneProvider? timezone; // testlerde sabit saat dilimi vermek için
   final Duration pollInterval;
 
@@ -89,6 +95,19 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('DevPulse'),
         actions: [
+          if (widget.auth != null)
+            IconButton(
+              tooltip: 'Hesap',
+              icon: const Icon(Icons.account_circle_outlined),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                builder: (_) => AccountScreen(
+                  session: widget.session,
+                  auth: widget.auth!,
+                  onLogout: widget.onLogout,
+                  onDeleted: widget.onDeleted ?? (_) {},
+                ),
+              )),
+            ),
           IconButton(
             tooltip: 'Çıkış yap',
             onPressed: widget.onLogout,

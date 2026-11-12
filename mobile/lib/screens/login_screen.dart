@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
+import 'privacy_screen.dart';
 
 /// Giriş ekranı: GitHub ile giriş ya da demo kullanıcıyla deneme.
 class LoginScreen extends StatefulWidget {
@@ -84,6 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   'E-posta adresin ve kodun saklanmaz.',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+                // Kullanıcı metni giriş yapmadan önce okuyabilmeli.
+                TextButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => PrivacyScreen(api: widget.auth.api)),
+                  ),
+                  child: const Text('Aydınlatma metni'),
                 ),
               ],
             ),

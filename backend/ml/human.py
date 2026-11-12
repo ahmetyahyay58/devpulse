@@ -2,7 +2,7 @@
 
     py -m ml.human select     # yalnız eğitim etiketlerinde 5 katlı CV: hangi seçenek?
     py -m ml.human evaluate   # seçileni test kümesinde (tr_gold) bir kez ölç, eskiyle kıyasla
-    py -m ml.human save       # seçileni uygulama modeli olarak kaydet
+    py -m ml.human save       # (eski, 7 sınıf) UYGULAMA MODELİ ARTIK: py -m ml.merge save
 
 Tüm sistemler yalnızca mesajın İLK SATIRINA bakar (kullanıcı commit'leri çoğunlukla tek satır).
 Yazar önekleri (zayıf, gürültülü etiket) atılmaz; düşük örnek ağırlığıyla eklenir.

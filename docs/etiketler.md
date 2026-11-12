@@ -16,6 +16,11 @@ o ana kadar etiketlenenler yeniden gözden geçirilir.
 | `chore` | Kodun davranışına dokunmayan bakım: bağımlılık, derleme, CI, sürüm, .gitignore, dosya silme/taşıma. | "Bump requests to 2.32", "Update CI", "Delete flutter_01.png", "Release 1.2.0" |
 | `diger` | Mesajdan tür anlaşılamıyor ya da birden fazla türe eşit ağırlıkta giriyor. | "wip", "changes", "Merge branch 'dev'", "asdf" |
 
+**Uygulamada gösterim:** Etiketleme 7 ince sınıfla yapılır; uygulama `refactor` ve `chore`
+sınıflarını tek sınıfta birleştirip **"Bakım ve düzenleme"** olarak gösterir (bu ikisi insanlar
+arasında da en sık karışan çiftti; bkz. `docs/olcumler.md` → "Sınıf sadeleştirme"). Uygulamadaki
+6 sınıf: Yeni özellik, Hata düzeltme, Belgelendirme, Bakım ve düzenleme, Test, Belirsiz.
+
 ## Karar kuralları (kararsız kalınca)
 
 1. **Mesaja göre etiketle, koda göre değil.** Kodu görmüyoruz; model de yalnızca mesajı görecek.

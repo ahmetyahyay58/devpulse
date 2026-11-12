@@ -41,6 +41,15 @@ def test_low_confidence_is_belirsiz(model, monkeypatch):
     assert (c.label, c.label_tr, c.source) == ("diger", "Belirsiz", "belirsiz")
 
 
+def test_refactor_and_chore_rules_merge_into_bakim(model):
+    # Kural ince sınıfı ve gerekçesini korur; çıktıda ikisi tek sade sınıfta birleşir.
+    for msg, reason_part in (("servis katmanı sadeleştirildi", "düzenleme"),
+                             ("gitignore güncellendi", "bakım")):
+        c = classify(msg, model)
+        assert (c.label, c.label_tr, c.source) == ("bakim", "Bakım ve düzenleme", "kural")
+        assert reason_part in c.reason
+
+
 def test_only_first_line_is_used(model):
     # Gövdedeki "düzeltildi" ilk satırın kararını değiştirmez (model ilk satırlarla eğitildi).
     c = classify("README\n\nayrıca giriş hatası düzeltildi", model)
@@ -53,7 +62,9 @@ def test_saved_app_model_loads_and_knows_belirsiz():
     clf._model.cache_clear()
     m = clf._model()
     assert m is not None
-    assert "diger" in set(map(str, m.classes_))  # insan etiketlerinden "Belirsiz" öğrenildi
+    classes = set(map(str, m.classes_))
+    assert "diger" in classes  # insan etiketlerinden "Belirsiz" öğrenildi
+    assert classes == {"feat", "fix", "docs", "bakim", "test", "diger"}  # 6 sade sınıf
     c = clf.classify("kullanıcı profili sayfası")
     assert c.source in ("kural", "model") and isinstance(c.label, str)
 

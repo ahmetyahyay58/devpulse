@@ -116,6 +116,39 @@ en iyi "insan + yazar öneki (ağırlık 0,3), kural önce" 0,45 ± 0,08; eski s
 - Uygulamaya alınan model: insan + yazar (0,3), "Belirsiz" sınıfını da öğrenmiş; test
   repolarını görmeden eğitildi (altın küme ileride yeniden ölçüm için temiz kalır).
 
+### Sınıf sadeleştirme (13 Kasım 2026)
+
+Komut: `py -m ml.merge select | evaluate | save`. Sınıf azalınca doğruluk kendiliğinden artar
+(şans eseri tutma olasılığı büyür); bu yüzden şansı düzelten **Cohen's kappa** da raporlandı.
+
+**Seçim (200 insan eğitim etiketi, 5 katlı CV, test kümesine bakılmadan):**
+
+| birleştirme | sınıf | doğruluk | kappa | en sık sınıf tabanı |
+|---|---|---|---|---|
+| 7 sınıf | 7 | 0.45 ± 0.08 | 0.33 ± 0.09 | 0.32 |
+| 6: Kod düzenleme + Bakım | 6 | 0.47 ± 0.08 | 0.35 ± 0.09 | 0.32 |
+| 5: + Test | 5 | 0.50 ± 0.08 | 0.34 ± 0.10 | 0.27 |
+| 4: + Hata düzeltme | 4 | 0.57 ± 0.08 | 0.36 ± 0.11 | 0.40 |
+
+**Test (bir kez):**
+
+| birleştirme | Türkçe test (94) doğruluk / kappa | kendi (33) doğruluk / kappa |
+|---|---|---|
+| 7 sınıf | 0.35 / 0.24 | 0.58 / 0.32 |
+| **6: Kod düzenleme + Bakım (seçilen)** | **0.41 / 0.27** | **0.58 / 0.31** |
+
+**Yorum.**
+- Birleştirmeler doğruluğu artırıyor (0,45 → 0,57) ama kappa neredeyse sabit (0,33 → 0,36,
+  sapmanın içinde): artışın çoğu sınıf sayısının azalmasından gelir, sistem gerçekten
+  "keskinleşmez".
+- 6 sınıf (Kod düzenleme + Bakım → "Bakım ve düzenleme") **anlaşılırlık** için seçildi: bu iki
+  sınıf insanlar arasında da en sık karışan çiftti. 4 sınıf en yüksek doğruluğu verse de "Hata
+  düzeltme"yi ayırmadığı için kullanıcıya az bilgi verir.
+- Uygulamadaki son sistem: kural önce, sonra model; 6 sınıf; insan etiketleri + yazar önekleri
+  (0,3). Türkçe testte 0,41 doğruluk / 0,27 kappa; kendi commit'lerde 0,58 / 0,31.
+- Kappa 0,27-0,35 "zayıf-orta" uyuşmadır; arayüz commit türlerini kesin bilgi gibi değil,
+  yaklaşık bir dağılım olarak sunmalıdır.
+
 **Sınırlamalar.**
 - Test kümesini tek kişi etiketledi; kişiler arası uyuşma (ör. Cohen's kappa) ölçülmedi.
 - Küçük kümeler: 94 ve 33 mesaj; tek bir yüzde puanı yaklaşık 1 mesajdır.

@@ -12,6 +12,7 @@ class OverviewController extends ChangeNotifier {
 
   Overview? overview;
   CalendarData? calendar;
+  MetricSection? anomalies; // olağan dışı yoğun günler
   String? error;
   bool loading = false;
   bool _disposed = false;
@@ -21,13 +22,15 @@ class OverviewController extends ChangeNotifier {
     error = null;
     _notify();
     try {
-      // İki istek aynı anda gider; ikisi de bitince devam edilir.
+      // Üç istek aynı anda gider; hepsi bitince devam edilir.
       final results = await Future.wait([
         api.get('/metrics/overview'),
         api.get('/metrics/calendar'),
+        api.get('/metrics/anomalies'),
       ]);
       overview = Overview.fromJson(results[0]);
       calendar = CalendarData.fromJson(results[1]);
+      anomalies = MetricSection.fromJson(results[2]);
     } on ApiException catch (e) {
       if (e.isUnauthorized) {
         onUnauthorized();

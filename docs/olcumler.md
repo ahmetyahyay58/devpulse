@@ -45,5 +45,9 @@ için son günün ertesi sabahı da olay penceresine dahildir (pencerede 4 aktif
   silik olabilir; bu test yalnızca bariz bir olayın bulunduğunu gösterir.
 - Isolation Forest'ın `contamination = 0,05` değeri bir varsayımdır; her kişide ~%5 gün
   işaretlemeye zorlar. Bu değer değişirse yanlış alarm/yakalama dengesi de değişir.
-- Geliştiricinin kendi hesabında 10 aktif gün olduğu için anomali bölümü "Yeterli veri yok" der;
-  gerçek veriyle değerlendirme yapılamadı.
+- Gerçek veri: geliştiricinin kendi hesabında 10 aktif gün var ("Düşük güven"). MAD tek bir günü
+  işaretledi: 28.07.2026, 9 commit (aktif günlerde medyan 2, z = 4,72). Bu gün, hesaptaki 7 günlük
+  serinin en yoğun günüdür. Olayın "gerçekten" olağan dışı olup olmadığına dair bir etiket
+  olmadığından bu bir doğrulama değil, yalnızca yöntemin gerçek veride çalıştığının gösterimidir.
+- Demo kullanıcıda (canlı API, 12.11.2026) MAD tam olarak enjekte edilen 3 günü işaretledi
+  (03-05.10.2026), başka gün işaretlemedi.

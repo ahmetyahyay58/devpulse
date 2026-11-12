@@ -62,6 +62,17 @@ class FakeBackend {
   int overviewCalls = 0;
   int projectsCalls = 0;
 
+  Map<String, dynamic> anomalies = section(
+    'normal',
+    '1 gün alışkanlığının belirgin dışında yoğundu. En yoğunu 02.10.2026: 23 commit.',
+    {
+      'flagged': [
+        {'day': '2026-10-02', 'commits': 23, 'lines': 900, 'robust_z': 8.09},
+      ],
+      'active_days': 114, 'median_commits': 3.0, 'mad': 1.0, 'threshold': 3.5,
+    },
+  );
+
   static Map<String, dynamic> check(String key, String label, String status, [String? hint]) =>
       {'key': key, 'label': label, 'weight': 25, 'status': status, 'hint': hint};
 
@@ -119,6 +130,9 @@ class FakeBackend {
     if (path == '/metrics/overview') {
       overviewCalls++;
       return _json(overview);
+    }
+    if (path == '/metrics/anomalies') {
+      return _json(anomalies);
     }
     if (path == '/metrics/calendar') {
       final start = DateTime(2026, 11, 6);

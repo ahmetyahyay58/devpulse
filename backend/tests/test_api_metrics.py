@@ -21,6 +21,16 @@ def test_calendar_fills_missing_days_with_zero(api, db, login_as):
     assert "PR" in body["note"]
 
 
+def test_anomalies_requires_session_and_handles_few_days(api, demo_auth):
+    assert api.get("/metrics/anomalies").status_code == 401
+    api.post("/sync", json={}, headers=demo_auth)
+    body = api.get("/metrics/anomalies", headers=demo_auth).json()
+    # Küçük demo: 6 aktif gün < 10 -> yeterli veri yok; yine de 200 ve açıklama döner.
+    assert body["active_days"] == 6
+    assert body["sufficiency"] == "yetersiz"
+    assert "Iglewicz" in body["how"]
+
+
 def test_calendar_rejects_bad_range(api, login_as):
     assert api.get("/metrics/calendar?days=5000", headers=login_as("U_x", "x")).status_code == 422
 

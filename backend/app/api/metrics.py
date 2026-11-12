@@ -2,6 +2,7 @@
 
 GET /metrics/overview  Genel Bakış: KPI, süreklilik, ritim, oturum/yoğunluk
 GET /metrics/calendar  Katkı takvimi (ısı haritası için, eksik günler 0)
+GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
 from datetime import date, datetime, timedelta
@@ -14,6 +15,7 @@ from sqlalchemy import func, select
 from app.auth import current_user
 from app.db import SessionLocal
 from app.metrics.activity import CommitPoint
+from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.overview import Overview, build_overview
 from app.models import Commit, ContributionDay, Repo, User
 
@@ -59,19 +61,28 @@ def calendar(
     return CalendarOut(days=out, total=sum(x.count for x in out))
 
 
-@router.get("/overview", response_model=Overview)
-def overview(user: User = Depends(current_user)) -> Overview:
+def _load_points(user_id: int) -> list[CommitPoint]:
+    """Kullanıcının commit'leri: zaman + değişen satır (bilinmiyorsa None)."""
     with SessionLocal() as db:
         rows = db.execute(
             select(Commit.authored_at, Commit.additions, Commit.deletions)
             .join(Repo)
-            .where(Repo.user_id == user.id)
+            .where(Repo.user_id == user_id)
         ).all()
-        repo_count = db.scalar(select(func.count()).select_from(Repo).where(Repo.user_id == user.id))
+    return [CommitPoint(t, a + d if a is not None and d is not None else None) for t, a, d in rows]
 
-    points = [
-        CommitPoint(t, a + d if a is not None and d is not None else None) for t, a, d in rows
-    ]
+
+@router.get("/overview", response_model=Overview)
+def overview(user: User = Depends(current_user)) -> Overview:
+    points = _load_points(user.id)
+    with SessionLocal() as db:
+        repo_count = db.scalar(select(func.count()).select_from(Repo).where(Repo.user_id == user.id))
     # "Bugün" kullanıcının saat dilimindeki tarihtir (İstanbul'da gece 01:00 ise UTC'de dün).
     today = datetime.now(ZoneInfo(user.timezone or "UTC")).date()
     return build_overview(points, user.timezone, today, repo_count)
+
+
+@router.get("/anomalies", response_model=AnomaliesOut)
+def anomalies(user: User = Depends(current_user)) -> AnomaliesOut:
+    """Olağan dışı yoğun günler (robust z / MAD). Isolation Forest yalnızca ölçüm betiğinde."""
+    return build_anomalies(_load_points(user.id), user.timezone)

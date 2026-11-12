@@ -44,6 +44,10 @@ class OverviewSection extends StatelessWidget {
             _rhythm(o),
             const SizedBox(height: 12),
             _sessions(o.sessions),
+            if (controller.anomalies != null) ...[
+              const SizedBox(height: 12),
+              _anomalies(controller.anomalies!),
+            ],
           ],
         );
       },
@@ -105,6 +109,35 @@ class OverviewSection extends StatelessWidget {
         StatRow('Aktif gün başına commit (medyan)', fmt(s.raw['commits_per_active_day'])),
         StatRow('Commit başına değişen satır (medyan)', fmt(s.raw['lines_per_commit'])),
       ]),
+    );
+  }
+
+  Widget _anomalies(MetricSection s) {
+    final flagged = (s.raw['flagged'] as List).cast<Map<String, dynamic>>();
+    String date(String iso) {
+      final d = DateTime.parse(iso);
+      return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+    }
+
+    return MetricCard(
+      title: 'Olağan dışı günler',
+      section: s,
+      // İşaretlenen gün yoksa gövde boş: özet cümle durumu zaten söyler.
+      body: flagged.isEmpty
+          ? null
+          : Column(children: [
+              for (final a in flagged)
+                StatRow(
+                  date(a['day'] as String),
+                  '${a['commits']} commit · z ${(a['robust_z'] as num).toStringAsFixed(1)}',
+                ),
+              const SizedBox(height: 4),
+              Text(
+                'Aktif günlerde medyan ${s.raw['median_commits']} commit. Bu bir yargı değil; '
+                'yalnızca alışkanlığının dışında kalan günler.',
+                style: const TextStyle(fontSize: 12),
+              ),
+            ]),
     );
   }
 

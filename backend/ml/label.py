@@ -1,7 +1,10 @@
 """Komut satırında commit mesajı etiketleme aracı (kılavuz: docs/etiketler.md).
 
-    py -m ml.label          # açık kaynak havuzu: ml/data/pool.jsonl -> ml/data/labels.jsonl
+    py -m ml.label --tr     # Türkçe altın küme: tr_gold_pool.jsonl -> tr_gold_labels.jsonl
     py -m ml.label --own    # kendi commit'lerin: own.jsonl -> own_labels.jsonl (repoya girmez)
+    py -m ml.label          # (eski) İngilizce havuz: pool.jsonl -> labels.jsonl
+
+Kör etiketleme: yazarın öneki ve repo adı gösterilmez, yalnızca mesaj metni.
 
 Her etiket hemen dosyaya eklenir; istediğin an çıkıp kaldığın yerden devam edebilirsin.
 Tuşlar: 1-7 etiket, n not ekle, u son etiketi geri al, s atla, q çık.
@@ -10,6 +13,8 @@ import argparse
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+
+from app.classify.labels import LABEL_TR
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 LABELS = ["feat", "fix", "docs", "refactor", "test", "chore", "diger"]
@@ -76,12 +81,13 @@ def format_message(message: str) -> str:
 
 # --- Etkileşimli döngü ----------------------------------------------------------------------
 
-def run(pool_path: Path, labels_path: Path, target: int | None) -> None:
+def run(pool_path: Path, labels_path: Path, target: int | None, resume: str = "py -m ml.label") -> None:
     pool = read_jsonl(pool_path)
     if not pool:
         raise SystemExit(f"Havuz yok: {pool_path} (önce: py -m ml.collect)")
     skipped: set[str] = set()
-    menu = "  ".join(f"{k}={v}" for k, v in KEYS.items()) + "   n=not  u=geri al  s=atla  q=çık"
+    menu = ("  ".join(f"{k}={LABEL_TR[v]}" for k, v in KEYS.items())
+            + "\n   n=not  u=geri al  s=atla  q=çık   (kılavuz: docs/etiketler.md)")
     pending_note: str | None = None
 
     while True:
@@ -117,7 +123,7 @@ def run(pool_path: Path, labels_path: Path, target: int | None) -> None:
         elif action == "skip":
             skipped.add(item["id"])
         elif action == "quit":
-            print(f"Kaydedildi: {len(labels)} etiket. Kaldığın yerden: py -m ml.label")
+            print(f"Kaydedildi: {len(labels)} etiket. Kaldığın yerden: {resume}")
             return
         else:
             print("Tanınmayan tuş.")
@@ -126,9 +132,14 @@ def run(pool_path: Path, labels_path: Path, target: int | None) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Commit mesajı etiketle (docs/etiketler.md)")
     parser.add_argument("--own", action="store_true", help="kendi commit'lerini etiketle")
+    parser.add_argument("--tr", action="store_true", help="Türkçe altın kümeyi etiketle")
     args = parser.parse_args()
-    if args.own:
-        run(DATA_DIR / "own.jsonl", DATA_DIR / "own_labels.jsonl", target=None)
+    if args.tr:
+        run(DATA_DIR / "tr_gold_pool.jsonl", DATA_DIR / "tr_gold_labels.jsonl", target=None,
+            resume="py -m ml.label --tr")
+    elif args.own:
+        run(DATA_DIR / "own.jsonl", DATA_DIR / "own_labels.jsonl", target=None,
+            resume="py -m ml.label --own")
     else:
         run(DATA_DIR / "pool.jsonl", DATA_DIR / "labels.jsonl", target=TARGET)
 

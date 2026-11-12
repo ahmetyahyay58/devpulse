@@ -148,6 +148,10 @@ class LiveGitHubClient:
         )
         return data
 
+    def query(self, kind: str, query: str, variables: dict | None = None) -> dict:
+        """Senkron dışı araçlar için (ör. ml/collect.py): ölçümlü tek GraphQL isteği."""
+        return self._query(kind, query, variables)
+
     def fetch_profile(self) -> Profile:
         v = self._query("profile", PROFILE_QUERY)["viewer"]
         return Profile(node_id=v["id"], login=v["login"], created_at=_dt(v["createdAt"]))

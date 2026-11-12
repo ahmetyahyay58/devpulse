@@ -25,6 +25,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Testler: `backend/` içinde `py -m pytest` (PostgreSQL açık olmalı). Testler ayrı `devpulse_test` veritabanını migration'larla kurar ve sonunda siler; gerçek veriye dokunmaz, GitHub'a gitmez (sahte HTTP). Gizlilik kuralı (`tests/test_app.py`) yasaklı sütunları denetler. Yeni özellik = yeni test.
 - Sade tut: Redis, kuyruk sistemi ve karmaşık durum makinesi yok. Tek arka plan görevi yeter.
 - ML: scikit-learn (ve gerekirse ruptures).
+- Commit sınıflandırma verisi: etiket kılavuzu `docs/etiketler.md` (feat/fix/docs/refactor/test/chore/diger). Havuz: 8 açık kaynak projeden 480 mesaj (`backend/ml/data/pool.jsonl`, `py -m ml.collect`); yazar alanları hiç istenmez, imza ve e-posta içeren satırlar silinir, @ bahisleri maskelenir. Etiketleme: `py -m ml.label` (hedef 300) ve `py -m ml.label --own` (geliştiricinin kendi 33 commit'i; alan dışı test; `own*.jsonl` gitignore'da). Açık kaynak verisi İngilizce, geliştiricinin mesajları Türkçe/karışık: genelleme ayrıca ölçülecek.
 - GitHub verisi: GraphQL API. Giriş: GitHub OAuth, yetki kodu akışı + PKCE; kod-token değişimi backend'de yapılır, client secret asla uygulamada durmaz.
 - Token kullanıcının telefonunda güvenli depoda durur; sunucu yalnızca senkron sırasında kullanır, kalıcı saklamaz.
 - Telefon backend'e kendi oturum belirteciyle bağlanır: HS256 JWT, 7 gün, yenileme yok; içinde yalnız kullanıcı id'si (sub). Süre dolunca GitHub ile yeniden giriş. (Uygulandı; onaylanırsa açık karardan çıkar.)

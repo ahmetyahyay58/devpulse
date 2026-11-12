@@ -7,6 +7,9 @@
 # Ham GitHub verisi (kişisel veri, repoya girmez)
 ham_veri/
 scripts/ham_veri/
+# Geliştiricinin kendi commit mesajları ve etiketleri (alan dışı test kümesi)
+backend/ml/data/own.jsonl
+backend/ml/data/own_labels.jsonl
 
 # Python
 __pycache__/

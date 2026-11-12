@@ -56,15 +56,23 @@ def test_only_first_line_is_used(model):
     assert (c.label, c.source) == ("docs", "kural")
 
 
-def test_saved_app_model_loads_and_knows_belirsiz():
+def test_belirsiz_comes_from_rules():
+    from app.classify.classifier import classify as real_classify
+
+    c = real_classify("Merge branch 'dev'")
+    assert (c.label, c.label_tr, c.source) == ("diger", "Belirsiz", "kural")
+
+
+def test_saved_app_model_loads():
     import app.classify.classifier as clf
 
     clf._model.cache_clear()
     m = clf._model()
     assert m is not None
     classes = set(map(str, m.classes_))
-    assert "diger" in classes  # insan etiketlerinden "Belirsiz" öğrenildi
-    assert classes == {"feat", "fix", "docs", "bakim", "test", "diger"}  # 6 sade sınıf
+    # Model yalnız yazar önekleriyle eğitildi (ml/llm_ref.py): öneklerde "Belirsiz" yok;
+    # "Belirsiz" yalnızca kurallardan gelir (ör. Revert, Merge).
+    assert classes == {"feat", "fix", "docs", "bakim", "test"}
     c = clf.classify("kullanıcı profili sayfası")
     assert c.source in ("kural", "model") and isinstance(c.label, str)
 

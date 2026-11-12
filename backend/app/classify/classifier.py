@@ -1,8 +1,8 @@
 """Hibrit commit türü sınıflandırıcı: önek/kural -> model.
 
-Model (harf parçası TF-IDF + lojistik regresyon) `py -m ml.merge save` ile eğitilir (insan
-etiketleri + düşük ağırlıklı yazar önekleri, 6 sade sınıf) ve app/classify/model.joblib
-dosyasına kaydedilir; "Belirsiz" (diger) sınıfını da öğrenmiştir. Dosya yoksa yalnız kurallar.
+Model (harf parçası TF-IDF + lojistik regresyon) `py -m ml.llm_ref save` ile yalnız yazar
+önekleriyle eğitilir (5 sınıf; refactor+chore = "bakim") ve app/classify/model.joblib dosyasına
+kaydedilir. "Belirsiz" yalnız kurallardan gelir (Revert, Merge). Dosya yoksa yalnız kurallar.
 Yalnızca mesajın İLK SATIRINA bakılır (model de öyle eğitildi). Güven eşiği yoktur: olasılıklar
 7 sınıfa yayıldığından eşik işe yaramıyordu (docs/olcumler.md); güven yine de gösterilir.
 Commit mesajları hiçbir dış hizmete (LLM vb.) gönderilmez; sınıflandırma tamamen yereldir.

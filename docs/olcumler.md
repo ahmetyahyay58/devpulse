@@ -176,7 +176,39 @@ Bakım (4), Kod düzenleme → Bakım (4).
   etiketletmek mevcut 2479 önekli örneğe yeni bilgi eklemez; bu yüzden yapılmadı.
 - Önerilen sonraki adım: test kümesinde ikinci tur gözden geçirme (adjudication).
 
+### Yapay zekâ etiketli test standardı (13 Kasım 2026)
+
+Komut: `py -m ml.llm_ref evaluate | save | check`.
+
+**Karar (sonuçlar görülmeden verildi, geliştirici onayıyla).** Test referansı olarak altın
+kümenin yapay zekâ (kör) etiketleri kullanılır; gerekçe: bu etiketler mesajların yazarlarıyla
+bağımsız biçimde %78 uyuşur (kappa 0,73), tek insan etiketleyicinin etiketleri iki kaynakla da
+~%40 uyuşuyordu. Bu standarda uyumlu olarak model yalnız yazar önekleriyle eğitilir
+(geliştiricinin 200 etiketi farklı bir yorumu yansıttığından eğitime alınmaz); kural önce,
+sonra model; 6 sade sınıf. Yapay zekâ etiketleri eğitimde/tasarımda kullanılmaz.
+
+| sistem (6 sınıf) | ref: yapay zekâ (98) doğruluk / kappa | ref: geliştirici (94) doğruluk / kappa |
+|---|---|---|
+| **Yeni: yazar önekleri, kural önce (uygulamada)** | **0.63 / 0.53** | 0.39 / 0.24 |
+| Yeni model, yalnız model | 0.62 / 0.52 | 0.40 / 0.26 |
+| Önceki: insan + yazar (0,3), kural önce | 0.63 / 0.53 | 0.41 / 0.27 |
+
+**Yorum (rapora aynen girmeli).**
+- 0,41 → 0,63 artışı **sistemin iyileşmesinden değil, referansın değişmesinden** kaynaklanır:
+  aynı sistemler yapay zekâ referansıyla 0,63, geliştirici referansıyla ~0,40 alır; yeni ve
+  önceki sistem yapay zekâ referansında aynıdır.
+- Tutarlı bir standarda (yazarlar ve yapay zekânın ortak görüşü) karşı kappa 0,53 "orta" düzey
+  uyuşmadır.
+- Yeni model yazar önekleriyle eğitildiği için "Belirsiz" sınıfını öğrenmez; "Belirsiz" yalnızca
+  kurallardan (Revert, Merge) gelir.
+- İnsan kontrolü: geliştirici, yapay zekâ etiketlerinden rastgele 20'sini (etiket görünür
+  biçimde) onaylar ya da reddeder (`py -m ml.llm_ref check`); sonuç buraya eklenecek.
+
 **Sınırlamalar.**
+- Test referansı bir yapay zekânın etiketleridir; insan doğrulaması 20 örnekle sınırlıdır ve
+  etiket gösterilerek yapılır (bağımsız değil, onay niteliğindedir).
+- Yapay zekâ, bu sistemin kurallarını tasarlayan aynı model ailesindendir; kör etiketlemede
+  kurallar ve sistem çıktıları görülmemiş olsa da tanım yorumu ortak olabilir.
 - Test kümesini tek kişi etiketledi; ikinci insan etiketleyici yoktur (yapay zekâ ve yazar
   önekleri insan yerine geçmez).
 - Küçük kümeler: 94 ve 33 mesaj; tek bir yüzde puanı yaklaşık 1 mesajdır.

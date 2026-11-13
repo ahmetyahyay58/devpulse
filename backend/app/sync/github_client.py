@@ -14,15 +14,15 @@ MAX_ATTEMPTS = 3
 # Repo alanları birden fazla sorguda lazım; GraphQL "fragment" ile bir kez yazılır.
 REPO_FIELDS = """
 fragment RepoFields on Repository {
-  id name isFork isPrivate description createdAt pushedAt
+  id name isFork isPrivate isArchived description createdAt pushedAt
   owner { id }
   primaryLanguage { name }
   licenseInfo { spdxId }
   repositoryTopics(first: 20) { nodes { topic { name } } }
-  readme1: object(expression: "HEAD:README.md") { id }
-  readme2: object(expression: "HEAD:readme.md") { id }
-  readme3: object(expression: "HEAD:README") { id }
-  readme4: object(expression: "HEAD:README.rst") { id }
+  readme1: object(expression: "HEAD:README.md") { ... on Blob { byteSize } }
+  readme2: object(expression: "HEAD:readme.md") { ... on Blob { byteSize } }
+  readme3: object(expression: "HEAD:README") { ... on Blob { byteSize } }
+  readme4: object(expression: "HEAD:README.rst") { ... on Blob { byteSize } }
 }
 """
 
@@ -264,6 +264,8 @@ class LiveGitHubClient:
 
     @staticmethod
     def _repo(node: dict, profile: Profile) -> RepoData:
+        # Bulunan ilk README'nin boyutu (yalnız bayt sayısı; içerik istenmez).
+        readme = next((node[k] for k in ("readme1", "readme2", "readme3", "readme4") if node[k]), None)
         return RepoData(
             node_id=node["id"],
             name=node["name"],
@@ -272,7 +274,9 @@ class LiveGitHubClient:
             is_private=node["isPrivate"],
             primary_language=(node["primaryLanguage"] or {}).get("name"),
             description=node["description"],
-            has_readme=any(node[k] for k in ("readme1", "readme2", "readme3", "readme4")),
+            has_readme=readme is not None,
+            readme_bytes=readme.get("byteSize") if readme else None,
+            is_archived=node.get("isArchived", False),
             license_spdx=(node["licenseInfo"] or {}).get("spdxId"),
             topics=[t["topic"]["name"] for t in node["repositoryTopics"]["nodes"]],
             created_at=_dt(node["createdAt"]),

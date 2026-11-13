@@ -30,6 +30,8 @@ class RepoData:
     topics: list[str]
     created_at: datetime | None
     pushed_at: datetime | None
+    readme_bytes: int | None = None  # README'nin bayt boyutu (içerik çekilmez)
+    is_archived: bool = False
 
 
 @dataclass

@@ -28,6 +28,10 @@ class Project {
     required this.checks,
     required this.daysSincePush,
     required this.commitCount,
+    this.state = 'durgun',
+    this.topics = const [],
+    this.weeklyCommits = const [],
+    this.suggestion,
   });
 
   final String name;
@@ -40,6 +44,13 @@ class Project {
   final List<ProjectCheck> checks;
   final int? daysSincePush;
   final int commitCount;
+  final String state; // aktif | durgun | arsiv (skora girmez)
+  final List<String> topics;
+  final List<int> weeklyCommits; // son 12 hafta, eskiden yeniye
+  final String? suggestion; // "Şu eksikleri kapatırsan skor N puan artar: ..."
+
+  /// Durum etiketinin Türkçesi.
+  String get stateLabel => switch (state) { 'aktif' => 'Aktif', 'arsiv' => 'Arşiv', _ => 'Durağan' };
 
   List<ProjectCheck> get missing => checks.where((c) => c.status == 'missing').toList();
 
@@ -54,6 +65,10 @@ class Project {
         checks: [for (final c in j['checks'] as List) ProjectCheck.fromJson(c as Map<String, dynamic>)],
         daysSincePush: j['days_since_push'] as int?,
         commitCount: j['commit_count'] as int,
+        state: j['state'] as String? ?? 'durgun',
+        topics: [for (final t in j['topics'] as List? ?? const []) t as String],
+        weeklyCommits: [for (final n in j['weekly_commits'] as List? ?? const []) n as int],
+        suggestion: j['suggestion'] as String?,
       );
 }
 

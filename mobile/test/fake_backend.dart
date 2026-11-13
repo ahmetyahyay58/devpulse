@@ -110,11 +110,13 @@ class FakeBackend {
       {'key': key, 'label': label, 'weight': 25, 'status': status, 'hint': hint};
 
   static Map<String, dynamic> project(String name, int? score, List<Map<String, dynamic>> checks,
-          {bool owner = true, String? reason}) =>
+          {bool owner = true, String? reason, String state = 'aktif', List<String> topics = const [],
+          List<int>? weekly, String? suggestion}) =>
       {
         'name': name, 'language': 'Python', 'is_private': false, 'is_fork': false, 'is_owner': owner,
         'scored': reason == null, 'not_scored_reason': reason, 'score': score, 'checks': checks,
-        'days_since_push': 3, 'commit_count': 4,
+        'days_since_push': 3, 'commit_count': 4, 'state': state, 'topics': topics,
+        'weekly_commits': weekly ?? [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1], 'suggestion': suggestion,
       };
 
   Map<String, dynamic> projects = {
@@ -125,17 +127,18 @@ class FakeBackend {
       'how': 'Test: proje sağlığı nasıl hesaplandı.',
     },
     'projects': [
-      project('eksikli-repo', 60, [
+      project('eksikli-repo', 60, topics: ['flutter', 'dart'],
+          suggestion: 'Şu eksikleri kapatırsan skor 40 puan artar: Lisans, Topic.', [
         check('readme', 'README', 'ok'), check('description', 'Açıklama', 'ok'),
         check('license', 'Lisans', 'missing', 'LICENSE dosyası ekle.'),
         check('topics', 'Topic', 'missing', 'Topic ekle.'),
       ]),
-      project('iyi-repo', 80, [
+      project('iyi-repo', 80, state: 'arsiv', weekly: List.filled(12, 0), [
         check('readme', 'README', 'ok'), check('description', 'Açıklama', 'ok'),
         check('license', 'Lisans', 'missing', 'LICENSE dosyası ekle.'),
         check('topics', 'Topic', 'ok'),
       ]),
-      project('katki-repo', null, [], owner: false, reason: 'Başkasına ait repo.'),
+      project('katki-repo', null, [], owner: false, reason: 'Başkasına ait repo.', state: 'durgun'),
     ],
   };
 

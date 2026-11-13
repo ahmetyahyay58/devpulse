@@ -44,6 +44,14 @@ REPOS = [
      "Apache-2.0", ["library"], (70, 10), 0.7),
 ]
 
+# README boyutu (bayt; None = README yok) ve arşiv durumu. Kısa README "içerik" kontrolünü
+# geçmez; flutter-sayac arşivlenmiş bir deneme projesi.
+REPO_EXTRAS = {
+    "hava-durumu-api": (2400, False), "kisisel-blog": (900, False), "algoritma-notlari": (120, False),
+    "flutter-sayac": (None, True), "dotfiles": (650, False), "awesome-turkce": (5100, False),
+    "acik-kaynak-kutuphane": (3800, False),
+}
+
 # Commit türü -> (ağırlık, örnek konular, satır aralığı)
 KINDS = {
     "feat": (35, ["yeni uç nokta eklendi", "arama özelliği", "kullanıcı ayarları sayfası",
@@ -142,6 +150,7 @@ def generate(seed: int = SEED) -> dict:
             "node_id": f"DEMO_REPO_{name}", "name": name, "is_owner": owner, "is_fork": fork,
             "is_private": False, "primary_language": lang, "description": desc,
             "has_readme": readme, "license_spdx": lic, "topics": topics,
+            "readme_bytes": REPO_EXTRAS[name][0], "is_archived": REPO_EXTRAS[name][1],
             "created_at": _utc_iso(datetime.fromisoformat(first) - timedelta(days=1)),
             "pushed_at": commits[-1]["authored_at"] if commits else first,
             "commits": commits,

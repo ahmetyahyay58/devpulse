@@ -14,7 +14,7 @@ OTHER = "U_someone_else"
 
 def repo_node(node_id, name, owner, readme_key=None, license_id=None, topics=()):
     node = {
-        "id": node_id, "name": name, "isFork": False, "isPrivate": False,
+        "id": node_id, "name": name, "isFork": False, "isPrivate": False, "isArchived": False,
         "description": None, "createdAt": "2026-01-02T00:00:00Z", "pushedAt": None,
         "owner": {"id": owner},
         "primaryLanguage": {"name": "Python"},
@@ -23,7 +23,7 @@ def repo_node(node_id, name, owner, readme_key=None, license_id=None, topics=())
         "readme1": None, "readme2": None, "readme3": None, "readme4": None,
     }
     if readme_key:
-        node[readme_key] = {"id": "blob"}
+        node[readme_key] = {"byteSize": 1200}
     return node
 
 
@@ -111,8 +111,10 @@ def test_repos_are_paginated_deduplicated_and_parsed(client):
     assert set(repos) == {"R_a", "R_empty", "R_other"}
     a = repos["R_a"]
     assert a.is_owner and a.has_readme and a.license_spdx == "MIT" and a.topics == ["api"]
+    assert a.readme_bytes == 1200 and a.is_archived is False
     assert repos["R_other"].is_owner is False
     assert repos["R_empty"].has_readme is False and repos["R_empty"].license_spdx is None
+    assert repos["R_empty"].readme_bytes is None
 
 
 def test_commits_follow_cursor(client, fake):

@@ -1,6 +1,7 @@
 import 'package:devpulse/api/api_client.dart';
 import 'package:devpulse/api/health_api.dart';
 import 'package:devpulse/auth/session_store.dart';
+import 'package:devpulse/overview/charts.dart';
 import 'package:devpulse/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,23 +38,59 @@ void main() {
     expect(find.text('README eksik'), findsNothing); // hiçbir repoda eksik değil: satır yok
   });
 
-  testWidgets('en eksikli repo önce; eksikler öneriyle', (tester) async {
+  testWidgets('liste: en eksikli önce, skor, durum etiketi ve eksik sayısı', (tester) async {
     await _openProjects(tester, FakeBackend());
     final first = tester.getTopLeft(find.text('eksikli-repo')).dy;
     final second = tester.getTopLeft(find.text('iyi-repo')).dy;
     expect(first, lessThan(second));
 
     expect(find.text('60/100'), findsOneWidget);
-    expect(find.text('Topic: eksik'), findsOneWidget);
-    expect(find.text('Topic ekle.'), findsOneWidget);
-    expect(find.text('README: var'), findsNWidgets(2));
+    expect(find.text('Python · 4 commit · 2 eksik'), findsOneWidget);
+    expect(find.text('Aktif'), findsOneWidget);
+    expect(find.text('Arşiv'), findsOneWidget);
+    expect(find.text('Durağan'), findsOneWidget); // katki-repo
+    expect(find.text('Topic: eksik'), findsNothing); // kontroller detayda
   });
 
-  testWidgets('puanlanmayan repolar gerekçesiyle ayrı listelenir', (tester) async {
+  testWidgets('repoya dokununca detay: halka, öneri, kontroller, topic, 12 hafta', (tester) async {
+    await _openProjects(tester, FakeBackend());
+    await tester.tap(find.text('eksikli-repo'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ScoreRing), findsOneWidget);
+    expect(tester.widget<ScoreRing>(find.byType(ScoreRing)).score, 60);
+    expect(find.text('Şu eksikleri kapatırsan skor 40 puan artar: Lisans, Topic.'), findsOneWidget);
+    expect(find.text('Topic: eksik'), findsOneWidget);
+    expect(find.text('Topic ekle.'), findsOneWidget);
+    expect(find.text('README: var'), findsOneWidget);
+    expect(find.widgetWithText(Chip, 'flutter'), findsOneWidget);
+    expect(find.text('Son 12 hafta'), findsOneWidget);
+    expect(find.text('4 commit'), findsOneWidget); // 12 haftalık toplam
+    expect(tester.widget<BarChart>(find.byType(BarChart)).values.length, 12);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Proje sağlığı'), findsOneWidget); // listeye dönüldü
+  });
+
+  testWidgets('12 haftada commit yoksa çubuk yerine yazı', (tester) async {
+    await _openProjects(tester, FakeBackend());
+    await tester.tap(find.text('iyi-repo'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BarChart), findsNothing);
+    expect(find.text('Son 12 haftada bu repoya commit atmadın.'), findsOneWidget);
+    expect(find.byType(Chip), findsNothing); // topic yok: kart gösterilmez
+  });
+
+  testWidgets('puanlanmayan repo gerekçesiyle ayrı listelenir, detayda halka yok', (tester) async {
     await _openProjects(tester, FakeBackend());
     expect(find.text('Puanlanmayan repolar'), findsOneWidget);
-    expect(find.text('katki-repo · 4 commit'), findsOneWidget);
+    expect(find.text('Python · 4 commit'), findsOneWidget);
+    await tester.tap(find.text('katki-repo'));
+    await tester.pumpAndSettle();
+    expect(find.text('Puanlanmıyor'), findsOneWidget);
     expect(find.text('Başkasına ait repo.'), findsOneWidget);
+    expect(find.byType(ScoreRing), findsNothing);
   });
 
   testWidgets('senkron bitince Projeler de yenilenir', (tester) async {

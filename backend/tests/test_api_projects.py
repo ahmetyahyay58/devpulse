@@ -19,7 +19,14 @@ def test_projects_after_demo_sync(api, demo_auth):
 
     s = body["summary"]
     assert (s["scored_count"], s["average_score"]) == (2, 50)
-    assert s["missing_counts"] == {"readme": 1, "description": 1, "license": 1, "topics": 1}
+    # README boyutu demo_small'da yok: hava-durumu-api'de içerik bilinmiyor, notlar'da README yok.
+    assert s["missing_counts"] == {"readme": 1, "readme_content": 1, "description": 1, "license": 1, "topics": 1}
+
+    hava = by_name["hava-durumu-api"]
+    assert hava["topics"] == ["fastapi", "weather"]
+    assert hava["state"] in {"aktif", "durgun"} and hava["suggestion"] is None
+    assert len(hava["weekly_commits"]) == 12 and sum(hava["weekly_commits"]) <= hava["commit_count"]
+    assert by_name["notlar"]["suggestion"].startswith("Şu eksikleri kapatırsan skor 50 puan artar: README, ")
     assert "kod kalitesini" in s["how"]
 
 

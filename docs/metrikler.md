@@ -111,16 +111,28 @@ nasıl kullanılacağını ve hangi lisansla paylaşıldığını anlayabiliyor 
 
 | Kontrol | Ağırlık | Geçer sayılması |
 |---|---|---|
-| README | 35 | Varsayılan dalda `README.md`, `readme.md`, `README` ya da `README.rst` var |
-| Açıklama | 25 | GitHub'daki "About" açıklaması boş değil |
+| README | 30 | Varsayılan dalda `README.md`, `readme.md`, `README` ya da `README.rst` var |
+| README içeriği | 15 | Bulunan README en az 300 bayt (GitHub'ın "Add a README" ile oluşturduğu yalnız başlıklı dosya geçmez) |
+| Açıklama | 20 | GitHub'daki "About" açıklaması boş değil |
 | Lisans | 20 | GitHub bir lisans tanıyor (`licenseInfo`) |
-| Topic | 20 | En az bir topic var |
+| Topic | 15 | En az bir topic var |
 
 - **Skor** = geçen kontrollerin ağırlık toplamı / bilinen kontrollerin ağırlık toplamı × 100.
   Durumu bilinmeyen kontrol (GitHub döndürmediyse) eksik sayılmaz, hesaptan çıkarılır.
-- Ağırlıklar sezgiseldir (README en çok bilgi taşıdığı için en ağır); bir standarda dayanmaz.
+- Ağırlıklar ve 300 bayt eşiği sezgiseldir (README en çok bilgi taşıdığı için en ağır); bir
+  standarda dayanmaz. README yoksa içerik kontrolü de geçmez. README boyutu yalnızca bayt
+  sayısıdır; içerik okunmaz ve saklanmaz. Boyut bilinmiyorsa (eski senkron) kontrol hesaptan çıkar.
+- **Öneri cümlesi:** Eksik kontrollerden ağırlığı en büyük en çok iki tanesi seçilir; ikisi
+  kapatılınca skorun kaç puan artacağı aynı formülle hesaplanır ("Şu eksikleri kapatırsan skor
+  N puan artar: README, Lisans."). Deterministiktir; tahmin değildir.
+- **Durum etiketi** (skora girmez): GitHub'da arşivlenmişse *Arşiv*; değilse son push son 90 gün
+  içindeyse *Aktif*, daha eskiyse ya da hiç push yoksa *Durağan*. Durağan bir değer yargısı
+  değildir; bitmiş projeler de durağandır.
+- **Son 12 hafta commit:** Kullanıcının o repodaki commit'leri, kendi saat dilimine göre
+  Pazartesi başlayan haftalara sayılır; içinde bulunulan hafta dahil son 12 hafta.
 - **Puanlanmaz:** Başkasına ait repolar (yalnızca katkı yapılan) ve fork'lar; vitrinleri
   kullanıcının elinde değildir. Listede ayrıca gösterilir.
 - Bilinen sınırlama: README yalnızca dört yaygın dosya adına bakılarak aranır (ör. `Readme.md`
   ya da `docs/README.md` bulunmaz).
-- Skora girmeyen bilgi: son push'tan bu yana geçen gün ve kullanıcının o repodaki commit sayısı.
+- Skora girmeyen bilgi: son push'tan bu yana geçen gün, durum etiketi ve kullanıcının o
+  repodaki commit sayısı.

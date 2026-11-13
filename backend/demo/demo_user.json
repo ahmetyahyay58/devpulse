@@ -31,6 +31,8 @@
     "fastapi",
     "weather"
    ],
+   "readme_bytes": 2400,
+   "is_archived": false,
    "created_at": "2026-05-16T12:29:00Z",
    "pushed_at": "2026-11-12T14:31:00Z",
    "commits": [
@@ -1910,6 +1912,8 @@
    "has_readme": true,
    "license_spdx": null,
    "topics": [],
+   "readme_bytes": 900,
+   "is_archived": false,
    "created_at": "2026-06-14T11:20:00Z",
    "pushed_at": "2026-10-22T19:01:00Z",
    "commits": [
@@ -2709,6 +2713,8 @@
    "has_readme": true,
    "license_spdx": null,
    "topics": [],
+   "readme_bytes": 120,
+   "is_archived": false,
    "created_at": "2026-05-18T11:33:00Z",
    "pushed_at": "2026-09-09T12:01:00Z",
    "commits": [
@@ -3346,6 +3352,8 @@
    "has_readme": false,
    "license_spdx": null,
    "topics": [],
+   "readme_bytes": null,
+   "is_archived": true,
    "created_at": "2026-09-29T11:33:00Z",
    "pushed_at": "2026-10-05T21:39:00Z",
    "commits": [
@@ -3959,6 +3967,8 @@
     "dotfiles",
     "zsh"
    ],
+   "readme_bytes": 650,
+   "is_archived": false,
    "created_at": "2026-05-15T10:46:00Z",
    "pushed_at": "2026-11-11T07:40:00Z",
    "commits": [
@@ -4461,6 +4471,8 @@
    "has_readme": true,
    "license_spdx": "CC0-1.0",
    "topics": [],
+   "readme_bytes": 5100,
+   "is_archived": false,
    "created_at": "2026-11-10T21:00:00Z",
    "pushed_at": "2026-11-11T21:00:00Z",
    "commits": []
@@ -4478,6 +4490,8 @@
    "topics": [
     "library"
    ],
+   "readme_bytes": 3800,
+   "is_archived": false,
    "created_at": "2026-09-09T20:19:00Z",
    "pushed_at": "2026-10-28T16:47:00Z",
    "commits": [

@@ -15,7 +15,7 @@ Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna er
 
 ## Saklanan veriler
 - Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, saat dilimin, ilk kayıt ve son senkron zamanı.
-- Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı, oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
+- Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı ve bayt boyutu (README'nin içeriği okunmaz), arşivlenip arşivlenmediği, oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
 - Commit'lerin: kimliği (SHA), yazılma zamanı, mesajı, eklenen ve silinen satır sayısı, değişen dosya sayısı, birden fazla yazarı olup olmadığı.
 - Katkı takvimi: gün başına toplam katkı sayısı.
 - Senkron kayıtları: ne zaman yapıldığı, kaç istek sürdüğü, varsa hata mesajı.

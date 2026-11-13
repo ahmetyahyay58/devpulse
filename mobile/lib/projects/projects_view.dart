@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'project_detail_screen.dart';
 import 'projects_controller.dart';
 import 'projects_models.dart';
 
-const _labels = {'readme': 'README', 'description': 'Açıklama', 'license': 'Lisans', 'topics': 'Topic'};
+const _labels = {
+  'readme': 'README',
+  'readme_content': 'README içeriği',
+  'description': 'Açıklama',
+  'license': 'Lisans',
+  'topics': 'Topic',
+};
 
 /// Projeler sekmesi: özet, puanlanan repolar (en eksikli önce), puanlanmayanlar.
 class ProjectsView extends StatelessWidget {
@@ -40,12 +47,13 @@ class ProjectsView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _SummaryCard(data: data),
-                    for (final p in scored) ...[const SizedBox(height: 12), _ProjectCard(project: p)],
+                    for (final p in scored) ...[const SizedBox(height: 8), _ProjectCard(project: p)],
                     if (unscored.isNotEmpty) ...[
                       const SizedBox(height: 24),
                       Text('Puanlanmayan repolar', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      for (final p in unscored) _UnscoredTile(project: p),
+                      Text("Fork'lar ve katkı yaptığın başkasına ait repolar; vitrinleri senin elinde değil.",
+                          style: Theme.of(context).textTheme.bodySmall),
+                      for (final p in unscored) ...[const SizedBox(height: 8), _ProjectCard(project: p)],
                     ],
                   ],
                 ),
@@ -104,6 +112,7 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
+/// Listedeki repo kartı: ad, skor, dil/commit, durum etiketi, skor çubuğu. Dokununca detay.
 class _ProjectCard extends StatelessWidget {
   const _ProjectCard({required this.project});
   final Project project;
@@ -113,89 +122,48 @@ class _ProjectCard extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     final p = project;
+    final missing = p.missing.length;
     final details = [
       ?p.language,
-      if (p.isPrivate) 'özel',
       '${p.commitCount} commit',
-      if (p.daysSincePush != null) 'son push ${p.daysSincePush} gün önce',
+      if (p.scored) missing == 0 ? 'eksik yok' : '$missing eksik',
     ].join(' · ');
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(children: [
-              Expanded(child: Text(p.name, style: theme.textTheme.titleMedium)),
-              Text('${p.score}/100', style: theme.textTheme.titleMedium),
-            ]),
-            const SizedBox(height: 4),
-            Text(details, style: muted),
-            const SizedBox(height: 8),
-            // Tek değerli ilerleme çubuğu: skoru görselleştirir, sayı yanında yazılıdır.
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(value: (p.score ?? 0) / 100, minHeight: 6),
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => ProjectDetailScreen(project: p)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
+          child: Row(children: [
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                // Ad tam satırı alır (dar ekranda kısalmasın); durum etiketi alt satırda.
+                Text(p.name, style: theme.textTheme.titleMedium, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  StateChip(project: p),
+                  Text(details, style: muted),
+                ]),
+                if (p.scored) ...[
+                  const SizedBox(height: 8),
+                  // Tek değerli ilerleme çubuğu: skoru görselleştirir, sayı yanında yazılıdır.
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(value: (p.score ?? 0) / 100, minHeight: 4),
+                  ),
+                ],
+              ]),
             ),
-            const SizedBox(height: 12),
-            for (final c in p.checks) _CheckRow(check: c),
-          ],
+            const SizedBox(width: 12),
+            if (p.scored) Text('${p.score}/100', style: theme.textTheme.titleMedium),
+            const Icon(Icons.chevron_right),
+          ]),
         ),
       ),
-    );
-  }
-}
-
-class _CheckRow extends StatelessWidget {
-  const _CheckRow({required this.check});
-  final ProjectCheck check;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final (icon, color, word) = switch (check.status) {
-      'ok' => (Icons.check_circle, const Color(0xFF0CA30C), 'var'),
-      'missing' => (Icons.cancel, const Color(0xFFEC835A), 'eksik'),
-      _ => (Icons.help_outline, theme.colorScheme.onSurfaceVariant, 'bilinmiyor'),
-    };
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              // Durum ikonun yanında yazıyla da söylenir (renk tek başına anlam taşımaz).
-              Text('${check.label}: $word'),
-              if (check.hint != null)
-                Text(check.hint!,
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            ]),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UnscoredTile extends StatelessWidget {
-  const _UnscoredTile({required this.project});
-  final Project project;
-
-  @override
-  Widget build(BuildContext context) {
-    final muted = Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('${project.name} · ${project.commitCount} commit'),
-        Text(project.notScoredReason ?? '', style: muted),
-      ]),
     );
   }
 }

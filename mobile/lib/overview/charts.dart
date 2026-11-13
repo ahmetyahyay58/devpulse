@@ -182,6 +182,57 @@ class _DonutPainter extends CustomPainter {
   bool shouldRepaint(_DonutPainter old) => old.slices != slices;
 }
 
+/// Tek değerli halka (0-100): dolu kısım mavi, kalan kısım yüzeye yakın iz. Sayı ortada yazılı.
+class ScoreRing extends StatelessWidget {
+  const ScoreRing({super.key, required this.score, this.size = 120});
+
+  final int score; // 0-100
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox.square(
+      dimension: size,
+      child: Stack(alignment: Alignment.center, children: [
+        CustomPaint(
+          size: Size.square(size),
+          painter: _RingPainter(score / 100, theme.colorScheme.surfaceContainerHighest),
+        ),
+        Text.rich(TextSpan(children: [
+          TextSpan(text: '$score', style: theme.textTheme.headlineSmall),
+          TextSpan(text: '/100', style: theme.textTheme.bodySmall),
+        ])),
+      ]),
+    );
+  }
+}
+
+class _RingPainter extends CustomPainter {
+  _RingPainter(this.fraction, this.track);
+  final double fraction;
+  final Color track;
+
+  static const stroke = 12.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Rect.fromCircle(center: size.center(Offset.zero), radius: (size.shortestSide - stroke) / 2);
+    Paint p(Color c) => Paint()
+      ..color = c
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(rect, 0, 2 * math.pi, false, p(track));
+    if (fraction > 0) {
+      canvas.drawArc(rect, -math.pi / 2, 2 * math.pi * fraction.clamp(0, 1), false, p(ChartColors.bar));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RingPainter old) => old.fraction != fraction || old.track != track;
+}
+
 /// GitHub tarzı katkı ısı haritası: sütunlar hafta, satırlar Pazartesi-Pazar.
 class ContributionHeatmap extends StatelessWidget {
   const ContributionHeatmap({

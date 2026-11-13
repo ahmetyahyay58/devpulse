@@ -18,6 +18,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 
 ## Teknik kararlar
 - Mobil: Flutter (Dart), yalnızca Android. iOS kapsam dışı. Geliştirme ortamı Windows. Yedek plan: aynı kodun Flutter web derlemesi.
+- Android'de deneme: emülatör bu makinede (7,7 GB) bellek yetmediği için çöküyor; gerçek telefon (kablosuz adb) kullanılır. APK `--dart-define=API_BASE_URL=http://127.0.0.1:8000` ve `--target-platform android-arm64` ile derlenir, sonra `adb reverse tcp:8000 tcp:8000` (bkz. `mobile/lib/config.dart`). Web ve Android ayrı GitHub OAuth App kullanır (`GITHUB_ANDROID_CLIENT_ID/SECRET`). Telefonda demo ve GitHub girişi doğrulandı (13 Kas).
 - Backend: Python, FastAPI, PostgreSQL. Docker Compose ile çalışır.
 - Şema yalnızca Alembic migration'larıyla değişir (`backend/migrations/`); `create_all` kullanılmaz. Model değişince: `py -m alembic revision --autogenerate -m "..."`, dosyayı gözden geçir, `py -m alembic upgrade head`. `py -m alembic check` model ile veritabanı arasındaki farkı yakalar.
 - Backend'i geliştirmede `py -m uvicorn app.main:app --reload --reload-dir app` ile çalıştır (`.venv`'i izlemesin). Windows'ta `--reload` bazen "Reloading..." deyip takılıyor (eski süreç kapanmıyor); değişiklik canlıda görünmüyorsa log'a bak ve sunucuyu yeniden başlat. `.env` değişikliği her zaman yeniden başlatma ister.

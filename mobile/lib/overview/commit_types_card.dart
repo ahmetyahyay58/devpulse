@@ -4,8 +4,8 @@ import 'charts.dart';
 import 'metric_card.dart';
 import 'overview_models.dart';
 
-/// Commit türleri: tek renkli yatay çubuklar (tür adı yazıyla, renk tek başına anlam taşımaz).
-/// Bir türe dokununca o türdeki son commit'ler ve nasıl karar verildiği gösterilir.
+/// Commit türleri: halka grafik + yazılı lejant (tür adı, sayı, yüzde; renk tek başına anlam
+/// taşımaz). Bir türe dokununca o türdeki son commit'ler ve nasıl karar verildiği gösterilir.
 class CommitTypesCard extends StatelessWidget {
   const CommitTypesCard({super.key, required this.section});
 
@@ -24,6 +24,16 @@ class CommitTypesCard extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Center(
+            child: DonutChart(
+              slices: [
+                for (final t in visible) ((t['count'] as int).toDouble(), _colorOf(t)),
+              ],
+              centerValue: '${section.raw['total']}',
+              centerLabel: 'commit',
+            ),
+          ),
+          const SizedBox(height: 12),
           for (final t in visible) _TypeRow(type: t),
           const SizedBox(height: 8),
           Text(section.raw['note'] as String, style: muted),
@@ -40,30 +50,24 @@ class _TypeRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final share = (type['share'] as num).toDouble();
-    final track = Theme.of(context).colorScheme.surfaceContainerHighest;
     return InkWell(
       borderRadius: BorderRadius.circular(6),
       onTap: () => _showExamples(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(child: Text(type['label_tr'] as String)),
-            Text('${type['count']} · %${(share * 100).round()}',
-                style: const TextStyle(fontWeight: FontWeight.w600)),
-            const Icon(Icons.chevron_right, size: 18),
-          ]),
-          const SizedBox(height: 4),
-          // Oranı gösteren tek renkli çubuk; sayı yanında yazılıdır.
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: share,
-              minHeight: 8,
-              color: ChartColors.bar,
-              backgroundColor: track,
-            ),
+        child: Row(children: [
+          // Lejant işareti: halkadaki dilimin rengi.
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(color: _colorOf(type), borderRadius: BorderRadius.circular(3)),
           ),
+          const SizedBox(width: 10),
+          Expanded(child: Text(type['label_tr'] as String)),
+          const SizedBox(width: 8), // uzun tür adı sayıya yapışmasın
+          Text('${type['count']} · %${(share * 100).round()}',
+              style: const TextStyle(fontWeight: FontWeight.w600)),
+          const Icon(Icons.chevron_right, size: 18),
         ]),
       ),
     );
@@ -101,6 +105,9 @@ class _TypeRow extends StatelessWidget {
     );
   }
 }
+
+/// Türün sabit rengi; bilinmeyen bir tür gelirse nötr gri.
+Color _colorOf(Map<String, dynamic> type) => ChartColors.types[type['label']] ?? Colors.grey;
 
 String _date(String iso) {
   final d = DateTime.parse(iso).toLocal();

@@ -38,10 +38,28 @@ void main() {
   testWidgets('KPI, takvim, rozetler ve özetler görünür', (tester) async {
     await _pumpHome(tester, FakeBackend());
 
-    expect(find.text('Toplam commit'), findsOneWidget);
-    expect(find.text('33'), findsOneWidget);
+    // Dört KPI kartı; değer kartın içinde aranır (33 halka grafiğin ortasında da yazar).
+    // "Repo" senkron kartında da geçer: içinde zengin metinli (değer) satır olan kart KPI'dır.
+    String kpi(String label) {
+      for (var i = 0; i < find.text(label).evaluate().length; i++) {
+        final card = find.ancestor(of: find.text(label).at(i), matching: find.byType(Card)).first;
+        final values = find
+            .descendant(of: card, matching: find.byType(RichText))
+            .evaluate()
+            .map((e) => (e.widget as RichText).text.toPlainText())
+            .where((t) => t != label)
+            .toList();
+        if (values.length == 1) return values.single;
+      }
+      return 'bulunamadı';
+    }
+    expect(kpi('Toplam commit'), '33');
+    expect(kpi('Aktif gün'), '10');
+    expect(kpi('En uzun seri'), '7 gün'); // Süreklilik bölümünden
+    expect(kpi('Repo'), '4');
+    expect(find.text('Güncel seri'), findsOneWidget); // yalnız Süreklilik kartında
     expect(find.textContaining('üretkenliği ya da kaliteyi ölçmez'), findsOneWidget);
-    expect(find.text('Son bir yılda 5 katkı'), findsOneWidget);
+    expect(find.text('Son 30 haftada 5 katkı'), findsOneWidget);
     expect(find.byType(ContributionHeatmap), findsOneWidget);
 
     // Üç durum da ikon + yazıyla gösterilir.
@@ -62,6 +80,7 @@ void main() {
 
   testWidgets('türe dokununca commit\'ler ve karar gerekçesi görünür', (tester) async {
     await _pumpHome(tester, FakeBackend());
+    await tester.ensureVisible(find.text('Yeni özellik')); // halkanın altında kalabilir
     await tester.tap(find.text('Yeni özellik'));
     await tester.pumpAndSettle();
     expect(find.text("Yeni özellik · son commit'ler"), findsOneWidget);
@@ -71,9 +90,39 @@ void main() {
 
   testWidgets('kural kararı "kural:" önekiyle gösterilir', (tester) async {
     await _pumpHome(tester, FakeBackend());
+    await tester.ensureVisible(find.text('Belgelendirme'));
     await tester.tap(find.text('Belgelendirme'));
     await tester.pumpAndSettle();
     expect(find.text('kural: Markdown dosyası'), findsOneWidget);
+  });
+
+  testWidgets('commit türleri halka grafikle, her tür sabit renginde', (tester) async {
+    await _pumpHome(tester, FakeBackend());
+    final donut = tester.widget<DonutChart>(find.byType(DonutChart));
+    expect(donut.centerValue, '33');
+    // Görünen türler (sayısı 0 olan Test yok), renkleri türe bağlı.
+    expect([for (final s in donut.slices) s.$2],
+        [ChartColors.types['docs'], ChartColors.types['feat'], ChartColors.types['fix']]);
+    expect([for (final s in donut.slices) s.$1], [19, 8, 6]);
+  });
+
+  testWidgets('olağan dışı gün takvimde halkayla ve lejantla gösterilir', (tester) async {
+    final backend = FakeBackend()
+      ..anomalies = FakeBackend.section('normal', '1 gün yoğundu.', {
+        'flagged': [
+          {'day': '2026-11-11', 'commits': 9, 'lines': 300, 'robust_z': 5.0}, // takvim aralığında
+        ],
+        'active_days': 40, 'median_commits': 2.0, 'mad': 1.0, 'threshold': 3.5,
+      });
+    await _pumpHome(tester, backend);
+    final map = tester.widget<ContributionHeatmap>(find.byType(ContributionHeatmap));
+    expect(map.highlighted, {DateTime(2026, 11, 11)});
+    expect(find.text('Olağan dışı yoğun gün (1)'), findsOneWidget);
+  });
+
+  testWidgets('takvim aralığı dışındaki olağan dışı gün için lejant çıkmaz', (tester) async {
+    await _pumpHome(tester, FakeBackend()); // işaretli gün 02.10.2026, takvim 06-12.11
+    expect(find.textContaining('Olağan dışı yoğun gün ('), findsNothing);
   });
 
   testWidgets('olağan dışı günler kartı işaretlenen günü gösterir', (tester) async {

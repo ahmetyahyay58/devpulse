@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 /// Grafik renkleri. Büyüklük tek renk tonuyla (mavi) gösterilir; koyu temada
@@ -10,6 +12,22 @@ class ChartColors {
     Color(0xFF3987E5), // 3       (mavi 400)
     Color(0xFF86B6EF), // 4: çok  (mavi 250)
   ];
+
+  /// Olağan dışı gün halkası: "uyarı" durumu rengi (amber). Kategorik renklerden ayrı;
+  /// lejantta yazıyla da açıklanır.
+  static const anomaly = Color(0xFFFAB219);
+
+  /// Commit türleri: koyu tema kategorik paleti, sabit sıra (renk sırayı değil türü izler;
+  /// bir tür hangi sırada olursa olsun hep aynı renktir). Doğrulama: altı renk koyu yüzeyde
+  /// açıklık, doygunluk, renk körlüğü ayrımı ve kontrast kontrollerinden geçti.
+  static const types = {
+    'feat': Color(0xFF3987E5), // mavi
+    'fix': Color(0xFFD95926), // turuncu
+    'docs': Color(0xFF199E70), // su yeşili
+    'bakim': Color(0xFFC98500), // sarı
+    'test': Color(0xFFD55181), // pembe
+    'diger': Color(0xFF008300), // yeşil
+  };
 }
 
 const _weekdayShort = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
@@ -100,12 +118,82 @@ Widget weekdayChart(List<int> byWeekday) => BarChart(
       height: 56,
     );
 
+/// Halka grafik: her dilim bir yay; dilimler arasında yüzey renginde küçük bir boşluk,
+/// ortada toplam. Renk tek başına anlam taşımaz: yanında yazılı lejant olmalı.
+class DonutChart extends StatelessWidget {
+  const DonutChart({
+    super.key,
+    required this.slices,
+    required this.centerValue,
+    required this.centerLabel,
+    this.size = 140,
+  });
+
+  final List<(double, Color)> slices; // (değer, renk), değerler > 0
+  final String centerValue;
+  final String centerLabel;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SizedBox.square(
+      dimension: size,
+      child: Stack(alignment: Alignment.center, children: [
+        CustomPaint(size: Size.square(size), painter: _DonutPainter(slices)),
+        Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(centerValue, style: theme.textTheme.titleLarge),
+          Text(centerLabel, style: theme.textTheme.bodySmall),
+        ]),
+      ]),
+    );
+  }
+}
+
+class _DonutPainter extends CustomPainter {
+  _DonutPainter(this.slices);
+  final List<(double, Color)> slices;
+
+  static const stroke = 18.0;
+  static const gapPx = 2.0; // dilimler arası boşluk (yay uzunluğu olarak)
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final total = slices.fold<double>(0, (a, s) => a + s.$1);
+    if (total <= 0) return;
+    final radius = (size.shortestSide - stroke) / 2;
+    final rect = Rect.fromCircle(center: size.center(Offset.zero), radius: radius);
+    final gap = slices.length > 1 ? gapPx / radius : 0.0; // piksel -> radyan
+    var start = -math.pi / 2; // saat 12'den başla
+    for (final (value, color) in slices) {
+      final sweep = value / total * 2 * math.pi;
+      final paint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke;
+      // Çok küçük dilim boşluktan kısa kalmasın diye en az yarısı çizilir.
+      final drawn = (sweep - gap).clamp(sweep / 2, sweep);
+      canvas.drawArc(rect, start + (sweep - drawn) / 2, drawn, false, paint);
+      start += sweep;
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DonutPainter old) => old.slices != slices;
+}
+
 /// GitHub tarzı katkı ısı haritası: sütunlar hafta, satırlar Pazartesi-Pazar.
 class ContributionHeatmap extends StatelessWidget {
-  const ContributionHeatmap({super.key, required this.days, this.unit = 'katkı'});
+  const ContributionHeatmap({
+    super.key,
+    required this.days,
+    this.unit = 'katkı',
+    this.highlighted = const {},
+  });
 
   final List<(DateTime, int)> days; // eskiden yeniye, ardışık günler
   final String unit; // ipucunda sayının yanındaki kelime ("katkı" ya da "commit")
+  final Set<DateTime> highlighted; // amber halkayla çizilecek günler (olağan dışı yoğun)
 
   static const cell = 11.0;
   static const gap = 2.0;
@@ -130,12 +218,16 @@ class ContributionHeatmap extends StatelessWidget {
 
     // AnimatedContainer: renk değişince (senkron ekranında yeni commit'ler geldikçe)
     // kare birden değil, yumuşak bir geçişle dolar.
-    Widget square(Color color) => AnimatedContainer(
+    Widget square(Color color, {bool ring = false}) => AnimatedContainer(
           duration: const Duration(milliseconds: 400),
           width: cell,
           height: cell,
           margin: const EdgeInsets.all(gap / 2),
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+            border: ring ? Border.all(color: ChartColors.anomaly, width: 1.5) : null,
+          ),
         );
 
     return Column(
@@ -175,11 +267,15 @@ class ContributionHeatmap extends StatelessWidget {
                       for (var r = 0; r < 7; r++)
                         if (w * 7 + r < cells.length && cells[w * 7 + r] != null)
                           Tooltip(
-                            message: '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} $unit',
-                            child: square(switch (level(cells[w * 7 + r]!.$2, maxCount)) {
-                              0 => empty,
-                              final l => ChartColors.heat[l - 1],
-                            }),
+                            message: '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} $unit'
+                                '${highlighted.contains(cells[w * 7 + r]!.$1) ? ' · olağan dışı yoğun gün' : ''}',
+                            child: square(
+                              switch (level(cells[w * 7 + r]!.$2, maxCount)) {
+                                0 => empty,
+                                final l => ChartColors.heat[l - 1],
+                              },
+                              ring: highlighted.contains(cells[w * 7 + r]!.$1),
+                            ),
                           )
                         else
                           const SizedBox(width: cell + gap, height: cell + gap),
@@ -193,8 +289,10 @@ class ContributionHeatmap extends StatelessWidget {
         // Lejant: renk düzeylerinin anlamı (renk tek başına bilgi taşımasın diye yazılı).
         Row(children: [
           Text('Az', style: TextStyle(fontSize: 11, color: muted)),
+          const SizedBox(width: 4),
           square(empty),
           for (final c in ChartColors.heat) square(c),
+          const SizedBox(width: 4),
           Text('Çok', style: TextStyle(fontSize: 11, color: muted)),
         ]),
       ],

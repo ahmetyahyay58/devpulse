@@ -26,7 +26,7 @@ class OverviewController extends ChangeNotifier {
       // Dört istek aynı anda gider; hepsi bitince devam edilir.
       final results = await Future.wait([
         api.get('/metrics/overview'),
-        api.get('/metrics/calendar'),
+        api.get('/metrics/calendar?days=210'), // son 30 hafta
         api.get('/metrics/anomalies'),
         api.get('/metrics/commit-types'),
       ]);

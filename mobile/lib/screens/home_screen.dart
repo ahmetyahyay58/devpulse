@@ -6,7 +6,7 @@ import '../api/sync_api.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import '../overview/overview_controller.dart';
-import '../analysis/metrics_view.dart';
+import '../analysis/analysis_view.dart';
 import '../overview/overview_section.dart';
 import '../projects/projects_controller.dart';
 import '../projects/projects_view.dart';
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _tab,
         children: [
           _overviewTab(context),
-          MetricsView(controller: _overview, api: widget.api),
+          AnalysisView(controller: _overview, api: widget.api),
           ProjectsView(controller: _projects),
         ],
       ),

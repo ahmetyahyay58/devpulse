@@ -4,7 +4,7 @@ Canlı GitHub istemcisi ve demo istemcisi bu arayüzü uygular; senkron kodu
 (runner.py) yalnızca bunu bilir, verinin nereden geldiğini bilmez.
 """
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Protocol
 
@@ -32,6 +32,8 @@ class RepoData:
     pushed_at: datetime | None
     readme_bytes: int | None = None  # README'nin bayt boyutu (içerik çekilmez)
     is_archived: bool = False
+    languages: dict[str, int] = field(default_factory=dict)  # dil -> bayt
+    tools: list[str] = field(default_factory=list)  # kök dizinden tespit edilen araçlar
 
 
 @dataclass

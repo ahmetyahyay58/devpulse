@@ -5,6 +5,7 @@ GET /metrics/calendar  Katkı takvimi (ısı haritası için, eksik günler 0)
 GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
 GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçeli örnekler)
 GET /metrics/change-points Haftalık commit sayısında değişim noktaları (PELT, istatistik)
+GET /metrics/technology Diller, çeşitlilik (betimleyici entropi), tespit edilen araçlar
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
@@ -24,6 +25,7 @@ from app.metrics.change_points import ChangePointsOut, build_change_points
 from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
+from app.metrics.technology import RepoTech, TechnologyOut, build_technology
 from app.models import Commit, ContributionDay, Repo, User
 
 router = APIRouter(prefix="/metrics", tags=["metrikler"])
@@ -117,3 +119,13 @@ def change_points(user: User = Depends(current_user)) -> ChangePointsOut:
 def catalog(user: User = Depends(current_user)) -> CatalogOut:
     """Metrik kataloğu (kullanıcıya göre değişmez; yine de oturum ister)."""
     return CatalogOut(entries=CATALOG)
+
+
+@router.get("/technology", response_model=TechnologyOut)
+def technology(user: User = Depends(current_user)) -> TechnologyOut:
+    """Kendi repolarının dil dağılımı, çeşitlilik ve kök dizinden tespit edilen araçlar."""
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Repo.is_owner, Repo.is_fork, Repo.languages, Repo.tools).where(Repo.user_id == user.id)
+        ).all()
+    return build_technology([RepoTech(o, f, dict(lang or {}), list(t or [])) for o, f, lang, t in rows])

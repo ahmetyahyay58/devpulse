@@ -116,6 +116,24 @@ class FakeBackend {
     },
   );
 
+  Map<String, dynamic> technology = section(
+    'dusuk',
+    '3 dil kullanıyorsun; en çok Python (kodun %80 kadarı). Dil dağılımının dengesi %57.',
+    {
+      'repo_count': 2, 'language_count': 3, 'dominant': 'Python', 'dominant_share': 0.8,
+      'diversity': 0.5693,
+      'languages': [
+        {'name': 'Python', 'bytes': 8000, 'share': 0.8, 'repos': 2},
+        {'name': 'Dart', 'bytes': 1000, 'share': 0.1, 'repos': 1},
+        {'name': 'Diğer', 'bytes': 50, 'share': 0.005, 'repos': 1},
+      ],
+      'tools': [
+        {'name': 'Docker', 'repos': 2},
+        {'name': 'GitHub Actions', 'repos': 1},
+      ],
+    },
+  );
+
   Map<String, dynamic> anomalies = section(
     'normal',
     '1 gün alışkanlığının belirgin dışında yoğundu. En yoğunu 02.10.2026: 23 commit.',
@@ -197,6 +215,9 @@ class FakeBackend {
     }
     if (path == '/metrics/anomalies') {
       return _json(anomalies);
+    }
+    if (path == '/metrics/technology') {
+      return _json(technology);
     }
     if (path == '/metrics/change-points') {
       return _json(changePoints);

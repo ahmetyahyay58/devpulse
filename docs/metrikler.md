@@ -32,6 +32,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Olağan dışı günler | < 10 aktif gün | < 30 aktif gün | diğer |
 | Commit türleri | < 10 commit | < 30 commit | diğer |
 | Değişim noktaları | < 12 hafta ya da < 10 commit | < 26 hafta | diğer |
+| Teknoloji | Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -137,6 +138,33 @@ regresyon) karar verir. Her commit için kaynak (kural/model) ve gerekçe göste
   değil, yaklaşık bir dağılımdır (ayrıntı `docs/olcumler.md`). Bu not arayüzde de gösterilir.
 - **Veri yeterliliği:** < 10 commit "Yeterli veri yok", < 30 commit "Düşük güven".
 - Commit mesajları hiçbir dış hizmete gönderilmez; sınıflandırma sunucuda yereldir.
+
+### Teknoloji (diller, çeşitlilik, araçlar)
+**Kaynak:** Kendi (fork olmayan) repoların. Başkasına ait repolarda kodun çoğu başkasınındır;
+fork'larda kod asıl repodan gelir. Bu yüzden ikisi de sayılmaz.
+
+- **Dil dağılımı:** GitHub'ın her repo için verdiği dil başına bayt (`languages`, Linguist
+  tespiti) repolar üzerinden toplanır; pay = dilin baytı / toplam bayt. HTML/CSS gibi
+  biçimlendirme dilleri de GitHub'ın saydığı şekliyle dahildir. Bayt, emeği ölçmez: tek bir
+  büyük repo dağılımı belirler (bu yüzden her dilin kaç repoda geçtiği de gösterilir).
+- **Dil sayısı:** En az bir kendi reposunda görülen farklı dil sayısı.
+- **Baskın dil:** Payı en yüksek dil ve payı.
+- **Çeşitlilik (puan değil):** Bayt paylarının normalleştirilmiş Shannon entropisi,
+  H / ln(k) (H = −Σ pᵢ ln pᵢ, k = dil sayısı), %0-100. Tek dil = %0; bütün diller eşit paylı
+  = %100. Yalnız *dengeyi* betimler; "yüksek = iyi" değildir (tek dilde derinleşmek de geçerli
+  bir yoldur). Payı %1'in altındaki diller hesaba girer ama listede "Diğer" altında toplanır.
+- **Tespit edilen araçlar:** Varsayılan dalın kök dizinindeki dosya ve klasör adlarından
+  (ör. `Dockerfile` → Docker, `pubspec.yaml` → Flutter/Dart, `.github/workflows` → GitHub
+  Actions). Tablo `backend/app/sync/tools.py` içindedir. Dosya içeriği okunmaz; dosya adları
+  saklanmaz, yalnız araç adı saklanır. Alt klasördeki dosyalar görülmez (bilinen sınırlama).
+- **Bilinen sınırlama:** Linguist, çatıların otomatik ürettiği dosyaları da sayabilir. Örneğin
+  bir Flutter projesinin `windows/`, `linux/`, `ios/` klasörlerindeki şablon kodu C++, CMake,
+  Swift, Kotlin olarak görünür (geliştiricinin kendi hesabında 10 dilin birkaçı böyle, 13 Kas).
+  Bu diller genelde küçük paylıdır; dil sayısı bu yüzden gerçekte yazılan dilden fazla olabilir.
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

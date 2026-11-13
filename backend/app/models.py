@@ -81,6 +81,10 @@ class Repo(Base):
     topics: Mapped[list[str]] = mapped_column(ARRAY(String(50)), default=list)
     readme_bytes: Mapped[int | None] = mapped_column(Integer)  # yalnız boyut; içerik saklanmaz
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    # Teknoloji: dil başına bayt (GitHub Linguist) ve kök dizinden tespit edilen araç adları.
+    # Dosya adları ve içerikleri saklanmaz.
+    languages: Mapped[dict[str, int]] = mapped_column(JSONB, default=dict, server_default="{}")
+    tools: Mapped[list[str]] = mapped_column(ARRAY(String(40)), default=list, server_default="{}")
 
     created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     pushed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -271,3 +271,18 @@ için son günün ertesi sabahı da olay penceresine dahildir (pencerede 4 aktif
   olmadığından bu bir doğrulama değil, yalnızca yöntemin gerçek veride çalıştığının gösterimidir.
 - Demo kullanıcıda (canlı API, 12.11.2026) MAD tam olarak enjekte edilen 3 günü işaretledi
   (03-05.10.2026), başka gün işaretlemedi.
+
+## Senkron: dil ve araç alanlarının süreye etkisi (13 Kasım 2026)
+Repo sorgusuna `languages`, kök dizin ağacı (`HEAD:`) ve `.github/workflows` eklendi.
+Geliştiricinin hesabı (4 repo, yeni commit yok, istek sayısı her seferinde 8). Süreler
+`sync_jobs.requests` alanından, milisaniye.
+
+| Senkron | Alanlar | repos | contributed_repos (3 istek) | Toplam |
+|---|---|---|---|---|
+| #29, #30 | eski alanlar | 565 / 936 | 1967 / 1839 | - |
+| #33 | + README boyutu, arşiv | 1186 | 2441 | 6,6 sn |
+| #34 | + diller, kök ağaç, workflows | 1309 | 3083 | 7,2 sn |
+
+Sonuç: repo başına sorgu ağırlaştı, istek sayısı değişmedi. Bu küçük hesapta toplam artış
+yaklaşık 0,5-1 sn ve ölçüm gürültüsüyle (aynı alanlarla #32'de profil isteği 2 sn sürdü)
+karşılaştırılabilir. Çok repolu hesaplarda (50'lik sayfalar) etkisi ayrıca ölçülmeli.

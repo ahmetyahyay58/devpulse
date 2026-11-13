@@ -194,10 +194,11 @@ class _DonutPainter extends CustomPainter {
 
 /// Tek değerli halka (0-100): dolu kısım mavi, kalan kısım yüzeye yakın iz. Sayı ortada yazılı.
 class ScoreRing extends StatelessWidget {
-  const ScoreRing({super.key, required this.score, this.size = 120});
+  const ScoreRing({super.key, required this.score, this.size = 120, this.percent = false});
 
   final int score; // 0-100
   final double size;
+  final bool percent; // true: ortada "%62" (puan değil, oran); false: "62/100"
 
   @override
   Widget build(BuildContext context) {
@@ -209,10 +210,13 @@ class ScoreRing extends StatelessWidget {
           size: Size.square(size),
           painter: _RingPainter(score / 100, theme.colorScheme.surfaceContainerHighest),
         ),
-        Text.rich(TextSpan(children: [
-          TextSpan(text: '$score', style: theme.textTheme.headlineSmall),
-          TextSpan(text: '/100', style: theme.textTheme.bodySmall),
-        ])),
+        if (percent)
+          Text('%$score', style: theme.textTheme.headlineSmall)
+        else
+          Text.rich(TextSpan(children: [
+            TextSpan(text: '$score', style: theme.textTheme.headlineSmall),
+            TextSpan(text: '/100', style: theme.textTheme.bodySmall),
+          ])),
       ]),
     );
   }

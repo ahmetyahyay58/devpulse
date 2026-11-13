@@ -22,8 +22,15 @@ def repo_node(node_id, name, owner, readme_key=None, license_id=None, topics=())
         "repositoryTopics": {"nodes": [{"topic": {"name": t}} for t in topics]},
         "readme1": None, "readme2": None, "readme3": None, "readme4": None,
     }
+    node["languages"] = {"edges": []}
+    node["root"] = None  # boş repoda kök ağaç yok
+    node["workflows"] = None
     if readme_key:
         node[readme_key] = {"byteSize": 1200}
+        node["languages"] = {"edges": [{"size": 900, "node": {"name": "Python"}},
+                                       {"size": 100, "node": {"name": "Shell"}}]}
+        node["root"] = {"entries": [{"name": "README.md"}, {"name": "Dockerfile"}, {"name": ".github"}]}
+        node["workflows"] = {"entries": [{"name": "ci.yml"}]}
     return node
 
 
@@ -112,9 +119,12 @@ def test_repos_are_paginated_deduplicated_and_parsed(client):
     a = repos["R_a"]
     assert a.is_owner and a.has_readme and a.license_spdx == "MIT" and a.topics == ["api"]
     assert a.readme_bytes == 1200 and a.is_archived is False
+    assert a.languages == {"Python": 900, "Shell": 100}
+    assert a.tools == ["Docker", "GitHub Actions"]  # dosya adları saklanmaz, yalnız araçlar
     assert repos["R_other"].is_owner is False
     assert repos["R_empty"].has_readme is False and repos["R_empty"].license_spdx is None
     assert repos["R_empty"].readme_bytes is None
+    assert (repos["R_empty"].languages, repos["R_empty"].tools) == ({}, [])
 
 
 def test_commits_follow_cursor(client, fake):

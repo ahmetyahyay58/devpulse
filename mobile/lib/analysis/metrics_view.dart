@@ -58,8 +58,8 @@ class MetricsView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(children: [
-                      Expanded(child: Text('Metrikler', style: Theme.of(context).textTheme.titleLarge)),
+                    // Başlık üstteki bölüm seçicide yazıyor; burada yalnız katalog düğmesi.
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                       TextButton.icon(
                         icon: const Icon(Icons.menu_book_outlined, size: 18),
                         label: const Text('Metrik kataloğu'),

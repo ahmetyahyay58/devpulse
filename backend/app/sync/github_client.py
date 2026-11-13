@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 
 import httpx
 
+from app.sync.tools import detect_tools
 from app.sync.source import CalendarDay, CommitData, Profile, RepoData, RequestStat
 
 GRAPHQL_URL = "https://api.github.com/graphql"
@@ -23,6 +24,9 @@ fragment RepoFields on Repository {
   readme2: object(expression: "HEAD:readme.md") { ... on Blob { byteSize } }
   readme3: object(expression: "HEAD:README") { ... on Blob { byteSize } }
   readme4: object(expression: "HEAD:README.rst") { ... on Blob { byteSize } }
+  languages(first: 30, orderBy: {field: SIZE, direction: DESC}) { edges { size node { name } } }
+  root: object(expression: "HEAD:") { ... on Tree { entries { name } } }
+  workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
 }
 """
 
@@ -277,6 +281,12 @@ class LiveGitHubClient:
             has_readme=readme is not None,
             readme_bytes=readme.get("byteSize") if readme else None,
             is_archived=node.get("isArchived", False),
+            languages={e["node"]["name"]: e["size"] for e in (node.get("languages") or {}).get("edges", [])},
+            # Kök dizindeki adlar yalnız burada, araç tespiti için kullanılır; saklanmaz.
+            tools=detect_tools(
+                [e["name"] for e in (node.get("root") or {}).get("entries", [])],
+                has_workflows=bool((node.get("workflows") or {}).get("entries")),
+            ),
             license_spdx=(node["licenseInfo"] or {}).get("spdxId"),
             topics=[t["topic"]["name"] for t in node["repositoryTopics"]["nodes"]],
             created_at=_dt(node["createdAt"]),

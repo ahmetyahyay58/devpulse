@@ -91,6 +91,20 @@ CATALOG = [
         reliable_when="En az 30 commit.",
     ),
     CatalogEntry(
+        name="Dil dağılımı ve çeşitlilik", section="Teknoloji",
+        definition="Kendi repolarındaki dil başına bayt payları; çeşitlilik = normalleştirilmiş entropi.",
+        unit="%, dil",
+        interpretation="Çeşitlilik puan değildir: dağılımın dengesini betimler. Bayt emeği ölçmez.",
+        reliable_when="Dil bilgisi olan en az 3 kendi reposu.",
+    ),
+    CatalogEntry(
+        name="Tespit edilen araçlar", section="Teknoloji",
+        definition="Repo kök dizinindeki bilinen dosya adlarından araç tespiti (ör. Dockerfile → Docker).",
+        unit="repo",
+        interpretation="Yalnız kök dizine bakılır; alt klasörlerdeki araçlar görülmez.",
+        reliable_when="Kendi repoların için; dosya içeriği okunmaz.",
+    ),
+    CatalogEntry(
         name="Proje sağlığı", section="Proje sağlığı",
         definition="README, README içeriği, açıklama, lisans ve topic kontrollerinin ağırlıklı skoru.",
         unit="0-100",

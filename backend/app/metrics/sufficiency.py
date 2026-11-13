@@ -55,3 +55,11 @@ def change_points(weeks: int, commits: int) -> Sufficiency:
     if weeks < 26:
         return Sufficiency.LOW
     return Sufficiency.NORMAL
+
+
+def technology(repos_with_languages: int) -> Sufficiency:
+    if repos_with_languages == 0:
+        return Sufficiency.NONE
+    if repos_with_languages < 3:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL

@@ -15,6 +15,7 @@ class OverviewController extends ChangeNotifier {
   MetricSection? anomalies; // olağan dışı yoğun günler
   MetricSection? commitTypes; // commit türleri dağılımı
   MetricSection? changePoints; // haftalık commit'te değişim noktaları
+  MetricSection? technology; // diller, çeşitlilik, araçlar
   String? error;
   bool loading = false;
   bool _disposed = false;
@@ -31,12 +32,14 @@ class OverviewController extends ChangeNotifier {
         api.get('/metrics/anomalies'),
         api.get('/metrics/commit-types'),
         api.get('/metrics/change-points'),
+        api.get('/metrics/technology'),
       ]);
       overview = Overview.fromJson(results[0]);
       calendar = CalendarData.fromJson(results[1]);
       anomalies = MetricSection.fromJson(results[2]);
       commitTypes = MetricSection.fromJson(results[3]);
       changePoints = MetricSection.fromJson(results[4]);
+      technology = MetricSection.fromJson(results[5]);
     } on ApiException catch (e) {
       if (e.isUnauthorized) {
         onUnauthorized();

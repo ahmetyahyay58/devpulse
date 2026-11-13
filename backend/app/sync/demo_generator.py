@@ -52,6 +52,19 @@ REPO_EXTRAS = {
     "acik-kaynak-kutuphane": (3800, False),
 }
 
+# Dil başına bayt (GitHub Linguist gibi) ve kök dizinden tespit edilecek araçlar.
+REPO_TECH = {
+    "hava-durumu-api": ({"Python": 48200, "Dockerfile": 610, "Shell": 900},
+                        ["Docker", "GitHub Actions", "pip", "pytest"]),
+    "kisisel-blog": ({"TypeScript": 31500, "CSS": 7200, "HTML": 2100, "JavaScript": 1800},
+                     ["ESLint", "Node.js (npm)", "TypeScript", "Vite"]),
+    "algoritma-notlari": ({"Python": 12400, "C++": 5300}, []),
+    "flutter-sayac": ({"Dart": 9800, "Kotlin": 400, "Swift": 300}, ["Flutter/Dart (pub)"]),
+    "dotfiles": ({"Shell": 6400, "Vim Script": 1200}, ["Make"]),
+    "awesome-turkce": ({}, []),
+    "acik-kaynak-kutuphane": ({"Python": 210000}, ["GitHub Actions", "pyproject (Python)"]),
+}
+
 # Commit türü -> (ağırlık, örnek konular, satır aralığı)
 KINDS = {
     "feat": (35, ["yeni uç nokta eklendi", "arama özelliği", "kullanıcı ayarları sayfası",
@@ -151,6 +164,7 @@ def generate(seed: int = SEED) -> dict:
             "is_private": False, "primary_language": lang, "description": desc,
             "has_readme": readme, "license_spdx": lic, "topics": topics,
             "readme_bytes": REPO_EXTRAS[name][0], "is_archived": REPO_EXTRAS[name][1],
+            "languages": REPO_TECH[name][0], "tools": REPO_TECH[name][1],
             "created_at": _utc_iso(datetime.fromisoformat(first) - timedelta(days=1)),
             "pushed_at": commits[-1]["authored_at"] if commits else first,
             "commits": commits,

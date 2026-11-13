@@ -55,7 +55,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### Analiz → Teknoloji
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| Dil sayısı, baskın dil ve yüzdesi, dağılım çubukları | Yeni | Yeni veri | Repo başına `languages { edges { size } }` (bayt). Yeni tablo + migration. |
+| Dil sayısı, baskın dil ve yüzdesi, dağılım çubukları | Yeni | Yeni veri | Repo başına `languages { edges { size } }` (bayt). `repos.languages` JSONB sütunu + migration (ayrı tablo gerekmedi). Yapıldı (13 Kas). |
 | Çeşitlilik halkası | Yeni | Yeni veri | Betimleyici entropi ölçüsü (bkz. çelişki çözümleri). |
 | Tespit edilen araçlar | Yeni | Yeni veri | Kök dizindeki bilinen dosyalar (package.json, requirements.txt, Dockerfile, pubspec.yaml, .github/workflows...). Tek GraphQL sorgusunda `object(expression:)` ile; senkron süresine etkisi ölçülecek. Dosya içeriği saklanmaz, yalnız araç adı. |
 

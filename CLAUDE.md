@@ -51,9 +51,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Basit sentetik demo kullanıcı (aynı kod yolundan geçer: veri çekme katmanının canlı ve demo istemcisi aynı arayüzü uygular). (Yapıldı: `backend/demo/demo_user.json` elle düzenlenmez, `py -m app.sync.demo_generator` ile deterministik üretilir; tarihler okunurken bugüne kaydırılır. Enjekte anomali `_injected` alanında. Testler küçük `tests/fixtures/demo_small.json` kullanır.)
 - Veri silme ve aydınlatma metni.
 
-Zaman kalırsa: değişim noktası, tek şablonlu CV ve PDF, Teknoloji sayfası (yalnız dil dağılımı), rozetler, LLM yorumu ve "Neden?", Model Laboratuvarı, basit yıllık özet.
-
-Kesildi: repo kümeleme, mülakat ve hedef koçu, iki dilli CV ve 5 şablon, "Sor" balonu, README taslağı, İşbirliği sayfası, araç tespiti, bildirim, paylaşım kartı, temalı yıllık özet animasyonları, çeşitlilik skoru.
+MVP sonrası kapsam (geliştirici kararı, 13 Kas): prototip ekran listesi `docs/ozellikler.md`'de; eskiden kesilen özellikler (kümeler, koçlar, 5 şablon ve TR/EN CV, Sor balonu, İşbirliği, araç tespiti, bildirim, paylaşım kartı, yıllık özet animasyonları, çeşitlilik) geri alındı. Kurallarla çelişenler orada yazan çözümlerle yapılır: Model Laboratuvarı yalnız gerçek ölçümler; 90 gün kuralı gerçekten uygulanır; "ATS" yerine "Biçim kontrolü"; çeşitlilik puan değil betimleyici entropi; AI özellikleri tek katmandan, yalnız toplu sayılarla, onaylı. Sıra ve faz listesi o dosyada; zaman yetmezse sondan kısılır. Hâlâ kapsam dışı: README taslağı, prototipteki demo kaydırıcıları.
 
 ## Dürüstlük kuralları
 - ML'i abartma: yalnızca commit sınıflandırma gözetimli ML'dir. Anomali gözetimsiz; değişim noktası istatistik; oturum kural. Raporda bu ayrım tabloyla verilir.

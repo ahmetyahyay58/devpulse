@@ -102,9 +102,10 @@ Widget weekdayChart(List<int> byWeekday) => BarChart(
 
 /// GitHub tarzı katkı ısı haritası: sütunlar hafta, satırlar Pazartesi-Pazar.
 class ContributionHeatmap extends StatelessWidget {
-  const ContributionHeatmap({super.key, required this.days});
+  const ContributionHeatmap({super.key, required this.days, this.unit = 'katkı'});
 
   final List<(DateTime, int)> days; // eskiden yeniye, ardışık günler
+  final String unit; // ipucunda sayının yanındaki kelime ("katkı" ya da "commit")
 
   static const cell = 11.0;
   static const gap = 2.0;
@@ -127,7 +128,10 @@ class ContributionHeatmap extends StatelessWidget {
     final cells = <(DateTime, int)?>[...List.filled(leading, null), ...days];
     final weeks = (cells.length / 7).ceil();
 
-    Widget square(Color color) => Container(
+    // AnimatedContainer: renk değişince (senkron ekranında yeni commit'ler geldikçe)
+    // kare birden değil, yumuşak bir geçişle dolar.
+    Widget square(Color color) => AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
           width: cell,
           height: cell,
           margin: const EdgeInsets.all(gap / 2),
@@ -171,7 +175,7 @@ class ContributionHeatmap extends StatelessWidget {
                       for (var r = 0; r < 7; r++)
                         if (w * 7 + r < cells.length && cells[w * 7 + r] != null)
                           Tooltip(
-                            message: '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} katkı',
+                            message: '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} $unit',
                             child: square(switch (level(cells[w * 7 + r]!.$2, maxCount)) {
                               0 => empty,
                               final l => ChartColors.heat[l - 1],

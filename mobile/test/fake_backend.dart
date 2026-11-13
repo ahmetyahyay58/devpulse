@@ -11,20 +11,26 @@ class FakeBackend {
   // --- Senkron taklidi ---
   /// GET /sync/jobs/{id} her sorulduğunda sıradaki durum döner; sonuncusu tekrarlanır.
   List<Map<String, dynamic>> jobStates = [
-    job(7, 'running', reposTotal: 2, reposDone: 0, progress: 0.0),
-    job(7, 'running', reposTotal: 2, reposDone: 2, progress: 2 / 3),
-    job(7, 'done', reposTotal: 2, reposDone: 2, progress: 1.0, commitsInserted: 6),
+    job(7, 'running', phase: 'commits', reposTotal: 2, reposDone: 0, progress: 0.0),
+    job(7, 'running', phase: 'calendar', reposTotal: 2, reposDone: 2, progress: 2 / 3),
+    job(7, 'done', phase: 'done', reposTotal: 2, reposDone: 2, progress: 1.0, commitsInserted: 6),
   ];
-  Map<String, dynamic>? latestJob; // null: hiç senkron yapılmamış (404)
+  int commitDaysCalls = 0;
+  /// Varsayılan: daha önce senkron yapmış kullanıcı. null: hiç senkron yok (404) = ilk giriş;
+  /// ana ekran o zaman senkronu kendiliğinden başlatır.
+  Map<String, dynamic>? latestJob =
+      job(5, 'done', reposTotal: 4, reposDone: 4, progress: 1.0, commitsInserted: 12);
   int? runningJobId; // doluysa POST /sync 409 döner (zaten süren iş)
   bool sessionExpired = false; // doluysa /sync uçları 401 döner
   bool exportFails = false; // doluysa /me/export 500 döner
   int _jobReads = 0;
 
   static Map<String, dynamic> job(int id, String status,
-          {int? reposTotal, int reposDone = 0, double? progress, int commitsInserted = 0, String? error}) =>
+          {String? phase, int? reposTotal, int reposDone = 0, double? progress, int commitsInserted = 0,
+          String? error}) =>
       {
-        'id': id, 'status': status, 'progress': progress, 'repos_total': reposTotal,
+        'id': id, 'status': status, 'phase': phase ?? (status == 'done' ? 'done' : 'repos'),
+        'progress': progress, 'repos_total': reposTotal,
         'repos_done': reposDone, 'repos_skipped': 0, 'commits_synced': commitsInserted,
         'commits_inserted': commitsInserted, 'calendar_days': 7, 'request_count': 5,
         'total_cost': 0, 'total_duration_ms': 1200, 'error': error,
@@ -185,6 +191,18 @@ class FakeBackend {
         return _json({'detail': {'message': 'zaten sürüyor', 'job_id': runningJobId}}, 409);
       }
       if (path == '/sync') return _json({'job_id': 7, 'status': 'pending'}, 202);
+      if (path == '/sync/commit-days') {
+        // Her soruluşta bir gün daha dolu: takvimin "dolması"nı taklit eder.
+        commitDaysCalls++;
+        final start = DateTime(2026, 11, 6);
+        return _json({
+          'days': [
+            for (var k = 0; k < 7; k++)
+              {'day': start.add(Duration(days: k)).toIso8601String().substring(0, 10),
+               'count': k < commitDaysCalls ? 2 : 0},
+          ],
+        });
+      }
       if (path == '/sync/jobs/latest') {
         return latestJob == null ? _json({'detail': 'yok'}, 404) : _json(latestJob!);
       }

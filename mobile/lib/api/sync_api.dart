@@ -5,10 +5,12 @@ class SyncJob {
   const SyncJob({
     required this.id,
     required this.status,
+    this.phase = 'profile',
     required this.progress,
     required this.reposTotal,
     required this.reposDone,
     required this.reposSkipped,
+    this.commitsSynced = 0,
     required this.commitsInserted,
     required this.calendarDays,
     required this.requestCount,
@@ -19,10 +21,12 @@ class SyncJob {
 
   final int id;
   final String status; // pending | running | done | failed
+  final String phase; // profile | repos | commits | calendar | done (hata: hatanın aşaması)
   final double? progress; // 0-1; repo sayısı henüz bilinmiyorsa null
   final int? reposTotal;
   final int reposDone;
   final int reposSkipped;
+  final int commitsSynced; // GitHub'dan gelen (yeni + zaten var olan)
   final int commitsInserted;
   final int calendarDays;
   final int requestCount;
@@ -35,10 +39,12 @@ class SyncJob {
   factory SyncJob.fromJson(Map<String, dynamic> j) => SyncJob(
         id: j['id'] as int,
         status: j['status'] as String,
+        phase: j['phase'] as String? ?? 'profile',
         progress: (j['progress'] as num?)?.toDouble(),
         reposTotal: j['repos_total'] as int?,
         reposDone: j['repos_done'] as int,
         reposSkipped: j['repos_skipped'] as int,
+        commitsSynced: j['commits_synced'] as int? ?? 0,
         commitsInserted: j['commits_inserted'] as int,
         calendarDays: j['calendar_days'] as int,
         requestCount: j['request_count'] as int,
@@ -71,6 +77,15 @@ class SyncApi {
   }
 
   Future<SyncJob> job(int id) async => SyncJob.fromJson(await api.get('/sync/jobs/$id'));
+
+  /// Şu ana kadar yazılmış commit'lerin günlük sayısı (son [weeks] hafta, eskiden yeniye).
+  Future<List<(DateTime, int)>> commitDays({int weeks = 30}) async {
+    final r = await api.get('/sync/commit-days?weeks=$weeks');
+    return [
+      for (final d in r['days'] as List)
+        (DateTime.parse(d['day'] as String), d['count'] as int),
+    ];
+  }
 
   /// En son iş; hiç senkron yapılmadıysa null.
   Future<SyncJob?> latest() async {

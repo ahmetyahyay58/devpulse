@@ -1,22 +1,23 @@
 """Senkron uç noktaları (oturum belirteci gerekir).
 
-POST /sync            senkronu başlatır, iş numarasını hemen döner (202)
-GET  /sync/jobs/{id}  kendi senkron işinin durumunu ve ilerlemesini döner
+POST /sync              senkronu başlatır, iş numarasını hemen döner (202)
+GET  /sync/jobs/{id}    kendi senkron işinin durumunu, aşamasını ve ilerlemesini döner
+GET  /sync/commit-days  şu ana kadar yazılan commit'lerin günlük sayısı (dolan takvim için)
 
 Token kuralı (CLAUDE.md): GitHub token'ı yalnızca istek gövdesinde gelir, arka plan
 görevi bitene kadar bellekte durur; veritabanına ya da loglara yazılmaz.
 """
 import logging
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.auth import current_user
 from app.db import SessionLocal
-from app.models import SyncJob, User
+from app.models import Commit, Repo, SyncJob, User
 from app.sync.demo_client import DemoClient, demo_path
 from app.sync.github_client import GitHubError, LiveGitHubClient, RateLimited, TokenInvalid
 from app.sync.runner import (
@@ -61,6 +62,7 @@ class SyncStarted(BaseModel):
 class SyncJobOut(BaseModel):
     id: int
     status: str
+    phase: str = Field(description="profile | repos | commits | calendar | done; hata olursa hatanın aşaması")
     progress: float | None = Field(description="0-1 arası; repo sayısı henüz bilinmiyorsa null")
     repos_total: int | None
     repos_done: int
@@ -129,6 +131,42 @@ def _job_out(job: SyncJob) -> SyncJobOut:
         progress=progress,
         **{k: getattr(job, k) for k in SyncJobOut.model_fields if k != "progress"},
     )
+
+
+class CommitDayOut(BaseModel):
+    day: date
+    count: int
+
+
+class CommitDaysOut(BaseModel):
+    days: list[CommitDayOut]  # eskiden yeniye, eksik günler 0
+
+
+@router.get("/commit-days", response_model=CommitDaysOut)
+def commit_days(
+    weeks: int = Query(default=30, ge=1, le=53), user: User = Depends(current_user)
+) -> CommitDaysOut:
+    """Şu ana kadar yazılmış commit'lerin günlük sayısı (kullanıcının saat dilimine göre).
+
+    Senkron ekranı bunu iş durumuyla birlikte sorar: commit'ler yazıldıkça takvim dolar.
+    Katkı takviminden (GitHub'ın PR/issue da sayan takvimi) farklıdır; yalnız commit sayar.
+    """
+    tz = user.timezone or "UTC"
+    today = datetime.now(ZoneInfo(tz)).date()
+    start = today - timedelta(days=weeks * 7 - 1)
+    # timezone(tz, authored_at): UTC zamanı kullanıcının yerel saatine çevirir; sonra gün.
+    local_day = func.date(func.timezone(tz, Commit.authored_at))
+    with SessionLocal() as db:
+        counts = dict(db.execute(
+            select(local_day, func.count())
+            .join(Repo)
+            .where(Repo.user_id == user.id, local_day >= start)
+            .group_by(local_day)
+        ).all())
+    return CommitDaysOut(days=[
+        CommitDayOut(day=d, count=counts.get(d, 0))
+        for d in (start + timedelta(days=k) for k in range(weeks * 7))
+    ])
 
 
 # Not: "/jobs/latest", "/jobs/{job_id}"den ÖNCE tanımlanmalı; yoksa "latest" bir

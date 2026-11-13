@@ -115,11 +115,17 @@ class SyncJob(Base):
         CheckConstraint(
             "status IN ('pending', 'running', 'done', 'failed')", name="sync_jobs_status_check"
         ),
+        CheckConstraint(
+            "phase IN ('profile', 'repos', 'commits', 'calendar', 'done')", name="sync_jobs_phase_check"
+        ),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     status: Mapped[str] = mapped_column(String(10), default="pending")
+    # Senkronun hangi aşamada olduğu (ekrandaki aşamalı liste). Hata olursa hatanın
+    # çıktığı aşamada kalır. Sıra: profile -> repos -> commits -> calendar -> done.
+    phase: Mapped[str] = mapped_column(String(10), default="profile", server_default="profile")
     # Senkron dakikalar sürebilir; ekran ilerlemeyi bu sayılardan gösterir.
     repos_total: Mapped[int | None] = mapped_column(Integer)
     repos_done: Mapped[int] = mapped_column(Integer, default=0)

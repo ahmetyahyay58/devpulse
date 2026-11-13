@@ -63,6 +63,7 @@ void main() {
   });
 
   test('hiç senkron yoksa iş null, yükleme biter', () async {
+    backend.latestJob = null;
     final c = controller();
     await c.load();
     expect(c.job, isNull);

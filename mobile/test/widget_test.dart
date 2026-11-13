@@ -29,7 +29,8 @@ Widget _card(http.Client client) => MaterialApp(
 void main() {
   // --- Giriş akışı ---------------------------------------------------------------
 
-  testWidgets('oturum yoksa giriş ekranı açılır; demo girişi ana ekrana götürür', (tester) async {
+  testWidgets('oturum yoksa giriş ekranı açılır; demo girişi senkron ekranından ana ekrana götürür',
+      (tester) async {
     final backend = FakeBackend();
     await tester.pumpWidget(_app(backend, MemorySessionStore()));
     await tester.pumpAndSettle();
@@ -37,6 +38,16 @@ void main() {
     expect(find.text('GitHub ile giriş yap'), findsOneWidget);
 
     await tester.tap(find.text('Demo ile dene'));
+    await tester.pumpAndSettle();
+
+    // Girişin hemen ardından senkron ekranı açılır ve yeni senkron başlar.
+    expect(find.text('Senkron'), findsOneWidget);
+    // Demo anında biter ama aşamalar birer birer gösterilir (4 x 0,8 sn), sonra ekran
+    // kendiliğinden kapanır (+0,8 sn). Testte saat dilimi eklentisi cevap vermez: 2 sn sınır.
+    for (var i = 0; i < 40; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    expect(backend.called('/sync'), isTrue);
     await tester.pumpAndSettle();
 
     expect(find.text('Merhaba, demo-gelistirici'), findsOneWidget);
@@ -63,8 +74,8 @@ void main() {
 
   // --- Senkron kartı ----------------------------------------------------------------
 
-  testWidgets('senkron kartı: "Verimi çek" senkronu başlatır ve özeti gösterir', (tester) async {
-    final backend = FakeBackend();
+  testWidgets('ilk girişte senkron kendiliğinden başlar, bitince özet görünür', (tester) async {
+    final backend = FakeBackend()..latestJob = null; // hiç senkron yok
     final api = ApiClient(baseUrl: 'http://test', client: backend.client);
     await tester.pumpWidget(MaterialApp(
       home: HomeScreen(
@@ -74,14 +85,13 @@ void main() {
         onLogout: () {},
         timezone: () async => 'Europe/Istanbul',
         pollInterval: Duration.zero,
+        syncStepDuration: Duration.zero,
       ),
     ));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Henüz verin çekilmedi'), findsOneWidget);
-
-    await tester.tap(find.text('Verimi çek'));
-    await tester.pumpAndSettle();
-
+    // Düğmeye basmadan senkron başladı; ekran iş bitince kendiliğinden kapandı.
+    expect(backend.called('/sync'), isTrue);
+    expect(find.text('Senkron'), findsNothing);
     expect(find.textContaining('Son senkron:'), findsOneWidget);
     // "6" yalnızca "Yeni commit" satırında aranır (saat grafiğinin "6" etiketiyle karışmasın).
     final newCommitRow = find.ancestor(of: find.text('Yeni commit'), matching: find.byType(Row)).first;

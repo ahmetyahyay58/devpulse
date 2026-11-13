@@ -29,6 +29,9 @@ class DevPulseApp extends StatefulWidget {
 class _DevPulseAppState extends State<DevPulseApp> {
   Session? _session;
   bool _restoring = true; // açılışta kayıtlı oturum aranıyor
+  // Giriş ekranından yeni mi gelindi? Öyleyse ana ekran senkronu başlatıp senkron ekranını
+  // açar. Kayıtlı oturumla açılışta (uygulama yeniden açıldı) false kalır.
+  bool _freshLogin = false;
 
   @override
   void initState() {
@@ -48,7 +51,10 @@ class _DevPulseAppState extends State<DevPulseApp> {
 
   Future<void> _logout() async {
     await widget.auth.logout();
-    setState(() => _session = null);
+    setState(() {
+      _session = null;
+      _freshLogin = false;
+    });
   }
 
   /// Veri silindikten sonra (oturum zaten silindi): giriş ekranı + özet bildirimi.
@@ -73,11 +79,15 @@ class _DevPulseAppState extends State<DevPulseApp> {
     if (session == null) {
       return LoginScreen(
         auth: widget.auth,
-        onLoggedIn: (s) => setState(() => _session = s),
+        onLoggedIn: (s) => setState(() {
+          _session = s;
+          _freshLogin = true;
+        }),
       );
     }
     return HomeScreen(
       session: session,
+      syncOnOpen: _freshLogin,
       api: widget.auth.api,
       healthApi: widget.healthApi,
       onLogout: _logout,

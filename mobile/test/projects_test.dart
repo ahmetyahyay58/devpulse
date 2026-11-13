@@ -19,6 +19,7 @@ Future<void> _openProjects(WidgetTester tester, FakeBackend backend) async {
       onLogout: () {},
       timezone: () async => 'Europe/Istanbul',
       pollInterval: Duration.zero,
+      syncStepDuration: Duration.zero,
     ),
   ));
   await tester.pumpAndSettle();
@@ -62,7 +63,7 @@ void main() {
 
     await tester.tap(find.text('Genel Bakış').last); // alt çubuktaki sekme
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Verimi çek'));
+    await tester.tap(find.text('Yeniden senkronla'));
     await tester.pumpAndSettle();
     expect(backend.projectsCalls, 2);
   });

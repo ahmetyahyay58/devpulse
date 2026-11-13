@@ -20,6 +20,7 @@ Future<void> _pumpHome(WidgetTester tester, FakeBackend backend) async {
       onLogout: () {},
       timezone: () async => 'Europe/Istanbul',
       pollInterval: Duration.zero,
+      syncStepDuration: Duration.zero,
     ),
   ));
   await tester.pumpAndSettle();
@@ -123,8 +124,8 @@ void main() {
     await _pumpHome(tester, backend);
     expect(backend.overviewCalls, 1);
 
-    await tester.tap(find.text('Verimi çek'));
-    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yeniden senkronla'));
+    await tester.pumpAndSettle(); // senkron ekranı açılır, bitince kendiliğinden kapanır
 
     expect(find.textContaining('Son senkron:'), findsOneWidget);
     expect(backend.overviewCalls, 2);

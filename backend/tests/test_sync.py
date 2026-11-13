@@ -179,6 +179,31 @@ def test_failed_source_marks_job_failed(db):
     assert _count(db, Repo) == 0
 
 
+def test_phase_ends_as_done(db):
+    run_sync(DemoClient(DEMO_FILE))
+    assert db.scalar(select(SyncJob)).phase == "done"
+
+
+def test_failed_job_keeps_phase_where_it_failed(db):
+    # Ekrandaki aşamalı liste kırmızı işareti doğru satıra koyabilsin.
+    with pytest.raises(GitHubError):
+        run_sync(FailingSource(DEMO_FILE))  # repo listesinde hata
+    assert db.scalar(select(SyncJob)).phase == "repos"
+
+
+class CalendarFailingSource(DemoClient):
+    def fetch_calendar(self, profile):
+        raise GitHubError("GitHub şu an yanıt vermiyor; biraz sonra tekrar dene.")
+
+
+def test_failure_in_calendar_phase(db):
+    with pytest.raises(GitHubError):
+        run_sync(CalendarFailingSource(DEMO_FILE))
+    job = db.scalar(select(SyncJob))
+    assert (job.phase, job.status) == ("calendar", "failed")
+    assert job.repos_done == job.repos_total  # repolar ve commit'ler tamamlanmıştı
+
+
 class BuggySource(DemoClient):
     """Kod hatası gibi beklenmeyen bir istisna (iç ayrıntı içerir)."""
 

@@ -179,12 +179,14 @@ def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool
         job = db.get(SyncJob, job_id)
         user_id = job.user_id
         job.status = "running"
+        job.phase = "repos"  # profil start_sync'te çekildi
         job.started_at = _now()
         db.commit()
 
         try:
             repos = source.fetch_repos(profile)
             job.repos_total = len(repos)
+            job.phase = "commits"
             _record_requests(job, source)
             db.commit()
 
@@ -206,14 +208,19 @@ def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool
                 _record_requests(job, source)
                 db.commit()  # her repodan sonra: ilerleme ekranı bunu görür
 
+            job.phase = "calendar"
+            db.commit()
             job.calendar_days = _upsert_calendar(db, user_id, source.fetch_calendar(profile))
             _record_requests(job, source)
 
             job.status = "done"
+            job.phase = "done"
             job.finished_at = _now()
             db.get(User, user_id).last_synced_at = job.finished_at
             db.commit()
         except Exception as exc:
+            # rollback yalnız son commit'ten sonrasını geri alır; phase hatanın çıktığı
+            # aşamada kalır (her aşama başında commit edildi).
             db.rollback()
             job = db.get(SyncJob, job_id)
             job.status = "failed"

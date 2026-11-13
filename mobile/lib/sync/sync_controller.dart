@@ -10,7 +10,9 @@ typedef TimezoneProvider = Future<String?> Function();
 
 Future<String?> deviceTimezone() async {
   try {
-    return (await FlutterTimezone.getLocalTimezone()).identifier;
+    // Zaman sınırı: eklenti cevap vermezse senkron sonsuza kadar beklemesin.
+    final tz = await FlutterTimezone.getLocalTimezone().timeout(const Duration(seconds: 2));
+    return tz.identifier;
   } catch (_) {
     return null; // backend saat dilimi olmadan da çalışır; eskisini korur
   }
@@ -33,6 +35,7 @@ class SyncController extends ChangeNotifier {
   final Duration pollInterval;
 
   SyncJob? job; // en son bilinen iş
+  List<(DateTime, int)> commitDays = const []; // dolan takvim: şu ana kadar yazılan commit'ler
   String? error;
   bool loading = true; // açılışta son iş soruluyor
   bool _disposed = false;
@@ -50,9 +53,25 @@ class SyncController extends ChangeNotifier {
     _notify();
   }
 
+  /// true: senkron başlatılıyor, henüz iş numarası yok (ekran eski işi göstermesin).
+  bool starting = false;
+
+  /// Girişten hemen sonra: son işi sorar, sonra yeni senkronu başlatır. Zaten süren bir iş
+  /// varsa yenisi açılmaz, o izlenir.
+  Future<void> loadAndStart() async {
+    starting = true;
+    commitDays = const [];
+    _notify();
+    await load();
+    await start();
+    starting = false;
+    _notify();
+  }
+
   Future<void> start() async {
     if (isRunning) return;
     error = null;
+    commitDays = const []; // önceki senkronun takvimi görünmesin; yeniden dolacak
     _notify();
     await _guard(() async {
       final id = await api.start(
@@ -74,12 +93,24 @@ class SyncController extends ChangeNotifier {
         await Future<void>.delayed(pollInterval);
         if (_disposed) return;
         final ok = await _guard(() async => job = await api.job(id));
+        if (ok && job!.phase != 'profile' && job!.phase != 'repos') await refreshDays(notify: false);
         _notify();
         if (!ok) return; // bağlantı hatası: izlemeyi bırak, hata gösterilir
       }
     } finally {
       _polling = false;
     }
+  }
+
+  /// Takvimi günceller. Yalnız görsel bir ek: hata olursa sessizce eski hali kalır,
+  /// senkronun izlenmesi durmaz.
+  Future<void> refreshDays({bool notify = true}) async {
+    try {
+      commitDays = await api.commitDays();
+    } catch (_) {
+      return;
+    }
+    if (notify) _notify();
   }
 
   /// Hataları kullanıcıya gösterilecek mesaja çevirir. Başarılıysa true.

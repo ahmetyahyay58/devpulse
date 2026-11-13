@@ -11,6 +11,7 @@ import '../projects/projects_controller.dart';
 import '../projects/projects_view.dart';
 import '../sync/sync_card.dart';
 import '../sync/sync_controller.dart';
+import '../sync/sync_screen.dart';
 import 'account_screen.dart';
 import 'health_card.dart';
 
@@ -26,7 +27,15 @@ class HomeScreen extends StatefulWidget {
     this.onDeleted,
     this.timezone,
     this.pollInterval = const Duration(milliseconds: 1500),
+    this.syncOnOpen = false,
+    this.syncStepDuration = const Duration(milliseconds: 800),
   });
+
+  /// true: girişten hemen sonra; senkron başlar ve senkron ekranı açılır.
+  final bool syncOnOpen;
+
+  /// Senkron ekranında her aşamanın en az gösterilme süresi (testlerde sıfır).
+  final Duration syncStepDuration;
 
   final Session session;
   final ApiClient api;
@@ -49,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
     onUnauthorized: widget.onLogout, // oturum süresi dolduysa giriş ekranına dön
     timezone: widget.timezone,
     pollInterval: widget.pollInterval,
-  )..load();
+  );
 
   late final OverviewController _overview = OverviewController(
     api: widget.api,
@@ -68,6 +77,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _sync.addListener(_reloadWhenSyncFinishes);
+    if (widget.syncOnOpen) {
+      // İlk kare çizildikten sonra (Navigator hazır olunca) ekranı aç ve senkronu başlat.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _openSyncScreen();
+        _sync.loadAndStart();
+      });
+    } else {
+      _loadSync();
+    }
+  }
+
+  /// Son senkronu sorar. Hiç senkron yapılmamışsa (ilk giriş) senkronu kendiliğinden
+  /// başlatır ve senkron ekranını açar: veri olmadan diğer ekranlar boş kalırdı.
+  Future<void> _loadSync() async {
+    await _sync.load();
+    final firstLogin = _sync.job == null && _sync.error == null;
+    if (firstLogin && mounted) _startSync();
   }
 
   /// Senkron "sürüyor"dan "bitti"ye geçince iki sekme de yeni veriyle yeniden yüklenir.
@@ -79,6 +106,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     _wasRunning = running;
   }
+
+  /// Senkronu başlatır ve ilerlemeyi tam sayfada gösterir.
+  void _startSync() {
+    _sync.start();
+    _openSyncScreen();
+  }
+
+  void _openSyncScreen() => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => SyncScreen(controller: _sync, stepDuration: widget.syncStepDuration),
+        ),
+      );
 
   @override
   void dispose() {
@@ -150,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              SyncCard(controller: _sync),
+              SyncCard(controller: _sync, onStart: _startSync, onOpen: _openSyncScreen),
               const SizedBox(height: 24),
               Text('Genel Bakış', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),

@@ -69,7 +69,42 @@ def test_demo_sync_runs_in_background_and_reports_progress(api, db, demo_auth):
     assert job["status"] == "done"
     assert job["progress"] == 1.0
     assert (job["repos_total"], job["commits_inserted"], job["calendar_days"]) == (2, 6, 7)
+    assert job["phase"] == "done"
     assert db.scalar(select(User.timezone)) == "Europe/Istanbul"
+
+
+# --- Dolan takvim (commit günleri) -----------------------------------------------
+
+def test_commit_days_counts_commits_in_window(api, db, demo_auth):
+    api.post("/sync", json={}, headers=demo_auth)
+    body = api.get("/sync/commit-days?weeks=53", headers=demo_auth).json()
+    days = body["days"]
+    assert len(days) == 53 * 7  # eksik günler 0 ile dolu
+    assert [d["day"] for d in days] == sorted(d["day"] for d in days)  # eskiden yeniye
+    # Pencere içindeki commit'ler (demo_small'da 3'ü 2025 Eylül'de, pencere dışında).
+    in_window = db.scalar(text("SELECT count(*) FROM commits WHERE authored_at::date >= :d"),
+                          {"d": days[0]["day"]})
+    assert sum(d["count"] for d in days) == in_window > 0
+
+
+def test_commit_days_uses_users_timezone(api, db, demo_auth):
+    # UTC 22:30 İstanbul'da ertesi gün 01:30'dur: commit ertesi güne sayılmalı.
+    api.post("/sync", json={"timezone": "Europe/Istanbul"}, headers=demo_auth)
+    db.execute(text("DELETE FROM commits"))
+    utc_day = datetime.now(timezone.utc).date() - timedelta(days=3)
+    authored = datetime(utc_day.year, utc_day.month, utc_day.day, 22, 30, tzinfo=timezone.utc)
+    db.execute(text(
+        "INSERT INTO commits (repo_id, oid, authored_at, message, is_coauthored) "
+        "SELECT id, 'abc', :t, 'deneme', false FROM repos WHERE user_id = 1 LIMIT 1"), {"t": authored})
+    db.commit()
+
+    days = api.get("/sync/commit-days", headers=demo_auth).json()["days"]
+    counted = [d["day"] for d in days if d["count"]]
+    assert counted == [(utc_day + timedelta(days=1)).isoformat()]
+
+
+def test_commit_days_requires_session(api):
+    assert api.get("/sync/commit-days").status_code == 401
 
 
 def test_live_sync_with_github_token(api, login_as, monkeypatch):

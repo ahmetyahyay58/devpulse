@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../api/sync_api.dart';
 import 'sync_controller.dart';
 
-/// Senkronu başlatan ve ilerlemesini gösteren kart.
+/// Senkronu başlatan ve ilerlemesini özetleyen kart. Ayrıntılar tam sayfa SyncScreen'de.
 class SyncCard extends StatelessWidget {
-  const SyncCard({super.key, required this.controller});
+  const SyncCard({super.key, required this.controller, this.onStart, this.onOpen});
 
   final SyncController controller;
+  final VoidCallback? onStart; // verilmezse yalnız controller.start (ör. testlerde)
+  final VoidCallback? onOpen; // senkron ekranını açar
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,7 @@ class SyncCard extends StatelessWidget {
       if (job != null && job.status == 'failed') _failed(context, job),
       const SizedBox(height: 16),
       FilledButton.icon(
-        onPressed: c.start,
+        onPressed: onStart ?? c.start,
         icon: const Icon(Icons.sync),
         label: Text(switch (job?.status) {
           null => 'Verimi çek',
@@ -74,6 +76,13 @@ class SyncCard extends StatelessWidget {
         'Uygulamayı kapatabilirsin; senkron sunucuda devam eder.',
         style: _muted(context),
       ),
+      if (onOpen != null) ...[
+        const SizedBox(height: 8),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton(onPressed: onOpen, child: const Text('Ayrıntıları gör')),
+        ),
+      ],
     ];
   }
 

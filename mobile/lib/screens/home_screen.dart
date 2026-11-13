@@ -6,6 +6,7 @@ import '../api/sync_api.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import '../overview/overview_controller.dart';
+import '../analysis/metrics_view.dart';
 import '../overview/overview_section.dart';
 import '../projects/projects_controller.dart';
 import '../projects/projects_view.dart';
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   )..load();
 
   bool _wasRunning = false;
-  int _tab = 0; // 0: Genel Bakış, 1: Projeler
+  int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler
 
   @override
   void initState() {
@@ -154,16 +155,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      // IndexedStack: iki sekme de bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
+      // IndexedStack: sekmeler bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
       body: IndexedStack(
         index: _tab,
-        children: [_overviewTab(context), ProjectsView(controller: _projects)],
+        children: [
+          _overviewTab(context),
+          MetricsView(controller: _overview, api: widget.api),
+          ProjectsView(controller: _projects),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.insights), label: 'Genel Bakış'),
+          NavigationDestination(icon: Icon(Icons.query_stats), label: 'Analiz'),
           NavigationDestination(icon: Icon(Icons.folder_outlined), label: 'Projeler'),
         ],
       ),

@@ -119,6 +119,19 @@ def sessions(local_times: list[datetime], gap: timedelta = SESSION_GAP) -> list[
     return result
 
 
+def longest_session(sess: list[Session]) -> Session | None:
+    """Süresi en uzun oturum; eşitlikte en yenisi."""
+    return max(reversed(sess), key=lambda s: s.minutes) if sess else None
+
+
+def common_start_hour(sess: list[Session]) -> int | None:
+    """Oturumların en sık başladığı yerel saat; eşitlikte en erken saat."""
+    if not sess:
+        return None
+    counts = Counter(s.start.hour for s in sess)
+    return min(counts, key=lambda h: (-counts[h], h))
+
+
 @dataclass(frozen=True)
 class Intensity:
     commits_per_active_day: float | None

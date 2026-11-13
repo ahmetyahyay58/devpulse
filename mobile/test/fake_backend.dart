@@ -63,6 +63,7 @@ class FakeBackend {
         'sessions': section('yetersiz', 'Bu metrik için henüz yeterli veri yok (2 oturum).', {
           'count': 2, 'commits_per_session': 2.0, 'session_minutes': 4.5,
           'commits_per_active_day': 2.0, 'lines_per_commit': 14.0,
+          'longest_minutes': 95.0, 'longest_day': '2026-10-02', 'common_start_hour': 14,
         }),
       };
 
@@ -92,6 +93,26 @@ class FakeBackend {
       ],
       'by_source': {'kural': 30, 'model': 3},
       'note': 'Türler yaklaşık bir tahmindir: %63 doğru (kappa 0,53).',
+    },
+  );
+
+  /// 8 hafta: ilk 4 hafta ~1 commit (Evre 1), son 4 hafta ~5 commit (Evre 2).
+  Map<String, dynamic> changePoints = section(
+    'dusuk',
+    "1 değişim noktası bulundu. Son değişim 19.10.2026 haftasında: haftalık ortalama 1 commit'ten 5 commit'e arttı.",
+    {
+      'weeks': [
+        for (var i = 0; i < 8; i++)
+          {
+            'start': DateTime(2026, 9, 21).add(Duration(days: 7 * i)).toIso8601String().substring(0, 10),
+            'commits': i < 4 ? 1 : 5,
+            'phase': i < 4 ? 0 : 1,
+          },
+      ],
+      'phases': [
+        {'index': 0, 'start': '2026-09-21', 'end': '2026-10-12', 'weeks': 4, 'mean': 1.0},
+        {'index': 1, 'start': '2026-10-19', 'end': '2026-11-09', 'weeks': 4, 'mean': 5.0},
+      ],
     },
   );
 
@@ -176,6 +197,19 @@ class FakeBackend {
     }
     if (path == '/metrics/anomalies') {
       return _json(anomalies);
+    }
+    if (path == '/metrics/change-points') {
+      return _json(changePoints);
+    }
+    if (path == '/metrics/catalog') {
+      return _json({
+        'entries': [
+          {
+            'name': 'Oturum', 'section': 'Oturum', 'definition': 'Test tanımı.', 'unit': 'oturum',
+            'interpretation': 'Test yorumu.', 'reliable_when': 'En az 15 oturum.',
+          },
+        ],
+      });
     }
     if (path == '/metrics/calendar') {
       final start = DateTime(2026, 11, 6);

@@ -14,7 +14,8 @@ Kod (`backend/app/metrics/`) bu belgeye uyar; tanım değişirse önce burası g
 - **Bugün:** Kullanıcının saat dilimindeki bugünün tarihi.
 - **Betimleme, puanlama değil:** Commit sayısı üretkenliği ya da kaliteyi ölçmez. Metrikler
   çalışma alışkanlığını betimler; "iyi/kötü" yargısı içermez.
-- **Kural tabanlıdır:** Bu sayfadaki metrikler makine öğrenmesi kullanmaz. Tek istisna
+- **Kural tabanlıdır:** Bu sayfadaki metrikler makine öğrenmesi kullanmaz (değişim noktaları
+  istatistiksel bir bölütlemedir, öğrenme değildir). Tek istisna
   "Olağan dışı günler" bölümündeki Isolation Forest kıyasıdır: gözetimsiz bir yöntemdir
   (etiketli veri yok), arayüzdeki ana sonuç ise istatistiksel MAD kuralıdır.
 
@@ -30,6 +31,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Oturum ve yoğunluk | < 3 oturum | < 15 oturum | diğer |
 | Olağan dışı günler | < 10 aktif gün | < 30 aktif gün | diğer |
 | Commit türleri | < 10 commit | < 30 commit | diğer |
+| Değişim noktaları | < 12 hafta ya da < 10 commit | < 26 hafta | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -57,6 +59,11 @@ Commit'ler zamana göre sıralanır; iki ardışık commit arasındaki boşluk *
 yeni oturum başlar. Oturum süresi = oturumdaki ilk ve son commit arasındaki süre (tek
 commit'lik oturumun süresi 0'dır; gerçek çalışma süresi commit'lerden bilinemez, bu bir alt
 sınırdır).
+- **En uzun oturum:** Süresi en uzun oturum (dakika) ve başladığı gün. Eşitlikte en yenisi.
+- **En sık başlangıç saati:** Oturumların ilk commit'inin yerel saatine göre en çok tekrarlanan
+  saat (eşitlikte en erken saat). Commit'in saati değil, oturumun başladığı saattir.
+- Ortalama süre gösterilmez, medyan gösterilir (bkz. Yoğunluk): tek bir uzun oturum ortalamayı
+  bozar.
 
 ### Yoğunluk
 - **Aktif gün başına commit:** Aktif günlerdeki commit sayısının medyanı.
@@ -67,6 +74,33 @@ sınırdır).
 
 Ortalama yerine **medyan** kullanılır: tek bir dev commit (ör. bağımlılık klasörü) ortalamayı
 bozar, medyanı bozmaz.
+
+### Değişim noktaları (istatistik, ML değil)
+**Ne gösterir:** Haftalık commit sayısının kalıcı olarak değiştiği haftaları; örneğin
+"haftada ~1 commit"ten "haftada ~5 commit"e geçiş. Tek bir yoğun gün değil (o "Olağan dışı
+günler"dir), haftalar süren düzey değişimi aranır.
+
+- **Veri:** Son 52 hafta (ilk commit daha yeniyse ilk commit'in haftasından başlar), yerel
+  saatle Pazartesi başlayan haftalık commit sayıları; commit'siz haftalar 0.
+- **Yöntem:** `ruptures` kütüphanesinin PELT algoritması, `l1` maliyeti (her evre kendi
+  medyanıyla temsil edilir), en kısa evre 4 hafta. Ceza = 2 · σ · ln(n); σ, ardışık
+  haftaların farklarının MAD'iyle ölçülen gürültü (σ = 1,4826 · MAD / √2), n hafta sayısı.
+  σ 0 çıkarsa 1 alınır.
+- **Neden `l1`:** Ortalamaya dayalı `l2` maliyeti tek bir çok yoğun haftayı (ör. 25 commit'lik
+  bir hafta) ayrı bir "evre" yapıyordu; geliştiricinin gerçek verisinde ve sentetik bir
+  patlama senaryosunda bu görüldü (13 Kas). Tek haftalık patlama düzey değişimi değildir,
+  "Olağan dışı günler"in konusudur. Medyana dayalı `l1` bunu evre saymaz; kalıcı düzey
+  değişimlerini (ör. 1'den 6'ya çıkış, tamamen durma) aynı şekilde bulur. Evre sayısı 6'yı aşarsa ceza ikiye katlanarak yeniden aranır (en çok
+  6 evre: renkler sabit sırayla verilir, döngüye girmez).
+- **Çıktı:** Evreler (başlangıç ve bitiş haftası, haftalık ortalama commit; evreler medyana
+  göre ayrılır, okunması kolay olsun diye ortalama gösterilir). Özet son iki
+  evreyi karşılaştırır.
+- **Sınır:** Ceza katsayısı ve en kısa evre sezgiseldir; yöntem değişimin *nedenini* bilmez.
+  Gözetimli öğrenme değildir; etiketli veri yoktur.
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| < 12 hafta ya da < 10 commit | < 26 hafta | diğer |
 
 ### Olağan dışı günler (anomali, gözetimsiz)
 **Ne arar:** Kullanıcının kendi alışkanlığına göre belirgin şekilde yoğun geçen günleri.
@@ -136,3 +170,8 @@ nasıl kullanılacağını ve hangi lisansla paylaşıldığını anlayabiliyor 
   ya da `docs/README.md` bulunmaz).
 - Skora girmeyen bilgi: son push'tan bu yana geçen gün, durum etiketi ve kullanıcının o
   repodaki commit sayısı.
+
+## Metrik kataloğu (uygulamada)
+Uygulamadaki "Metrik kataloğu" ekranı her metriğin tanımını, birimini, nasıl yorumlanacağını ve
+hangi koşulda güvenilir olduğunu kısaca gösterir. Metinler `backend/app/metrics/catalog.py`
+içindedir; her girdinin bu belgede bir başlığı olduğu test edilir (`tests/test_catalog.py`).

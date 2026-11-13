@@ -19,7 +19,8 @@ HOW_RHYTHM = (
 HOW_SESSIONS = (
     "Commit'ler zamana göre sıralandı; arada 2 saatten uzun boşluk varsa yeni oturum sayıldı "
     "(kural, makine öğrenmesi değil). Oturum süresi ilk ve son commit arasıdır; gerçek çalışma "
-    "süresi bundan uzun olabilir. Ortalama yerine medyan kullanıldı."
+    "süresi bundan uzun olabilir. Ortalama yerine medyan kullanıldı. En sık başlangıç saati, "
+    "oturumun ilk commit'inin saatidir."
 )
 NOT_ENOUGH = "Bu metrik için henüz yeterli veri yok ({basis})."
 
@@ -60,6 +61,9 @@ class SessionsOut(BaseModel):
     session_minutes: float | None
     commits_per_active_day: float | None
     lines_per_commit: float | None
+    longest_minutes: float | None  # en uzun oturumun süresi
+    longest_day: date | None  # en uzun oturumun başladığı gün (yerel)
+    common_start_hour: int | None  # oturumların en sık başladığı saat
     sufficiency: Sufficiency
     basis: str
     summary: str
@@ -113,6 +117,7 @@ def build_overview(
     # --- Oturum ve yoğunluk
     sess = activity.sessions(times)
     i = activity.intensity(times, points, sess)
+    longest_s = activity.longest_session(sess)
     s_suff = sufficiency.sessions(len(sess))
     s_basis = f"{len(sess)} oturum"
     s_summary = (
@@ -148,6 +153,9 @@ def build_overview(
             session_minutes=i.session_minutes,
             commits_per_active_day=i.commits_per_active_day,
             lines_per_commit=i.lines_per_commit,
+            longest_minutes=longest_s.minutes if longest_s else None,
+            longest_day=longest_s.start.date() if longest_s else None,
+            common_start_hour=activity.common_start_hour(sess),
             sufficiency=s_suff, basis=s_basis, summary=s_summary,
         ),
     )

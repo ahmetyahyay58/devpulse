@@ -4,6 +4,8 @@ GET /metrics/overview  Genel Bakış: KPI, süreklilik, ritim, oturum/yoğunluk
 GET /metrics/calendar  Katkı takvimi (ısı haritası için, eksik günler 0)
 GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
 GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçeli örnekler)
+GET /metrics/change-points Haftalık commit sayısında değişim noktaları (PELT, istatistik)
+GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
 from datetime import date, datetime, timedelta
@@ -15,7 +17,10 @@ from sqlalchemy import func, select
 
 from app.auth import current_user
 from app.db import SessionLocal
+from app.metrics import activity
 from app.metrics.activity import CommitPoint
+from app.metrics.catalog import CATALOG, CatalogOut
+from app.metrics.change_points import ChangePointsOut, build_change_points
 from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
@@ -98,3 +103,17 @@ def commit_types(user: User = Depends(current_user)) -> CommitTypesOut:
 def anomalies(user: User = Depends(current_user)) -> AnomaliesOut:
     """Olağan dışı yoğun günler (robust z / MAD). Isolation Forest yalnızca ölçüm betiğinde."""
     return build_anomalies(_load_points(user.id), user.timezone)
+
+
+@router.get("/change-points", response_model=ChangePointsOut)
+def change_points(user: User = Depends(current_user)) -> ChangePointsOut:
+    """Son 52 haftada haftalık commit sayısının kalıcı olarak değiştiği haftalar."""
+    times = activity.to_local(_load_points(user.id), user.timezone)
+    today = datetime.now(ZoneInfo(user.timezone or "UTC")).date()
+    return build_change_points(times, today)
+
+
+@router.get("/catalog", response_model=CatalogOut)
+def catalog(user: User = Depends(current_user)) -> CatalogOut:
+    """Metrik kataloğu (kullanıcıya göre değişmez; yine de oturum ister)."""
+    return CatalogOut(entries=CATALOG)

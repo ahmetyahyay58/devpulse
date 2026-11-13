@@ -35,7 +35,7 @@ void main() {
     expect(ContributionHeatmap.level(10, 10), 4);
   });
 
-  testWidgets('KPI, takvim, rozetler ve özetler görünür', (tester) async {
+  testWidgets('KPI, takvim ve commit türleri görünür; metrik kartları Analiz sekmesinde', (tester) async {
     await _pumpHome(tester, FakeBackend());
 
     // Dört KPI kartı; değer kartın içinde aranır (33 halka grafiğin ortasında da yazar).
@@ -57,16 +57,13 @@ void main() {
     expect(kpi('Aktif gün'), '10');
     expect(kpi('En uzun seri'), '7 gün'); // Süreklilik bölümünden
     expect(kpi('Repo'), '4');
-    expect(find.text('Güncel seri'), findsOneWidget); // yalnız Süreklilik kartında
     expect(find.textContaining('üretkenliği ya da kaliteyi ölçmez'), findsOneWidget);
     expect(find.text('Son 30 haftada 5 katkı'), findsOneWidget);
     expect(find.byType(ContributionHeatmap), findsOneWidget);
-
-    // Üç durum da ikon + yazıyla gösterilir.
-    expect(find.text('Normal'), findsNWidgets(3)); // süreklilik + commit türleri + olağan dışı
-    expect(find.text('Düşük güven'), findsOneWidget);
-    expect(find.text('Yeterli veri yok'), findsOneWidget);
-    expect(find.textContaining('en uzun serin 7 gün'), findsOneWidget);
+    expect(find.text('Normal'), findsOneWidget); // yalnız commit türleri kartı
+    // Süreklilik, ritim, oturum, olağan dışı günler Analiz sekmesinde (bkz. metrics_test).
+    expect(find.text('Güncel seri'), findsNothing);
+    expect(find.text('Ritim'), findsNothing);
   });
 
   testWidgets('commit türleri: oranlar, doğruluk notu; 0 olan tür gizli', (tester) async {
@@ -123,34 +120,6 @@ void main() {
   testWidgets('takvim aralığı dışındaki olağan dışı gün için lejant çıkmaz', (tester) async {
     await _pumpHome(tester, FakeBackend()); // işaretli gün 02.10.2026, takvim 06-12.11
     expect(find.textContaining('Olağan dışı yoğun gün ('), findsNothing);
-  });
-
-  testWidgets('olağan dışı günler kartı işaretlenen günü gösterir', (tester) async {
-    await _pumpHome(tester, FakeBackend());
-    expect(find.text('Olağan dışı günler'), findsOneWidget);
-    expect(find.text('02.10.2026'), findsOneWidget);
-    expect(find.text('23 commit · z 8.1'), findsOneWidget);
-    expect(find.textContaining('Bu bir yargı değil'), findsOneWidget);
-  });
-
-  testWidgets('olağan dışı gün yoksa yalnızca özet görünür', (tester) async {
-    final backend = FakeBackend()
-      ..anomalies = FakeBackend.section('normal', 'Alışkanlığının belirgin dışında yoğun bir gün bulunmadı.', {
-        'flagged': <Map<String, dynamic>>[], 'active_days': 40, 'median_commits': 2.0,
-        'mad': 1.0, 'threshold': 3.5,
-      });
-    await _pumpHome(tester, backend);
-    expect(find.textContaining('yoğun bir gün bulunmadı'), findsOneWidget);
-    expect(find.textContaining('Bu bir yargı değil'), findsNothing);
-  });
-
-  testWidgets('veri yetersiz bölümde sayılar öne çıkarılmaz', (tester) async {
-    await _pumpHome(tester, FakeBackend());
-    // Oturum bölümü "yetersiz": ayrıntı satırları gösterilmez, yalnızca özet.
-    expect(find.text('Oturum sayısı'), findsNothing);
-    expect(find.textContaining('henüz yeterli veri yok (2 oturum)'), findsOneWidget);
-    // Ritim "düşük güven": grafik gösterilir.
-    expect(find.text('Haftanın gününe göre commit'), findsOneWidget);
   });
 
   testWidgets('"Nasıl hesaplandı?" açılınca yöntem ve dayanak görünür', (tester) async {

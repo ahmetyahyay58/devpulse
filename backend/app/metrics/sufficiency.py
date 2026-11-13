@@ -47,3 +47,11 @@ def sessions(session_count: int) -> Sufficiency:
     if session_count < 15:
         return Sufficiency.LOW
     return Sufficiency.NORMAL
+
+
+def change_points(weeks: int, commits: int) -> Sufficiency:
+    if weeks < 12 or commits < 10:
+        return Sufficiency.NONE
+    if weeks < 26:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL

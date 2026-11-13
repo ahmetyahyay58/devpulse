@@ -17,6 +17,13 @@ class ChartColors {
   /// lejantta yazıyla da açıklanır.
   static const anomaly = Color(0xFFFAB219);
 
+  /// Değişim noktası evreleri: aynı doğrulanmış kategorik palet, sabit sıra (Evre 1 hep mavi).
+  /// En çok 6 evre olur (backend sınırlar); renk döngüye girmez.
+  static const phases = [
+    Color(0xFF3987E5), Color(0xFFD95926), Color(0xFF199E70),
+    Color(0xFFC98500), Color(0xFFD55181), Color(0xFF008300),
+  ];
+
   /// Commit türleri: koyu tema kategorik paleti, sabit sıra (renk sırayı değil türü izler;
   /// bir tür hangi sırada olursa olsun hep aynı renktir). Doğrulama: altı renk koyu yüzeyde
   /// açıklık, doygunluk, renk körlüğü ayrımı ve kontrast kontrollerinden geçti.
@@ -45,9 +52,11 @@ class BarChart extends StatelessWidget {
     required this.labelFor,
     required this.tooltipFor,
     this.height = 72,
+    this.colorFor,
   });
 
   final List<int> values;
+  final Color Function(int index)? colorFor; // null: hepsi aynı mavi (tek seri)
   final String? Function(int index) labelFor; // null: o çubuğun altına etiket yazma
   final String Function(int index, int value) tooltipFor;
   final double height;
@@ -71,9 +80,9 @@ class BarChart extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 1), // çubuklar arası 2px
                       child: Container(
                         height: maxValue == 0 ? 0 : height * values[i] / maxValue,
-                        decoration: const BoxDecoration(
-                          color: ChartColors.bar,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                        decoration: BoxDecoration(
+                          color: colorFor?.call(i) ?? ChartColors.bar,
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
                         ),
                       ),
                     ),
@@ -92,6 +101,7 @@ class BarChart extends StatelessWidget {
                   labelFor(i) ?? '',
                   textAlign: TextAlign.center,
                   maxLines: 1,
+                  softWrap: false, // çubuk dar olsa da etiket kırpılmadan yanlara taşar
                   overflow: TextOverflow.visible,
                   style: TextStyle(fontSize: 10, color: muted),
                 ),

@@ -61,3 +61,20 @@ def test_overview_after_demo_sync(api, demo_auth):
     # 6 commit < 10: ritim için yeterli veri yok; özet bunu açıkça söyler.
     assert body["rhythm"]["sufficiency"] == "yetersiz"
     assert "yeterli veri yok" in body["rhythm"]["summary"]
+
+
+def test_change_points_requires_session_and_works_after_demo_sync(api, demo_auth):
+    assert api.get("/metrics/change-points").status_code == 401
+    api.post("/sync", json={}, headers=demo_auth)
+    body = api.get("/metrics/change-points", headers=demo_auth).json()
+    assert body["sufficiency"] in {"yetersiz", "dusuk", "normal"}
+    assert len(body["weeks"]) == sum(p["weeks"] for p in body["phases"])
+    assert body["phases"][-1]["end"] == body["weeks"][-1]["start"]
+    assert "PELT" in body["how"]
+
+
+def test_overview_sessions_has_longest_and_start_hour(api, demo_auth):
+    api.post("/sync", json={}, headers=demo_auth)
+    s = api.get("/metrics/overview", headers=demo_auth).json()["sessions"]
+    assert s["longest_minutes"] is not None and 0 <= s["common_start_hour"] <= 23
+    assert s["longest_day"] is not None

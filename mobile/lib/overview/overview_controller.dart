@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../api/api_client.dart';
 import 'overview_models.dart';
 
-/// Genel Bakış verisini (metrikler + katkı takvimi) yükler.
+/// Genel Bakış ve Analiz → Metrikler verisini (metrikler + katkı takvimi) tek seferde yükler.
 class OverviewController extends ChangeNotifier {
   OverviewController({required this.api, required this.onUnauthorized});
 
@@ -14,6 +14,7 @@ class OverviewController extends ChangeNotifier {
   CalendarData? calendar;
   MetricSection? anomalies; // olağan dışı yoğun günler
   MetricSection? commitTypes; // commit türleri dağılımı
+  MetricSection? changePoints; // haftalık commit'te değişim noktaları
   String? error;
   bool loading = false;
   bool _disposed = false;
@@ -23,17 +24,19 @@ class OverviewController extends ChangeNotifier {
     error = null;
     _notify();
     try {
-      // Dört istek aynı anda gider; hepsi bitince devam edilir.
+      // İstekler aynı anda gider; hepsi bitince devam edilir.
       final results = await Future.wait([
         api.get('/metrics/overview'),
         api.get('/metrics/calendar?days=210'), // son 30 hafta
         api.get('/metrics/anomalies'),
         api.get('/metrics/commit-types'),
+        api.get('/metrics/change-points'),
       ]);
       overview = Overview.fromJson(results[0]);
       calendar = CalendarData.fromJson(results[1]);
       anomalies = MetricSection.fromJson(results[2]);
       commitTypes = MetricSection.fromJson(results[3]);
+      changePoints = MetricSection.fromJson(results[4]);
     } on ApiException catch (e) {
       if (e.isUnauthorized) {
         onUnauthorized();

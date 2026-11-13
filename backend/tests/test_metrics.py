@@ -84,6 +84,24 @@ def test_exactly_two_hours_is_same_session():
     assert len(activity.sessions([_t(10), _t(12)])) == 1
 
 
+def test_longest_session_prefers_latest_on_tie():
+    # Oturumlar: 10:00-10:30 (30 dk), 12:31-12:40 (9 dk), 15:00-15:30 (30 dk) -> en yeni 30 dk
+    s = activity.sessions([_t(10), _t(10, 30), _t(12, 31), _t(12, 40), _t(15), _t(15, 30)])
+    longest = activity.longest_session(s)
+    assert (longest.minutes, longest.start) == (30, _t(15))
+    assert activity.longest_session([]) is None
+
+
+def test_common_start_hour_counts_session_starts_not_commits():
+    # Oturum başları: 10, 15, 10 (ertesi gün) -> 10. 15'te çok commit var ama tek oturum.
+    next_day = datetime(2026, 11, 13, 10, 5, tzinfo=timezone.utc)
+    times = [_t(10), _t(15), _t(15, 5), _t(15, 10), _t(15, 20), next_day]
+    assert activity.common_start_hour(activity.sessions(times)) == 10
+    # Eşitlikte en erken saat
+    assert activity.common_start_hour(activity.sessions([_t(15), _t(9)][::-1])) == 9
+    assert activity.common_start_hour([]) is None
+
+
 # --- Ritim -------------------------------------------------------------------------------
 
 def test_rhythm_counts_and_tie_breaks_to_earliest_hour():
@@ -144,6 +162,7 @@ def test_session_thresholds(n, expected):
 def test_overview_with_no_commits_does_not_crash():
     o = build_overview([], IST, d(12), repo_count=0)
     assert o.kpi.total_commits == 0
+    assert (o.sessions.longest_minutes, o.sessions.common_start_hour) == (None, None)
     assert {o.continuity.sufficiency, o.rhythm.sufficiency, o.sessions.sufficiency} == {Sufficiency.NONE}
     assert "yeterli veri yok" in o.rhythm.summary
 

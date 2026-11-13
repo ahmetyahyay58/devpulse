@@ -33,6 +33,7 @@ class AuthService {
   static String get redirectUri =>
       kIsWeb ? '${Uri.base.origin}/auth.html' : 'devpulse://oauth-callback';
   static String get _callbackScheme => kIsWeb ? 'http' : 'devpulse';
+  static String get _platform => kIsWeb ? 'web' : 'android';
 
   /// Uygulama açılırken: daha önce giriş yapılmışsa oturumu geri yükler.
   Future<Session?> restore() async {
@@ -44,7 +45,8 @@ class AuthService {
   Future<Session> loginDemo() async => _save(await api.post('/auth/demo'));
 
   Future<Session> loginWithGitHub() async {
-    final config = await api.get('/auth/config');
+    // Web ve Android ayrı GitHub OAuth App'leri kullanır (her birinin tek geri dönüş adresi var).
+    final config = await api.get('/auth/config?platform=$_platform');
     final pkce = Pkce.generate();
     final state = randomUrlSafe(32); // CSRF koruması: dönüşte aynısı gelmeli
 

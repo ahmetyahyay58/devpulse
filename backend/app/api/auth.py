@@ -7,6 +7,8 @@ POST /auth/demo    sentetik demo kullanıcı için oturum belirteci (GitHub gere
 GitHub token'ı cevapta telefona döner ve telefonun güvenli deposunda durur;
 backend onu hiçbir yere yazmaz.
 """
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
@@ -58,11 +60,14 @@ def _login(profile: Profile, github_token: str | None) -> LoginResult:
 
 
 @router.get("/config", response_model=AuthConfig)
-def config() -> AuthConfig:
-    if not settings.github_client_id:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "GitHub girişi yapılandırılmamış.")
+def config(platform: Literal["web", "android"] = "web") -> AuthConfig:
+    """Platforma göre (web / android) OAuth App'in herkese açık client_id'si."""
+    app = github_oauth.app_for_platform(platform)
+    if app is None:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE,
+                            f"GitHub girişi bu platform için yapılandırılmamış ({platform}).")
     return AuthConfig(
-        client_id=settings.github_client_id,
+        client_id=app.client_id,
         scope=settings.github_oauth_scope,
         authorize_url=github_oauth.AUTHORIZE_URL,
     )

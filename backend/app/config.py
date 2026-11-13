@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # mobil uygulamaya asla girmez.
     github_client_id: str | None = None
     github_client_secret: str | None = None
+    # Android için ikinci OAuth App (geri dönüş adresi devpulse://oauth-callback).
+    github_android_client_id: str | None = None
+    github_android_client_secret: str | None = None
     # Yalnızca herkese açık veri: profil okuma yetkisi yeterli.
     github_oauth_scope: str = "read:user"
 

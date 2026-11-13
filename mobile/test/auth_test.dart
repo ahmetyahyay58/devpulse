@@ -33,6 +33,10 @@ void main() {
 
     final q = authorizeUrl.queryParameters;
     expect(q['client_id'], 'test-client');
+    // Testler web dışında (VM) koşar: Android OAuth App'i istenir, dönüş devpulse:// olur.
+    final configReq = backend.requests.firstWhere((r) => r.url.path == '/auth/config');
+    expect(configReq.url.queryParameters['platform'], 'android');
+    expect(q['redirect_uri'], 'devpulse://oauth-callback');
     expect(q['scope'], 'read:user');
     expect(q['code_challenge_method'], 'S256');
 

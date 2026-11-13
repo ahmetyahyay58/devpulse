@@ -24,17 +24,18 @@ def test_exchange_code_sends_secret_and_verifier():
         seen["form"] = {k: v[0] for k, v in parse_qs(request.content.decode()).items()}
         return httpx.Response(200, json={"access_token": "gho_abc", "token_type": "bearer"})
 
-    token = github_oauth.exchange_code("kod", VERIFIER, "devpulse://cb", httpx.MockTransport(github))
+    web_redirect = "http://127.0.0.1:5180/auth.html"
+    token = github_oauth.exchange_code("kod", VERIFIER, web_redirect, httpx.MockTransport(github))
 
     assert token == "gho_abc"
     assert seen["url"] == github_oauth.TOKEN_URL
     assert seen["accept"] == "application/json"
     assert seen["form"] == {
-        "client_id": "test-client-id",
+        "client_id": "test-client-id",  # web adresi -> web uygulaması
         "client_secret": "test-client-secret",  # secret yalnızca backend'den GitHub'a gider
         "code": "kod",
         "code_verifier": VERIFIER,
-        "redirect_uri": "devpulse://cb",
+        "redirect_uri": web_redirect,
     }
 
 
@@ -43,6 +44,38 @@ def test_exchange_code_error_in_200_body():
     reply = httpx.Response(200, json={"error": "bad_verification_code", "error_description": "geçersiz"})
     with pytest.raises(github_oauth.OAuthError, match="bad_verification_code"):
         github_oauth.exchange_code("eski", VERIFIER, "x", httpx.MockTransport(lambda r: reply))
+
+
+def test_android_redirect_uses_android_app():
+    seen = {}
+
+    def github(request: httpx.Request) -> httpx.Response:
+        seen["form"] = {k: v[0] for k, v in parse_qs(request.content.decode()).items()}
+        return httpx.Response(200, json={"access_token": "gho_android"})
+
+    token = github_oauth.exchange_code("k", VERIFIER, "devpulse://oauth-callback", httpx.MockTransport(github))
+    assert token == "gho_android"
+    assert (seen["form"]["client_id"], seen["form"]["client_secret"]) == ("test-android-id", "test-android-secret")
+
+
+def test_revoke_tries_android_app_when_web_rejects():
+    tried = []
+
+    def github(request: httpx.Request) -> httpx.Response:
+        tried.append(request.url.path)
+        # Token Android uygulamasından: web uygulaması 404 der, Android 204.
+        return httpx.Response(204 if "test-android-id" in request.url.path else 404)
+
+    assert github_oauth.revoke_grant("gho_x", httpx.MockTransport(github)) is True
+    assert tried == ["/applications/test-client-id/grant", "/applications/test-android-id/grant"]
+
+
+def test_missing_android_app_gives_clear_error(monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "github_android_client_id", None)
+    with pytest.raises(github_oauth.OAuthError, match="platform"):
+        github_oauth.exchange_code("k", VERIFIER, "devpulse://oauth-callback")
 
 
 # --- /auth uç noktaları ------------------------------------------------------------
@@ -55,6 +88,12 @@ def test_auth_config_exposes_only_public_values(api):
         "authorize_url": "https://github.com/login/oauth/authorize",
     }
     assert "secret" not in str(body).lower()
+
+
+def test_auth_config_for_android(api):
+    body = api.get("/auth/config?platform=android").json()
+    assert body["client_id"] == "test-android-id"
+    assert api.get("/auth/config?platform=ios").status_code == 422  # yalnız web / android
 
 
 @pytest.fixture

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, Uint8List;
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../api/api_client.dart';
@@ -85,6 +85,9 @@ class AuthService {
       'redirect_uri': redirectUri,
     }));
   }
+
+  /// Sunucuda saklanan tüm verilerin JSON kopyası (dosya içeriği).
+  Future<Uint8List> exportData() => api.getBytes('/me/export');
 
   /// Sunucudaki tüm verileri siler, sonra telefondaki oturumu (token'lar dahil) siler.
   /// [revokeGitHub]: GitHub'daki DevPulse iznini de kaldır. Silinen satır sayılarını döner.

@@ -1,13 +1,15 @@
 """Hesap uç noktaları.
 
-GET    /privacy  aydınlatma metni (girişsiz: kullanıcı giriş yapmadan okuyabilmeli)
-DELETE /me       hesabı ve tüm verileri kalıcı olarak siler; istenirse GitHub iznini kaldırır
+GET    /privacy    aydınlatma metni (girişsiz: kullanıcı giriş yapmadan okuyabilmeli)
+GET    /me/export  sunucuda saklanan tüm verilerin JSON kopyası (indirme)
+DELETE /me         hesabı ve tüm verileri kalıcı olarak siler; istenirse GitHub iznini kaldırır
 """
 from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import PlainTextResponse
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import delete, func, select
 
@@ -26,6 +28,41 @@ PRIVACY_FILE = Path(__file__).resolve().parent.parent / "legal" / "aydinlatma_me
 def privacy() -> str:
     """Tek kaynak: metin güncellenince uygulama da günceli gösterir."""
     return PRIVACY_FILE.read_text(encoding="utf-8")
+
+
+def _rows(db, model, where, order_by) -> list[dict]:
+    """Bir tablonun satırlarını TÜM sütunlarıyla döner. Sütunlar elle sayılmaz, tablodan
+    okunur: ileride eklenen bir sütun da indirilen dosyaya kendiliğinden girer."""
+    columns = [c.name for c in model.__table__.columns]
+    rows = db.scalars(select(model).where(where).order_by(*order_by))
+    return [{name: getattr(row, name) for name in columns} for row in rows]
+
+
+@router.get("/me/export")
+def export_me(user: User = Depends(current_user)) -> JSONResponse:
+    """Sunucuda bu kullanıcı hakkında ne varsa: hesap, repolar, commit'ler, takvim, senkronlar."""
+    with SessionLocal() as db:
+        data = {
+            "exported_at": datetime.now(timezone.utc),
+            "note": "DevPulse sunucusunda senin hakkında saklanan verilerin tamamı. "
+                    "Zamanlar UTC'dir. GitHub token'ın sunucuda saklanmadığı için burada yoktur.",
+            "user": _rows(db, User, User.id == user.id, [User.id])[0],
+            "repos": _rows(db, Repo, Repo.user_id == user.id, [Repo.id]),
+            "commits": _rows(
+                db, Commit,
+                Commit.repo_id.in_(select(Repo.id).where(Repo.user_id == user.id)),
+                [Commit.repo_id, Commit.authored_at],
+            ),
+            "contribution_days": _rows(
+                db, ContributionDay, ContributionDay.user_id == user.id, [ContributionDay.day]
+            ),
+            "sync_jobs": _rows(db, SyncJob, SyncJob.user_id == user.id, [SyncJob.id]),
+        }
+    filename = f"devpulse-verilerim-{datetime.now(timezone.utc):%Y-%m-%d}.json"
+    return JSONResponse(
+        jsonable_encoder(data),  # datetime/date -> ISO metin
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 class DeleteRequest(BaseModel):

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
+import 'file_saver.dart';
 import 'privacy_screen.dart';
 
-/// Hesap: kullanıcı bilgisi, aydınlatma metni, çıkış ve veri silme.
+/// Hesap: kullanıcı bilgisi, aydınlatma metni, çıkış, veri indirme ve silme.
 class AccountScreen extends StatelessWidget {
   const AccountScreen({
     super.key,
@@ -13,12 +14,14 @@ class AccountScreen extends StatelessWidget {
     required this.auth,
     required this.onLogout,
     required this.onDeleted,
+    this.saveFile = shareFile,
   });
 
   final Session session;
   final AuthService auth;
   final VoidCallback onLogout;
   final ValueChanged<Map<String, dynamic>> onDeleted; // silme sonucu (satır sayıları)
+  final FileSaver saveFile; // testlerde sahtesi verilir
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +57,15 @@ class AccountScreen extends StatelessWidget {
                 },
               ),
               const Divider(height: 32),
+              Text('Verilerimi indir', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                'Sunucuda senin hakkında saklanan her şeyin bir kopyası (JSON dosyası).',
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              _ExportButton(onExport: () => _export(context)),
+              const Divider(height: 32),
               Text('Verilerimi sil', style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
@@ -74,6 +86,17 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _export(BuildContext context) async {
+    try {
+      final bytes = await auth.exportData();
+      await saveFile(bytes, exportFileName(DateTime.now()));
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('İndirilemedi: ${userMessage(e)}')));
+    }
+  }
+
   Future<void> _confirmAndDelete(BuildContext context) async {
     final revoke = await showDialog<bool>(
       context: context,
@@ -91,6 +114,38 @@ class AccountScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silinemedi: ${userMessage(e)}')));
     }
   }
+}
+
+/// İndirme düğmesi: beklerken kilitlenir ve dönen bir gösterge gösterir (büyük hesapta
+/// dosya birkaç saniye sürebilir; iki kez basılmasın).
+class _ExportButton extends StatefulWidget {
+  const _ExportButton({required this.onExport});
+  final Future<void> Function() onExport;
+
+  @override
+  State<_ExportButton> createState() => _ExportButtonState();
+}
+
+class _ExportButtonState extends State<_ExportButton> {
+  bool _busy = false;
+
+  Future<void> _run() async {
+    setState(() => _busy = true);
+    try {
+      await widget.onExport();
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => OutlinedButton.icon(
+        onPressed: _busy ? null : _run,
+        icon: _busy
+            ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Icon(Icons.download),
+        label: Text(_busy ? 'Hazırlanıyor…' : 'Verilerimi indir'),
+      );
 }
 
 /// Onay penceresi: neyin silineceğini açıkça listeler. true/false: GitHub izni kaldırılsın mı;

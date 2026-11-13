@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
@@ -70,6 +71,13 @@ class ApiClient {
     final resp = await _send(() => _http.get(_uri(path), headers: _headers));
     if (resp.statusCode >= 400) throw ApiException(resp.statusCode, _fallbackMessage(resp.statusCode));
     return utf8.decode(resp.bodyBytes);
+  }
+
+  /// Dosya indirme için ham bayt, ör. /me/export. Hata yolu JSON isteklerle aynı.
+  Future<Uint8List> getBytes(String path) async {
+    final resp = await _send(() => _http.get(_uri(path), headers: _headers));
+    if (resp.statusCode >= 400) _decode(resp); // hata mesajını aynı kurallarla çıkarır (fırlatır)
+    return resp.bodyBytes;
   }
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');

@@ -65,6 +65,7 @@ Kesildi: repo kümeleme, mülakat ve hedef koçu, iki dilli CV ve 5 şablon, "So
 - Token, `.env` ve `ham_veri/` klasörü asla commit edilmez (`.gitignore`'da).
 - E-posta ve yazar adı veritabanında saklanmaz. Başka kişilerin kullanıcı adları saklanmaz, yalnızca sayılar.
 - Aydınlatma metni: `backend/app/legal/aydinlatma_metni.md` (tek kaynak; `GET /privacy` sunar, uygulama oradan gösterir). Saklanan/saklanmayan veri, yetki kapsamı ya da veri akışı değişirse metin de aynı commit'te güncellenir. İletişim adresi yer tutucusu geliştirici tarafından doldurulacak.
+- Veri indirme: `GET /me/export` saklanan her sütunu JSON olarak verir (sütunlar tablodan okunur; test her DB sütununun dosyada olduğunu denetler). Mobilde web'de doğrudan indirme, Android'de paylaşım menüsü (`share_plus`).
 - Veri silme: `DELETE /me` tek SQL komutuyla siler (ON DELETE CASCADE), senkron sürerken 409; istenirse GitHub izni de kaldırılır (başarısız olsa da silme tamamlanır).
 
 ## Repo yapısı (planlanan)

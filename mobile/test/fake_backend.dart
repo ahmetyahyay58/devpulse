@@ -18,6 +18,7 @@ class FakeBackend {
   Map<String, dynamic>? latestJob; // null: hiç senkron yapılmamış (404)
   int? runningJobId; // doluysa POST /sync 409 döner (zaten süren iş)
   bool sessionExpired = false; // doluysa /sync uçları 401 döner
+  bool exportFails = false; // doluysa /me/export 500 döner
   int _jobReads = 0;
 
   static Map<String, dynamic> job(int id, String status,
@@ -141,6 +142,10 @@ class FakeBackend {
         200,
         headers: {'content-type': 'text/plain; charset=utf-8'},
       );
+    }
+    if (path == '/me/export') {
+      if (exportFails) return _json({'detail': 'Sunucuda bir hata oluştu.'}, 500);
+      return _json({'user': {'github_login': 'ben'}, 'repos': [], 'commits': []});
     }
     if (path == '/me' && request.method == 'DELETE') {
       final hasToken = (jsonDecode(request.body) as Map).containsKey('github_token');

@@ -30,11 +30,46 @@ def test_privacy_text_is_public(api):
     assert resp.status_code == 200
     assert "Saklanmayan veriler" in resp.text
     assert "Verilerimi sil" in resp.text
+    assert "Verilerimi indir" in resp.text
 
 
 def test_privacy_text_matches_requested_scope(api):
     # Metin "yalnızca read:user" diyor; kod başka bir yetki isterse bu test kırılır.
     assert f'Yalnızca "{settings.github_oauth_scope}"' in api.get("/privacy").text
+
+
+# --- Veri indirme ---------------------------------------------------------------------------
+
+def test_export_contains_all_rows_of_user_only(api, db, demo_auth, login_as):
+    api.post("/sync", json={}, headers=demo_auth)
+    login_as("U_other", "baskasi")  # başka bir kullanıcı da var
+
+    resp = api.get("/me/export", headers=demo_auth)
+    assert resp.status_code == 200
+    assert resp.headers["content-disposition"].startswith('attachment; filename="devpulse-verilerim-')
+    body = resp.json()
+    # Silme testindeki sayılarla aynı: indirilen = silinecek olan.
+    assert {k: len(body[k]) for k in ["repos", "commits", "contribution_days", "sync_jobs"]} == {
+        "repos": 2, "commits": 6, "contribution_days": 7, "sync_jobs": 1}
+    assert body["user"]["github_login"] == "demo-gelistirici"
+    assert "baskasi" not in resp.text  # başkasının verisi yok
+
+
+def test_export_has_every_stored_column(api, db, demo_auth):
+    # "Sakladığımız her şeyi veriyoruz" iddiasının denetimi: veritabanındaki her sütun
+    # dosyada olmalı. Tabloya sütun eklenip dışa aktarma unutulursa bu test kırılır.
+    api.post("/sync", json={}, headers=demo_auth)
+    body = api.get("/me/export", headers=demo_auth).json()
+    sections = {"users": [body["user"]], "repos": body["repos"], "commits": body["commits"],
+                "contribution_days": body["contribution_days"], "sync_jobs": body["sync_jobs"]}
+    for table, rows in sections.items():
+        db_columns = set(db.scalars(text(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = :t"), {"t": table}))
+        assert set(rows[0]) == db_columns, table
+
+
+def test_export_requires_session(api):
+    assert api.get("/me/export").status_code == 401
 
 
 # --- Veri silme ---------------------------------------------------------------------------

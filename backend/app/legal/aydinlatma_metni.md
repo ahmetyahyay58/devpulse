@@ -1,6 +1,6 @@
 # DevPulse Aydınlatma Metni
 
-Son güncelleme: 12 Kasım 2026 · Taslak
+Son güncelleme: 13 Kasım 2026 · Taslak
 
 Bu metin, Harran Üniversitesi Bilgisayar Mühendisliği bitirme projesi olarak geliştirilen DevPulse uygulamasının hangi verileri neden işlediğini açıklar. Bir öğrenci projesi için hazırlanmış taslaktır; hukuki danışmanlık niteliği taşımaz.
 
@@ -34,8 +34,11 @@ Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Verile
 - Yapay zekâ hizmetleri: şu an hiçbirine veri gönderilmez. İleride isteğe bağlı bir yorum özelliği eklenirse yalnızca hesaplanmış toplu sayılar gönderilir (kullanıcı adı, repo adı, commit mesajı ya da kod gönderilmez) ve ayrıca onayın istenir.
 - Sunucu, proje süresince geliştiricinin denetimindeki bir makinede çalışır.
 
+## Verilerini indirme
+Uygulamadaki "Verilerimi indir" seçeneği, sunucuda senin hakkında saklanan verilerin tamamını (yukarıdaki "Saklanan veriler" bölümünde sayılanlar) tek bir JSON dosyası olarak verir. Dosya yalnızca sana, oturumunla gönderilir; sunucuda ayrıca bir kopyası oluşturulmaz.
+
 ## Saklama süresi ve silme
 Veriler sen silene kadar saklanır. Uygulamadaki "Verilerimi sil" seçeneği hesabını ve yukarıda sayılan bütün verileri sunucudan anında ve kalıcı olarak siler; ayrı bir yedek tutulmaz. İstersen aynı anda GitHub'daki DevPulse iznin de kaldırılır. Silmeden sonra yeniden giriş yaparsan veriler GitHub'dan yeniden çekilir.
 
 ## Hakların
-6698 sayılı Kişisel Verilerin Korunması Kanunu'nun 11. maddesi kapsamında, verilerinin işlenip işlenmediğini öğrenme, düzeltilmesini ya da silinmesini isteme gibi hakların vardır. Silme işlemini uygulamadan kendin yapabilirsin; diğer talepler için yukarıdaki iletişim adresine yazabilirsin.
+6698 sayılı Kişisel Verilerin Korunması Kanunu'nun 11. maddesi kapsamında, verilerinin işlenip işlenmediğini öğrenme, düzeltilmesini ya da silinmesini isteme gibi hakların vardır. Verilerini görme ve silme işlemlerini uygulamadan kendin yapabilirsin; diğer talepler için yukarıdaki iletişim adresine yazabilirsin.

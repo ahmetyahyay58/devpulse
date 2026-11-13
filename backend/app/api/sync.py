@@ -18,7 +18,7 @@ from app.auth import current_user
 from app.db import SessionLocal
 from app.models import SyncJob, User
 from app.sync.demo_client import DemoClient, demo_path
-from app.sync.github_client import GitHubError, LiveGitHubClient
+from app.sync.github_client import GitHubError, LiveGitHubClient, RateLimited, TokenInvalid
 from app.sync.runner import (
     SyncAlreadyRunning,
     WrongAccount,
@@ -108,9 +108,12 @@ def start(
         raise HTTPException(
             status.HTTP_409_CONFLICT, {"message": str(exc), "job_id": exc.job_id}
         ) from None
+    except TokenInvalid as exc:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, str(exc)) from None
+    except RateLimited as exc:
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, str(exc)) from None
     except GitHubError as exc:
-        code = status.HTTP_401_UNAUTHORIZED if "401" in str(exc) else status.HTTP_502_BAD_GATEWAY
-        raise HTTPException(code, str(exc)) from None
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from None
 
     # Cevap gönderildikten SONRA aynı süreçte çalışır.
     background.add_task(_run_in_background, job_id, source, profile, req.full)

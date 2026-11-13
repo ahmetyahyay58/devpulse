@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import 'privacy_screen.dart';
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final session = await login();
       if (mounted) widget.onLoggedIn(session);
     } catch (e) {
-      if (mounted) setState(() => _error = '$e');
+      if (mounted) setState(() => _error = userMessage(e, fallback: 'Giriş yapılamadı.'));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

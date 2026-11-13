@@ -1,7 +1,7 @@
 """Canlı GitHub istemcisi (GraphQL API). GitHubSource arayüzünü uygular."""
 import time
 from collections.abc import Iterator
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import httpx
 
@@ -91,7 +91,43 @@ query($repo: ID!, $author: ID!, $after: String) {
 
 
 class GitHubError(Exception):
-    pass
+    """Mesajı kullanıcıya gösterilebilir (Türkçe) GitHub hatası."""
+
+
+class TokenInvalid(GitHubError):
+    """GitHub 401: token iptal edilmiş ya da süresi dolmuş; yeniden giriş gerekir."""
+
+    def __init__(self):
+        super().__init__("GitHub izni geçersiz ya da süresi dolmuş. Yeniden giriş yap.")
+
+
+class RateLimited(GitHubError):
+    """GitHub istek sınırı doldu. reset_at: sınırın yenileneceği an (biliniyorsa)."""
+
+    def __init__(self, reset_at: datetime | None):
+        self.reset_at = reset_at
+        if reset_at:
+            minutes = max(1, round((reset_at - datetime.now(timezone.utc)).total_seconds() / 60))
+            when = f"yaklaşık {minutes} dakika sonra"
+        else:
+            when = "bir süre sonra"
+        super().__init__(f"GitHub istek sınırı doldu; {when} tekrar dene.")
+
+
+def _rate_limit_reset(resp: httpx.Response) -> datetime | None:
+    """Sınırın ne zaman yenileneceğini başlıklardan okur; başlık yoksa None."""
+    if resp.headers.get("retry-after", "").isdigit():
+        return datetime.now(timezone.utc).replace(microsecond=0) + timedelta(
+            seconds=int(resp.headers["retry-after"]))
+    reset = resp.headers.get("x-ratelimit-reset", "")
+    return datetime.fromtimestamp(int(reset), timezone.utc) if reset.isdigit() else None
+
+
+def _is_rate_limited(resp: httpx.Response) -> bool:
+    # REST ve GraphQL birincil sınırı: 403/429 + kalan 0. İkincil sınır: retry-after başlığı.
+    if resp.status_code not in (403, 429):
+        return False
+    return resp.headers.get("x-ratelimit-remaining") == "0" or "retry-after" in resp.headers
 
 
 def _dt(value: str | None) -> datetime | None:
@@ -125,18 +161,31 @@ class LiveGitHubClient:
         """Tek bir GraphQL isteği: gerekirse yeniden dener, puanı ve süreyi kaydeder."""
         start = time.perf_counter()
         for attempt in range(1, MAX_ATTEMPTS + 1):
-            resp = self._http.post(GRAPHQL_URL, json={"query": query, "variables": variables or {}})
+            try:
+                resp = self._http.post(GRAPHQL_URL, json={"query": query, "variables": variables or {}})
+            except httpx.TransportError as exc:  # bağlantı kurulamadı, zaman aşımı...
+                if attempt < MAX_ATTEMPTS:
+                    time.sleep(2 * attempt)
+                    continue
+                raise GitHubError("GitHub'a ulaşılamadı (ağ hatası ya da zaman aşımı).") from exc
             if resp.status_code in RETRY_STATUSES and attempt < MAX_ATTEMPTS:
                 time.sleep(2 * attempt)
                 continue
             break
         if resp.status_code == 401:
-            raise GitHubError("GitHub token geçersiz ya da süresi dolmuş (401).")
+            raise TokenInvalid()
+        if _is_rate_limited(resp):
+            raise RateLimited(_rate_limit_reset(resp))
+        if resp.status_code in RETRY_STATUSES:
+            raise GitHubError("GitHub şu an yanıt vermiyor; biraz sonra tekrar dene.")
         if resp.status_code != 200:
-            raise GitHubError(f"GitHub {resp.status_code} döndü.")
+            raise GitHubError(f"GitHub isteği başarısız oldu ({resp.status_code}).")
         body = resp.json()
         if body.get("errors"):
-            raise GitHubError("; ".join(e.get("message", "?") for e in body["errors"]))
+            # GraphQL sınır hatası 200 ile gelir; türü RATE_LIMITED olur.
+            if any(e.get("type") == "RATE_LIMITED" for e in body["errors"]):
+                raise RateLimited(_rate_limit_reset(resp))
+            raise GitHubError("GitHub sorgu hatası: " + "; ".join(e.get("message", "?") for e in body["errors"]))
 
         data = body["data"]
         self.request_log.append(

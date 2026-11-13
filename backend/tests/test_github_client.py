@@ -1,12 +1,12 @@
 """Canlı GraphQL istemcisinin testleri: gerçek GitHub yerine sahte bir sunucu (MockTransport)."""
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import httpx
 import pytest
 
 from app.sync import github_client
-from app.sync.github_client import GitHubError, LiveGitHubClient
+from app.sync.github_client import GitHubError, LiveGitHubClient, RateLimited, TokenInvalid
 
 ME = "U_me"
 OTHER = "U_someone_else"
@@ -166,7 +166,7 @@ def test_retries_on_502(monkeypatch):
 
 def test_bad_token_raises_clear_error():
     client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: httpx.Response(401)))
-    with pytest.raises(GitHubError, match="401"):
+    with pytest.raises(TokenInvalid, match="Yeniden giriş"):
         client.fetch_profile()
 
 
@@ -175,3 +175,48 @@ def test_graphql_errors_are_raised():
     client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: reply))
     with pytest.raises(GitHubError, match="Something went wrong"):
         client.fetch_profile()
+
+
+def test_rate_limit_403_says_when_to_retry():
+    reset = int((datetime.now(timezone.utc) + timedelta(minutes=12)).timestamp())
+    reply = httpx.Response(403, headers={"x-ratelimit-remaining": "0", "x-ratelimit-reset": str(reset)})
+    client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: reply))
+    with pytest.raises(RateLimited, match=r"istek sınırı doldu; yaklaşık 1[12] dakika sonra"):
+        client.fetch_profile()
+
+
+def test_secondary_rate_limit_uses_retry_after():
+    reply = httpx.Response(403, headers={"retry-after": "120"})
+    client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: reply))
+    with pytest.raises(RateLimited, match="yaklaşık 2 dakika"):
+        client.fetch_profile()
+
+
+def test_graphql_rate_limited_error_type():
+    # GraphQL sınırı 200 ile ve errors[].type = RATE_LIMITED olarak gelir.
+    reply = httpx.Response(200, json={"errors": [{"type": "RATE_LIMITED", "message": "API rate limit exceeded"}]})
+    client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: reply))
+    with pytest.raises(RateLimited, match="bir süre sonra"):
+        client.fetch_profile()
+
+
+def test_plain_403_is_not_rate_limit():
+    reply = httpx.Response(403, headers={"x-ratelimit-remaining": "4000"})
+    client = LiveGitHubClient("t", transport=httpx.MockTransport(lambda r: reply))
+    with pytest.raises(GitHubError, match=r"başarısız oldu \(403\)") as info:
+        client.fetch_profile()
+    assert not isinstance(info.value, RateLimited)
+
+
+def test_network_error_is_retried_then_reported(monkeypatch):
+    monkeypatch.setattr(github_client.time, "sleep", lambda s: None)
+    calls = []
+
+    def down(request):
+        calls.append(1)
+        raise httpx.ConnectError("[Errno 11001] getaddrinfo failed")
+
+    client = LiveGitHubClient("t", transport=httpx.MockTransport(down))
+    with pytest.raises(GitHubError, match="GitHub'a ulaşılamadı"):
+        client.fetch_profile()
+    assert len(calls) == github_client.MAX_ATTEMPTS

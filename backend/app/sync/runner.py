@@ -3,6 +3,7 @@
 Tekrar çalıştırılabilir: kullanıcı ve repolar güncellenir (upsert), commit'ler
 (repo_id, oid) benzersizliği sayesinde ikinci kez yazılmaz.
 """
+import logging
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 
@@ -12,8 +13,10 @@ from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
 from app.models import Commit, ContributionDay, Repo, SyncJob, User
+from app.sync.github_client import GitHubError
 from app.sync.source import CalendarDay, GitHubSource, Profile, RepoData
 
+log = logging.getLogger(__name__)
 COMMIT_BATCH = 500
 # Bu süreden eski "pending/running" iş yarıda kalmış sayılır (ör. sunucu yeniden başladı).
 STALE_AFTER = timedelta(minutes=30)
@@ -28,6 +31,15 @@ class SyncAlreadyRunning(Exception):
 class WrongAccount(Exception):
     def __init__(self):
         super().__init__("GitHub token'ı oturumdaki kullanıcıya ait değil.")
+
+
+def _user_error(exc: Exception) -> str:
+    """sync_jobs.error alanına (ve oradan ekrana) yazılacak metin. GitHub hataları zaten
+    Türkçe ve kullanıcıya göre yazılmış; beklenmeyen hataların iç metni gösterilmez, log'a gider."""
+    if isinstance(exc, GitHubError):
+        return str(exc)[:1000]
+    log.exception("Senkron beklenmedik hatayla durdu")
+    return "Senkron beklenmedik bir hatayla durdu. Biraz sonra tekrar dene."
 
 
 def _now() -> datetime:
@@ -205,7 +217,7 @@ def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool
             db.rollback()
             job = db.get(SyncJob, job_id)
             job.status = "failed"
-            job.error = str(exc)[:1000]
+            job.error = _user_error(exc)
             job.finished_at = _now()
             _record_requests(job, source)
             db.commit()

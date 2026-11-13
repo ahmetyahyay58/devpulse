@@ -5,7 +5,7 @@ import '../api/api_client.dart';
 import 'pkce.dart';
 import 'session_store.dart';
 
-class AuthException implements Exception {
+class AuthException implements Exception, UserFacingError {
   AuthException(this.message);
   final String message;
 

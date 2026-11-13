@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 
 from app.models import Commit, ContributionDay, Repo, SyncJob, User
 from app.sync.demo_client import DemoClient
+from app.sync.github_client import GitHubError
 from app.sync.runner import run_sync
 
 DEMO_FILE = Path(__file__).resolve().parent / "fixtures" / "demo_small.json"
@@ -160,19 +161,36 @@ def test_calendar_resync_updates_counts(db, tmp_path):
 
 
 class FailingSource(DemoClient):
-    """Repo listesini çekerken hata veren kaynak (ör. GitHub 502)."""
+    """Repo listesini çekerken hata veren kaynak (ör. GitHub yanıt vermiyor)."""
 
     def fetch_repos(self, profile):
-        raise RuntimeError("GitHub 502 döndü.")
+        raise GitHubError("GitHub şu an yanıt vermiyor; biraz sonra tekrar dene.")
 
 
 def test_failed_source_marks_job_failed(db):
-    with pytest.raises(RuntimeError):
+    with pytest.raises(GitHubError):
         run_sync(FailingSource(DEMO_FILE))
 
     job = db.scalar(select(SyncJob))
     assert job.status == "failed"
-    assert "502" in job.error
+    assert job.error == "GitHub şu an yanıt vermiyor; biraz sonra tekrar dene."  # olduğu gibi gösterilir
     assert job.finished_at is not None
     assert job.request_count == 1  # hatadan önceki profil isteği yine kayıtlı
     assert _count(db, Repo) == 0
+
+
+class BuggySource(DemoClient):
+    """Kod hatası gibi beklenmeyen bir istisna (iç ayrıntı içerir)."""
+
+    def fetch_repos(self, profile):
+        raise KeyError("data['viewer']['gizli_ic_ayrinti']")
+
+
+def test_unexpected_error_is_not_shown_raw(db):
+    with pytest.raises(KeyError):
+        run_sync(BuggySource(DEMO_FILE))
+
+    job = db.scalar(select(SyncJob))
+    assert job.status == "failed"
+    assert "gizli_ic_ayrinti" not in job.error  # iç metin log'a gider, ekrana değil
+    assert "beklenmedik" in job.error

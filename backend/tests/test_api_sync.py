@@ -109,6 +109,13 @@ def test_bad_github_token_returns_401(api, login_as, monkeypatch):
     assert resp.status_code == 401
 
 
+def test_github_rate_limit_returns_429(api, login_as, monkeypatch):
+    _use_fake_github(monkeypatch, lambda request: httpx.Response(429, headers={"retry-after": "60"}))
+    resp = api.post("/sync", json={"github_token": "t"}, headers=login_as("U_me", "ben"))
+    assert resp.status_code == 429
+    assert "istek sınırı" in resp.json()["detail"]
+
+
 def test_second_sync_while_running_returns_409(api, db, demo_auth):
     api.post("/sync", json={}, headers=demo_auth)
     running = SyncJob(user_id=1, status="running")

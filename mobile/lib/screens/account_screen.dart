@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import 'privacy_screen.dart';
@@ -87,7 +88,7 @@ class AccountScreen extends StatelessWidget {
       onDeleted(result);
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silinemedi: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Silinemedi: ${userMessage(e)}')));
     }
   }
 }

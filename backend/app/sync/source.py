@@ -14,6 +14,7 @@ class Profile:
     node_id: str
     login: str
     created_at: datetime
+    avatar_url: str | None = None  # GitHub'daki profil fotoğrafının adresi (görsel saklanmaz)
 
 
 @dataclass

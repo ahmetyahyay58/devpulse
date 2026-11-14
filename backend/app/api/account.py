@@ -33,6 +33,7 @@ def privacy() -> str:
 
 class MeOut(BaseModel):
     login: str
+    avatar_url: str | None
     created_at: datetime
     last_synced_at: datetime | None
     last_active_at: datetime
@@ -59,7 +60,7 @@ def me(user: User = Depends(current_user)) -> MeOut:
     with SessionLocal() as db:
         counts = _counts(db, user.id)
     return MeOut(
-        login=user.github_login, created_at=user.created_at, last_synced_at=user.last_synced_at,
+        login=user.github_login, avatar_url=user.avatar_url, created_at=user.created_at, last_synced_at=user.last_synced_at,
         last_active_at=user.last_active_at, delete_after=retention.delete_after(user.last_active_at),
         retention_days=retention.RETENTION.days, counts=counts,
     )

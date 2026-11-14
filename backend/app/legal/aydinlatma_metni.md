@@ -14,7 +14,7 @@ GitHub hesabındaki herkese açık etkinlikten çalışma alışkanlıklarını 
 Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna erişemez, GitHub hesabında hiçbir şeyi değiştiremez.
 
 ## Saklanan veriler
-- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, saat dilimin, ilk kayıt, son senkron ve son etkinlik (giriş ya da senkron) zamanı.
+- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, profil fotoğrafının GitHub'daki adresi (fotoğrafın kendisi saklanmaz; uygulama onu doğrudan GitHub'dan yükler), saat dilimin, ilk kayıt, son senkron ve son etkinlik (giriş ya da senkron) zamanı.
 - Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı ve bayt boyutu (README'nin içeriği okunmaz), arşivlenip arşivlenmediği, dil dağılımı (dil başına bayt), kök dizindeki dosya adlarından tespit edilen araç adları (ör. Docker; dosya adları ve içerikleri saklanmaz), oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
 - Commit'lerin: kimliği (SHA), yazılma zamanı, mesajı, eklenen ve silinen satır sayısı, değişen dosya sayısı, birden fazla yazarı olup olmadığı.
 - Katkı takvimi: gün başına toplam katkı sayısı.

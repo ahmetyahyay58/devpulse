@@ -195,9 +195,24 @@ class FakeBackend {
       if (exportFails) return _json({'detail': 'Sunucuda bir hata oluştu.'}, 500);
       return _json({'user': {'github_login': 'ben'}, 'repos': [], 'commits': []});
     }
+    if (path == '/metrics/model-lab') {
+      return _json({
+        'system': 'Önce kurallar, sonra model.',
+        'training': '2479 Türkçe commit mesajı.',
+        'classes': ['Yeni özellik', 'Hata düzeltme'],
+        'scores': [
+          {'reference': 'Yapay zekânın kör etiketleri (test standardı)', 'messages': 98, 'accuracy': '0.63', 'kappa': '0.53'},
+          {'reference': 'Geliştiricinin kör etiketleri', 'messages': 94, 'accuracy': '0.39', 'kappa': '0.24'},
+        ],
+        'random_baseline': '~0,14', 'human_check': '19/20',
+        'confusions': ['Bakım → Kod düzenleme (5)'],
+        'caveats': ['0,41 → 0,63 artışı sistemin iyileşmesinden değil, referansın değişmesinden kaynaklanır.'],
+        'source': 'docs/olcumler.md',
+      });
+    }
     if (path == '/me' && request.method == 'GET') {
       return _json({
-        'login': 'ben', 'created_at': '2026-11-01T10:00:00Z', 'last_synced_at': '2026-11-13T17:05:00Z',
+        'login': 'ben', 'avatar_url': null, 'created_at': '2026-11-01T10:00:00Z', 'last_synced_at': '2026-11-13T17:05:00Z',
         'last_active_at': '2026-11-13T17:05:00Z', 'delete_after': '2027-02-11T17:05:00Z',
         'retention_days': 90,
         'counts': {'repos': 4, 'commits': 33, 'contribution_days': 1048, 'sync_jobs': 12},

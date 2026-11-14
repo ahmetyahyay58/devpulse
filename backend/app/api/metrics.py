@@ -7,6 +7,7 @@ GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçe
 GET /metrics/change-points Haftalık commit sayısında değişim noktaları (PELT, istatistik)
 GET /metrics/technology Diller, çeşitlilik (betimleyici entropi), tespit edilen araçlar
 GET /metrics/achievements Rozetler (ilerlemeli) ve yıl kıyası (yılbaşından bugüne)
+GET /metrics/model-lab Model Laboratuvarı: commit sınıflandırmasının gerçek ölçümleri
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
@@ -23,6 +24,7 @@ from app.api.projects import load_projects
 from app.metrics import activity
 from app.metrics.achievements import AchievementsOut, badges, year_compare
 from app.metrics.activity import CommitPoint
+from app.classify.model_lab import MODEL_LAB, ModelLabOut
 from app.metrics.catalog import CATALOG, CatalogOut
 from app.metrics.change_points import ChangePointsOut, build_change_points
 from app.metrics.anomaly import AnomaliesOut, build_anomalies
@@ -155,3 +157,9 @@ def achievements(user: User = Depends(current_user)) -> AchievementsOut:
         badges=out_badges, unlocked=sum(b.unlocked for b in out_badges),
         year=year_compare(pairs, today),
     )
+
+
+@router.get("/model-lab", response_model=ModelLabOut)
+def model_lab(user: User = Depends(current_user)) -> ModelLabOut:
+    """Sabit: docs/olcumler.md'deki ölçümler (kullanıcıya göre değişmez)."""
+    return MODEL_LAB

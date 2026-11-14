@@ -17,7 +17,7 @@ const _live = Session(sessionToken: 'jwt', githubToken: 'gho_live', userId: 3, l
 const _demo = Session(sessionToken: 'jwt', githubToken: null, userId: 1, login: 'demo-gelistirici');
 
 Future<MemorySessionStore> _start(WidgetTester tester, FakeBackend backend, Session? session) async {
-  tester.view.physicalSize = const Size(1080, 3000);
+  tester.view.physicalSize = const Size(1080, 5000); // uzun Profil sayfası tamamen görünsün
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
   final store = MemorySessionStore();
@@ -32,7 +32,7 @@ Future<MemorySessionStore> _start(WidgetTester tester, FakeBackend backend, Sess
 }
 
 Future<void> _openDeleteDialog(WidgetTester tester) async {
-  await tester.tap(find.byTooltip('Hesap'));
+  await tester.tap(find.byTooltip('Profil'));
   await tester.pumpAndSettle();
   await tester.tap(find.widgetWithText(OutlinedButton, 'Verilerimi sil'));
   await tester.pumpAndSettle();
@@ -90,6 +90,9 @@ void main() {
   group('Verilerimi indir', () {
     Future<List<(Uint8List, String)>> openAccount(WidgetTester tester, FakeBackend backend) async {
       final saved = <(Uint8List, String)>[];
+      tester.view.physicalSize = const Size(1080, 5000); // uzun Profil sayfası tamamen görünsün
+      tester.view.devicePixelRatio = 2.5;
+      addTearDown(tester.view.reset);
       final api = ApiClient(baseUrl: 'http://test', client: backend.client)..sessionToken = 'jwt';
       await tester.pumpWidget(MaterialApp(
         home: AccountScreen(
@@ -142,7 +145,7 @@ void main() {
 
   testWidgets('Verilerim: saklanan sayılar ve 90 gün kuralıyla silinme tarihi', (tester) async {
     await _start(tester, FakeBackend(), _live);
-    await tester.tap(find.byTooltip('Hesap'));
+    await tester.tap(find.byTooltip('Profil'));
     await tester.pumpAndSettle();
     expect(find.text('Verilerim'), findsOneWidget);
     expect(find.text('1048 gün'), findsOneWidget);
@@ -150,5 +153,38 @@ void main() {
     expect(find.text('11.02.2027'), findsOneWidget);
     expect(find.textContaining('90 gün boyunca giriş yapmaz'), findsOneWidget);
     expect(find.textContaining('90 gün etkinlik olmazsa silinir'), findsOneWidget); // çıkış satırı
+  });
+
+  testWidgets('Profil: avatar yoksa baş harf, GitHub etiketi ve rozet vitrini', (tester) async {
+    await _start(tester, FakeBackend(), _live);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    expect(find.text('Profil'), findsOneWidget); // başlık
+    expect(find.text('B'), findsOneWidget); // "ben" -> baş harf (avatar_url yok)
+    expect(find.text("GitHub'a bağlı"), findsOneWidget);
+    expect(find.text('Rozet vitrini · 2 / 8'), findsOneWidget);
+    expect(find.text('Bir haftalık seri'), findsOneWidget);
+    expect(find.text('Lisanslı'), findsNothing); // kilitli rozet vitrinde yok
+  });
+
+  testWidgets('demo profilinde demo etiketi', (tester) async {
+    await _start(tester, FakeBackend(), _demo);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    expect(find.text('Demo kullanıcı · sentetik veri'), findsOneWidget);
+  });
+
+  testWidgets('Model Laboratuvarı: gerçek ölçümler ve kural/model payı', (tester) async {
+    await _start(tester, FakeBackend(), _live);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Model Laboratuvarı'));
+    await tester.pumpAndSettle();
+    expect(find.text('doğruluk 0,63 · kappa 0,53'), findsOneWidget);
+    expect(find.text('doğruluk 0,39 · kappa 0,24'), findsOneWidget);
+    expect(find.textContaining('rastgele tahmin ~0,14'), findsOneWidget);
+    expect(find.text('30 · %91'), findsOneWidget); // kural: 30 / 33
+    expect(find.text('3 · %9'), findsOneWidget); // model
+    expect(find.textContaining('referansın değişmesinden'), findsOneWidget);
   });
 }

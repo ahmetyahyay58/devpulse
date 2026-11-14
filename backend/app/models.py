@@ -36,6 +36,8 @@ class User(Base):
     timezone: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # GitHub profil fotoğrafının adresi; görselin kendisi saklanmaz (telefon GitHub'dan yükler).
+    avatar_url: Mapped[str | None] = mapped_column(String(500))
     # 90 gün kuralı: son giriş ya da biten senkron (app/retention.py)
     last_active_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

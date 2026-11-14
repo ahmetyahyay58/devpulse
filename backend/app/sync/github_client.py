@@ -31,7 +31,7 @@ fragment RepoFields on Repository {
 """
 
 PROFILE_QUERY = """
-query { viewer { id login createdAt } rateLimit { cost remaining } }
+query { viewer { id login createdAt avatarUrl } rateLimit { cost remaining } }
 """
 
 OWNED_REPOS_QUERY = REPO_FIELDS + """
@@ -207,7 +207,8 @@ class LiveGitHubClient:
 
     def fetch_profile(self) -> Profile:
         v = self._query("profile", PROFILE_QUERY)["viewer"]
-        return Profile(node_id=v["id"], login=v["login"], created_at=_dt(v["createdAt"]))
+        return Profile(node_id=v["id"], login=v["login"], created_at=_dt(v["createdAt"]),
+                       avatar_url=v.get("avatarUrl"))
 
     def fetch_repos(self, profile: Profile) -> list[RepoData]:
         repos: dict[str, RepoData] = {}

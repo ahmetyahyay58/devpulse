@@ -49,6 +49,8 @@ def _now() -> datetime:
 def upsert_user(db: Session, profile: Profile, tz: str | None) -> int:
     # Giriş de senkron başlangıcı da etkinliktir: 90 gün sayacı sıfırlanır (app/retention.py).
     values = {"github_node_id": profile.node_id, "github_login": profile.login, "last_active_at": _now()}
+    if profile.avatar_url:
+        values["avatar_url"] = profile.avatar_url
     if tz:  # saat dilimi gönderilmediyse eskisini silme
         values["timezone"] = tz
     stmt = (

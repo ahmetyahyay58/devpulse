@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           if (widget.auth != null)
             IconButton(
-              tooltip: 'Hesap',
+              tooltip: 'Profil',
               icon: const Icon(Icons.account_circle_outlined),
               onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
                 builder: (_) => AccountScreen(
@@ -146,6 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   auth: widget.auth!,
                   onLogout: widget.onLogout,
                   onDeleted: widget.onDeleted ?? (_) {},
+                  // Genel Bakış verisinden: rozet vitrini ve Model Laboratuvarı'ndaki kural/model payı
+                  achievements: _overview.achievements,
+                  bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
                 ),
               )),
             ),

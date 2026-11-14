@@ -16,6 +16,7 @@ class OverviewController extends ChangeNotifier {
   MetricSection? commitTypes; // commit türleri dağılımı
   MetricSection? changePoints; // haftalık commit'te değişim noktaları
   MetricSection? technology; // diller, çeşitlilik, araçlar
+  Map<String, dynamic>? achievements; // rozetler + yıl kıyası
   String? error;
   bool loading = false;
   bool _disposed = false;
@@ -33,6 +34,7 @@ class OverviewController extends ChangeNotifier {
         api.get('/metrics/commit-types'),
         api.get('/metrics/change-points'),
         api.get('/metrics/technology'),
+        api.get('/metrics/achievements'),
       ]);
       overview = Overview.fromJson(results[0]);
       calendar = CalendarData.fromJson(results[1]);
@@ -40,6 +42,7 @@ class OverviewController extends ChangeNotifier {
       commitTypes = MetricSection.fromJson(results[3]);
       changePoints = MetricSection.fromJson(results[4]);
       technology = MetricSection.fromJson(results[5]);
+      achievements = results[6];
     } on ApiException catch (e) {
       if (e.isUnauthorized) {
         onUnauthorized();

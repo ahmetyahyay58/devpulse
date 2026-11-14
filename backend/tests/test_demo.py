@@ -135,3 +135,47 @@ def test_shifted_demo_resync_replaces_instead_of_duplicating(api, db, tmp_path, 
 
     assert db.scalar(select(func.count()).select_from(Repo)) == len(DATA["repos"])
     assert db.scalar(select(func.count()).select_from(Commit)) == len(_commits())
+
+
+# --- Geçmiş dönem: yıl kıyası ve yıllık özet demoda dolu görünmeli -------------------------
+
+def test_demo_year_comparison_is_filled_whenever_the_demo_is_opened():
+    """Demo bugüne kaydırılır; yılın hangi gününde açılırsa açılsın (Ocak'ın ilk haftası hariç:
+    o zaman "bu yıl" birkaç günden ibarettir) iki dönemde de yeterli commit olmalı."""
+    from zoneinfo import ZoneInfo
+
+    from app.metrics.achievements import year_compare
+
+    tz = ZoneInfo("Europe/Istanbul")
+    rows = [(datetime.fromisoformat(c["authored_at"]), i)
+            for i, r in enumerate(DATA["repos"]) for c in r["commits"]]
+    for extra in range(0, 366, 15):
+        today = gen.ANCHOR + timedelta(days=extra)
+        if today.month == 1 and today.day <= 7:
+            continue
+        shift = timedelta(days=extra)
+        out = year_compare([((t + shift).astimezone(tz), r) for t, r in rows], today)
+        # Tablo her zaman dolu (yetersiz değil); Ocak'ta dönem kısa olduğu için "düşük güven"
+        # olabilir, Şubat'tan sonra normal.
+        assert out.sufficiency != Sufficiency.NONE, today
+        if today.month >= 2:
+            assert out.sufficiency == Sufficiency.NORMAL, today
+
+
+def test_demo_covers_every_month_of_the_previous_year():
+    """Yıllık özet için: geçen takvim yılının (2025) her ayında commit var (sınav arası hariç
+    en az 11 ay)."""
+    months = {datetime.fromisoformat(c["authored_at"]).month
+              for c in _commits() if datetime.fromisoformat(c["authored_at"]).year == gen.ANCHOR.year - 1}
+    assert len(months) >= 11
+
+
+def test_past_phase_does_not_change_the_recent_six_months():
+    """Geçmiş dönem ayrı tohumla üretilir: son 6 ayın commit'leri ve enjekte anomali aynı kalır."""
+    from app.metrics.anomaly import build_anomalies
+
+    points = [CommitPoint(datetime.fromisoformat(c["authored_at"]), None) for c in _commits()]
+    flagged = {a.day for a in build_anomalies(points, "Europe/Istanbul").flagged}
+    burst = DATA["_injected"][0]
+    assert flagged == {gen.ANCHOR - timedelta(days=d) for d in range(gen.BURST[1], gen.BURST[0] + 1)}
+    assert burst["start"] == min(flagged).isoformat()

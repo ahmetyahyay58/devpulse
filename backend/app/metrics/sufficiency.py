@@ -63,3 +63,11 @@ def technology(repos_with_languages: int) -> Sufficiency:
     if repos_with_languages < 3:
         return Sufficiency.LOW
     return Sufficiency.NORMAL
+
+
+def year_compare(this_year_commits: int, last_year_commits: int) -> Sufficiency:
+    if this_year_commits == 0 or last_year_commits == 0:
+        return Sufficiency.NONE
+    if min(this_year_commits, last_year_commits) < 10:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL

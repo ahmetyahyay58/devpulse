@@ -33,6 +33,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Commit türleri | < 10 commit | < 30 commit | diğer |
 | Değişim noktaları | < 12 hafta ya da < 10 commit | < 26 hafta | diğer |
 | Teknoloji | Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
+| Yıl kıyası | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -165,6 +166,41 @@ fork'larda kod asıl repodan gelir. Bu yüzden ikisi de sayılmaz.
 | Yeterli veri yok | Düşük güven | Normal |
 |---|---|---|
 | Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
+
+### Başarımlar (rozetler)
+**İlke:** Rozetler alışkanlığı ve proje bakımını tanır; ham commit sayısını ödüllendirmez
+(çok commit atmak kendi başına bir başarı değildir). Her rozetin ilerlemesi gösterilir
+(mevcut / hedef); hedefe ulaşınca açılır. Hepsi deterministik kurallardır.
+
+| Rozet | Koşul | İlerleme |
+|---|---|---|
+| Bir haftalık seri | En uzun seri ≥ 7 gün | en uzun seri / 7 |
+| Bir aylık seri | En uzun seri ≥ 30 gün | en uzun seri / 30 |
+| Düzenli | Son 90 günde ≥ 27 aktif gün (%30) | son 90 gündeki aktif gün / 27 |
+| Vitrin | En az bir kendi reposunun proje sağlığı 100 | en yüksek skor / 100 |
+| Belgelendirici | Puanlanan bütün repolarda README var (en az 1 repo) | README'si olan / puanlanan repo |
+| Lisanslı | Puanlanan bütün repolarda lisans var (en az 1 repo) | lisanslı / puanlanan repo |
+| Çok dilli | Kendi repolarında payı ≥ %5 olan en az 3 dil | bu koşuldaki dil sayısı / 3 |
+| Katkıcı | Başkasına ait en az bir repoya commit | katkı yapılan repo / 1 |
+
+Seri ve aktif gün tanımları "Süreklilik", repo koşulları "Proje sağlığı", dil payı
+"Teknoloji" ile aynıdır; rozet yeni bir hesap yapmaz, var olanları eşikle karşılaştırır.
+Eşikler sezgiseldir.
+
+### Yıl kıyası
+**Dönem:** Bu yılın 1 Ocak'ından bugüne (yerel saat) ile geçen yılın aynı dönemi (1 Ocak'tan
+geçen yılın bugünkü tarihine; 29 Şubat yoksa 28 Şubat). Tam geçen yıl ile yarım bu yıl
+kıyaslanmaz; bu yanıltıcı olurdu.
+
+- Kıyaslananlar: commit sayısı, aktif gün, dönem içindeki en uzun seri, commit atılan repo sayısı.
+- **Değişim:** (bu yıl − geçen yıl) / geçen yıl × 100, tam sayıya yuvarlanır. Geçen yıl 0 ise
+  yüzde hesaplanmaz ("geçen yıl aynı dönemde yoktu" yazılır).
+- **Dil:** Betimleyicidir: "geçen yılın aynı dönemine göre %40 daha fazla commit". "Daha
+  üretken", "daha iyi" gibi yargı kullanılmaz.
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

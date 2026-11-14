@@ -6,6 +6,7 @@ import '../api/sync_api.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
 import '../overview/overview_controller.dart';
+import '../achievements/achievements_view.dart';
 import '../analysis/analysis_view.dart';
 import '../overview/overview_section.dart';
 import '../projects/projects_controller.dart';
@@ -72,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   )..load();
 
   bool _wasRunning = false;
-  int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler
+  int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar
 
   @override
   void initState() {
@@ -162,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _overviewTab(context),
           AnalysisView(controller: _overview, api: widget.api),
           ProjectsView(controller: _projects),
+          AchievementsView(controller: _overview),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -171,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(icon: Icon(Icons.insights), label: 'Genel Bakış'),
           NavigationDestination(icon: Icon(Icons.query_stats), label: 'Analiz'),
           NavigationDestination(icon: Icon(Icons.folder_outlined), label: 'Projeler'),
+          NavigationDestination(icon: Icon(Icons.emoji_events_outlined), label: 'Başarımlar'),
         ],
       ),
     );

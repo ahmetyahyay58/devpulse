@@ -31,6 +31,11 @@ def weekly_counts(times: list[datetime], tz: ZoneInfo, today: date) -> list[int]
 
 @router.get("", response_model=ProjectsOut)
 def projects(user: User = Depends(current_user)) -> ProjectsOut:
+    return load_projects(user)
+
+
+def load_projects(user: User) -> ProjectsOut:
+    """Başarımlar da kullanır (Vitrin, Belgelendirici, Lisanslı, Katkıcı rozetleri)."""
     tz = ZoneInfo(user.timezone or "UTC")
     now = datetime.now(timezone.utc)
     today = now.astimezone(tz).date()

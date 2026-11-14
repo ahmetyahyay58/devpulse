@@ -105,6 +105,20 @@ CATALOG = [
         reliable_when="Kendi repoların için; dosya içeriği okunmaz.",
     ),
     CatalogEntry(
+        name="Başarımlar", section="Başarımlar",
+        definition="Seri, düzen, proje bakımı ve katkı için 8 rozet; her biri ilerlemesiyle.",
+        unit="rozet",
+        interpretation="Alışkanlığı ve bakımı tanır; ham commit sayısını ödüllendirmez.",
+        reliable_when="Her zaman; rozetler var olan metriklerin eşikleridir.",
+    ),
+    CatalogEntry(
+        name="Yıl kıyası", section="Yıl kıyası",
+        definition="Yılbaşından bugüne ile geçen yılın aynı dönemi: commit, aktif gün, seri, repo.",
+        unit="%, commit, gün",
+        interpretation="Betimleyicidir; artış ya da azalış iyi/kötü anlamına gelmez.",
+        reliable_when="İki dönemde de en az 10 commit.",
+    ),
+    CatalogEntry(
         name="Proje sağlığı", section="Proje sağlığı",
         definition="README, README içeriği, açıklama, lisans ve topic kontrollerinin ağırlıklı skoru.",
         unit="0-100",

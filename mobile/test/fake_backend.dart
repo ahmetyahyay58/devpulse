@@ -224,6 +224,37 @@ class FakeBackend {
     if (path == '/metrics/anomalies') {
       return _json(anomalies);
     }
+    if (path == '/metrics/achievements') {
+      Map<String, dynamic> badge(String key, String name, int current, int target) => {
+            'key': key, 'name': name, 'description': '$name açıklaması.',
+            'current': current, 'target': target, 'unlocked': current >= target,
+          };
+      return _json({
+        'badges': [
+          badge('streak7', 'Bir haftalık seri', 7, 7),
+          badge('streak30', 'Bir aylık seri', 7, 30),
+          badge('regular', 'Düzenli', 4, 27),
+          badge('showcase', 'Vitrin', 80, 100),
+          badge('docs', 'Belgelendirici', 2, 2),
+          badge('license', 'Lisanslı', 0, 2),
+          badge('polyglot', 'Çok dilli', 2, 3),
+          badge('contributor', 'Katkıcı', 0, 1),
+        ],
+        'unlocked': 2,
+        'year': {
+          'this_year': 2026, 'last_year': 2025, 'period_end': '2026-11-14',
+          'stats': [
+            {'label': 'Commit', 'this_year': 33, 'last_year': 22, 'change_pct': 50},
+            {'label': 'Aktif gün', 'this_year': 10, 'last_year': 10, 'change_pct': 0},
+            {'label': 'En uzun seri (gün)', 'this_year': 7, 'last_year': 3, 'change_pct': 133},
+            {'label': 'Commit atılan repo', 'this_year': 3, 'last_year': 0, 'change_pct': null},
+          ],
+          'sufficiency': 'normal', 'basis': 'bu yıl 33, geçen yıl 22 commit',
+          'summary': 'Yılbaşından bu yana geçen yılın aynı dönemine göre %50 daha fazla commit; aktif gün 10 (geçen yıl 10).',
+          'how': 'Test: yıl kıyası.',
+        },
+      });
+    }
     if (path == '/metrics/technology') {
       return _json(technology);
     }

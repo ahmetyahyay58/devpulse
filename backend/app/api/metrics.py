@@ -6,6 +6,7 @@ GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
 GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçeli örnekler)
 GET /metrics/change-points Haftalık commit sayısında değişim noktaları (PELT, istatistik)
 GET /metrics/technology Diller, çeşitlilik (betimleyici entropi), tespit edilen araçlar
+GET /metrics/achievements Rozetler (ilerlemeli) ve yıl kıyası (yılbaşından bugüne)
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
@@ -18,7 +19,9 @@ from sqlalchemy import func, select
 
 from app.auth import current_user
 from app.db import SessionLocal
+from app.api.projects import load_projects
 from app.metrics import activity
+from app.metrics.achievements import AchievementsOut, badges, year_compare
 from app.metrics.activity import CommitPoint
 from app.metrics.catalog import CATALOG, CatalogOut
 from app.metrics.change_points import ChangePointsOut, build_change_points
@@ -124,8 +127,31 @@ def catalog(user: User = Depends(current_user)) -> CatalogOut:
 @router.get("/technology", response_model=TechnologyOut)
 def technology(user: User = Depends(current_user)) -> TechnologyOut:
     """Kendi repolarının dil dağılımı, çeşitlilik ve kök dizinden tespit edilen araçlar."""
+    return _load_technology(user)
+
+
+def _load_technology(user: User) -> TechnologyOut:
     with SessionLocal() as db:
         rows = db.execute(
             select(Repo.is_owner, Repo.is_fork, Repo.languages, Repo.tools).where(Repo.user_id == user.id)
         ).all()
     return build_technology([RepoTech(o, f, dict(lang or {}), list(t or [])) for o, f, lang, t in rows])
+
+
+@router.get("/achievements", response_model=AchievementsOut)
+def achievements(user: User = Depends(current_user)) -> AchievementsOut:
+    """Rozetler var olan metrikleri eşikle karşılaştırır; yıl kıyası yılbaşından bugünedir."""
+    tz = user.timezone
+    today = datetime.now(ZoneInfo(tz or "UTC")).date()
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Commit.authored_at, Commit.repo_id).join(Repo).where(Repo.user_id == user.id)
+        ).all()
+    zone = ZoneInfo(tz or "UTC")
+    pairs = [(t.astimezone(zone), repo_id) for t, repo_id in rows]  # (yerel zaman, repo)
+    days = activity.active_days([t for t, _ in pairs])
+    out_badges = badges(days, today, load_projects(user), _load_technology(user))
+    return AchievementsOut(
+        badges=out_badges, unlocked=sum(b.unlocked for b in out_badges),
+        year=year_compare(pairs, today),
+    )

@@ -25,6 +25,17 @@ P_ACTIVE_WEEKEND = 0.30
 VACATION = (100, 114)  # bugünden kaç gün önce: bu aralıkta hiç commit yok
 BURST = (40, 38)  # bugünden kaç gün önce: enjekte edilen "hackathon" (3 gün)
 
+# Geçmiş dönem: son 6 aydan önceki ~1,5 yıl, daha seyrek (öğrencilik yılları gibi). Yıl kıyası
+# ve yıllık özet demoda dolu görünsün diye (demo hangi güne kaydırılırsa kaydırılsın iki yıl
+# kapsanır). Ayrı tohumla üretilir: son 6 ayın verisi bu eklemeden etkilenmez.
+PAST_DAYS = 730  # en eski commit: bugünden 730 gün önce
+# Aktif gün olasılığı düşük, aktif günün yoğunluğu son 6 ayla aynı: medyan ve olağan dışı gün
+# hesabı geçmiş eklenince bozulmasın (geçmiş "daha seyrek", "daha hafif" değil).
+PAST_P_WEEKDAY = 0.40
+PAST_P_WEEKEND = 0.15
+PAST_BREAK = (420, 450)  # bugünden kaç gün önce: sınav arası, commit yok
+PAST_REPOS = [("algoritma-notlari", 4), ("dotfiles", 1), ("kisisel-blog", 2)]
+
 # Oturum başlangıç saati ağırlıkları: gündüz ağırlıklı, ara sıra akşam, gece çok nadir.
 HOUR_WEIGHTS = {9: 6, 10: 9, 11: 9, 12: 4, 13: 5, 14: 8, 15: 8, 16: 7, 17: 5, 18: 3,
                 19: 2, 20: 3, 21: 3, 22: 2, 23: 1, 0: 0.3}
@@ -100,22 +111,22 @@ def generate(seed: int = SEED) -> dict:
     extra_contrib: dict[date, int] = {}  # commit dışı katkılar (PR, issue, inceleme)
     counter = 0
 
-    def add_commit(repo: str, local: datetime, burst: bool = False) -> None:
+    def add_commit(repo: str, local: datetime, burst: bool = False, r: random.Random = rng) -> None:
         nonlocal counter
         counter += 1
-        kind, msg = _message(rng)
+        kind, msg = _message(r)
         lo, hi = KINDS[kind][2]
-        coauthored = rng.random() < 0.03
+        coauthored = r.random() < 0.03
         if coauthored:
             msg += "\n\nCo-authored-by: demo-ortak <demo@example.invalid>"
-        lines = rng.randint(lo, hi) * (3 if burst else 1)
+        lines = r.randint(lo, hi) * (3 if burst else 1)
         commits_by_repo[repo].append({
             "oid": hashlib.sha1(f"{seed}-{counter}".encode()).hexdigest(),
             "authored_at": _utc_iso(local),
             "message": msg,
-            "additions": int(lines * rng.uniform(0.6, 1.0)),
-            "deletions": int(lines * rng.uniform(0.0, 0.4)),
-            "changed_files": rng.randint(1, 8),
+            "additions": int(lines * r.uniform(0.6, 1.0)),
+            "deletions": int(lines * r.uniform(0.0, 0.4)),
+            "changed_files": r.randint(1, 8),
             "is_coauthored": coauthored,
         })
 
@@ -147,6 +158,25 @@ def generate(seed: int = SEED) -> dict:
                 t += timedelta(minutes=rng.randint(5, 45))
         if rng.random() < 0.15:
             extra_contrib[day] = extra_contrib.get(day, 0) + rng.randint(1, 3)  # PR/issue
+
+    # Geçmiş dönem (DAYS'ten önce): ayrı rastgele üreteç, daha az aktif gün, aynı gün yoğunluğu.
+    past = random.Random(seed + 1)
+    for days_before in range(PAST_DAYS, DAYS, -1):
+        day = ANCHOR - timedelta(days=days_before)
+        if PAST_BREAK[1] >= days_before >= PAST_BREAK[0]:
+            continue
+        weekend = day.weekday() >= 5
+        if past.random() > (PAST_P_WEEKEND if weekend else PAST_P_WEEKDAY):
+            continue
+        for _ in range(past.choices([1, 2, 3], weights=[45, 35, 20])[0]):  # oturumlar (medyan son 6 ayla aynı: 4)
+            hour = past.choices(list(HOUR_WEIGHTS), weights=list(HOUR_WEIGHTS.values()))[0]
+            t = datetime.combine(day, time(hour, past.randint(0, 59)), TZ)
+            repo = past.choices([n for n, _ in PAST_REPOS], weights=[w for _, w in PAST_REPOS])[0]
+            for _ in range(past.choices([1, 2, 3, 4, 5], weights=[30, 30, 20, 12, 8])[0]):
+                add_commit(repo, t, r=past)
+                t += timedelta(minutes=past.randint(5, 45))
+        if past.random() < 0.08:
+            extra_contrib[day] = extra_contrib.get(day, 0) + past.randint(1, 2)  # PR/issue
 
     # Takvim: yerel güne göre commit sayısı + commit dışı katkılar (GitHub gibi).
     calendar: dict[date, int] = dict(extra_contrib)

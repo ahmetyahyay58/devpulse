@@ -36,6 +36,8 @@ class User(Base):
     timezone: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     last_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # 90 gün kuralı: son giriş ya da biten senkron (app/retention.py)
+    last_active_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     repos: Mapped[list["Repo"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     sync_jobs: Mapped[list["SyncJob"]] = relationship(back_populates="user", cascade="all, delete-orphan")

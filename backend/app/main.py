@@ -3,6 +3,7 @@
 Şema Alembic ile yönetilir; tabloları oluşturmak/güncellemek için:
     py -m alembic upgrade head
 """
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -10,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from app import retention
 from app.api import account, auth, metrics, projects, sync
 from app.classify import classifier
 from app.db import engine
@@ -25,7 +27,10 @@ async def lifespan(app: FastAPI):
         log.info("Commit türü modeli %s", "yüklendi" if loaded else "bulunamadı (yalnız kurallar)")
     except Exception as exc:  # model bozuksa sunucu yine açılır; sınıflandırma kurallarla sürer
         log.warning("Commit türü modeli yüklenemedi: %s", exc)
+    # 90 gün kuralı: açılışta bir kez, sonra günde bir (tek arka plan görevi).
+    cleanup = asyncio.create_task(retention.run_daily())
     yield
+    cleanup.cancel()
 
 
 app = FastAPI(title="DevPulse API", lifespan=lifespan)

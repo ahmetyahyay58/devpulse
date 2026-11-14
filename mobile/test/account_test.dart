@@ -139,4 +139,16 @@ void main() {
     expect(find.text('Saklanmayan veriler'), findsOneWidget);
     expect(find.text('E-posta adresin.'), findsOneWidget);
   });
+
+  testWidgets('Verilerim: saklanan sayılar ve 90 gün kuralıyla silinme tarihi', (tester) async {
+    await _start(tester, FakeBackend(), _live);
+    await tester.tap(find.byTooltip('Hesap'));
+    await tester.pumpAndSettle();
+    expect(find.text('Verilerim'), findsOneWidget);
+    expect(find.text('1048 gün'), findsOneWidget);
+    expect(find.text('Otomatik silinme'), findsOneWidget);
+    expect(find.text('11.02.2027'), findsOneWidget);
+    expect(find.textContaining('90 gün boyunca giriş yapmaz'), findsOneWidget);
+    expect(find.textContaining('90 gün etkinlik olmazsa silinir'), findsOneWidget); // çıkış satırı
+  });
 }

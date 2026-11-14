@@ -50,12 +50,14 @@ class AccountScreen extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.logout),
                 title: const Text('Çıkış yap'),
-                subtitle: const Text('Veriler sunucuda kalır'),
+                subtitle: const Text('Veriler sunucuda kalır (90 gün etkinlik olmazsa silinir)'),
                 onTap: () {
                   Navigator.of(context).pop();
                   onLogout();
                 },
               ),
+              const SizedBox(height: 8),
+              _MyDataCard(api: auth.api),
               const Divider(height: 32),
               Text('Verilerimi indir', style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
@@ -189,6 +191,79 @@ class _DeleteDialogState extends State<_DeleteDialog> {
           child: const Text('Kalıcı olarak sil'),
         ),
       ],
+    );
+  }
+}
+
+
+/// "Verilerim": sunucuda ne kadar veri saklandığı ve 90 gün kuralıyla ne zaman silineceği.
+class _MyDataCard extends StatefulWidget {
+  const _MyDataCard({required this.api});
+  final ApiClient api;
+
+  @override
+  State<_MyDataCard> createState() => _MyDataCardState();
+}
+
+class _MyDataCardState extends State<_MyDataCard> {
+  late Future<Map<String, dynamic>> _me = widget.api.get('/me');
+
+  static String _date(String iso) {
+    final d = DateTime.parse(iso).toLocal();
+    return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: FutureBuilder(
+          future: _me,
+          builder: (context, snap) {
+            if (snap.hasError) {
+              return Row(children: [
+                Expanded(child: Text(userMessage(snap.error!, fallback: 'Bilgi alınamadı.'))),
+                TextButton(
+                  onPressed: () => setState(() => _me = widget.api.get('/me')),
+                  child: const Text('Tekrar dene'),
+                ),
+              ]);
+            }
+            if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+            final me = snap.data!;
+            final counts = (me['counts'] as Map).cast<String, int>();
+            Widget row(String label, String value) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(children: [
+                    Expanded(child: Text(label)),
+                    Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  ]),
+                );
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Text('Verilerim', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 8),
+              row('Repo', '${counts['repos']}'),
+              row('Commit', '${counts['commits']}'),
+              row('Katkı takvimi', '${counts['contribution_days']} gün'),
+              row('Senkron kaydı', '${counts['sync_jobs']}'),
+              const SizedBox(height: 8),
+              row('Son etkinlik', _date(me['last_active_at'] as String)),
+              row('Otomatik silinme', _date(me['delete_after'] as String)),
+              const SizedBox(height: 8),
+              Text(
+                '${me['retention_days']} gün boyunca giriş yapmaz ve senkron başlatmazsan hesabın ve '
+                'bütün verilerin bu tarihte otomatik olarak, kalıcı biçimde silinir. Her giriş ya da '
+                "senkron tarihi ileri alır. E-posta, gerçek ad, kodun ve GitHub token'ın saklanmaz.",
+                style: muted,
+              ),
+            ]);
+          },
+        ),
+      ),
     );
   }
 }

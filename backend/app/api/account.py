@@ -1,6 +1,7 @@
 """Hesap uç noktaları.
 
 GET    /privacy    aydınlatma metni (girişsiz: kullanıcı giriş yapmadan okuyabilmeli)
+GET    /me         hesap özeti: saklanan satır sayıları, son etkinlik, 90 gün kuralıyla silinme tarihi
 GET    /me/export  sunucuda saklanan tüm verilerin JSON kopyası (indirme)
 DELETE /me         hesabı ve tüm verileri kalıcı olarak siler; istenirse GitHub iznini kaldırır
 """
@@ -13,7 +14,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import delete, func, select
 
-from app import github_oauth
+from app import github_oauth, retention
 from app.auth import current_user
 from app.db import SessionLocal
 from app.models import Commit, ContributionDay, Repo, SyncJob, User
@@ -28,6 +29,40 @@ PRIVACY_FILE = Path(__file__).resolve().parent.parent / "legal" / "aydinlatma_me
 def privacy() -> str:
     """Tek kaynak: metin güncellenince uygulama da günceli gösterir."""
     return PRIVACY_FILE.read_text(encoding="utf-8")
+
+
+class MeOut(BaseModel):
+    login: str
+    created_at: datetime
+    last_synced_at: datetime | None
+    last_active_at: datetime
+    delete_after: datetime  # bu tarihe kadar giriş/senkron olmazsa veriler otomatik silinir
+    retention_days: int
+    counts: dict[str, int]  # saklanan satır sayıları
+
+
+def _counts(db, user_id: int) -> dict[str, int]:
+    def count(stmt) -> int:
+        return db.scalar(select(func.count()).select_from(stmt.subquery()))
+
+    return {
+        "repos": count(select(Repo.id).where(Repo.user_id == user_id)),
+        "commits": count(select(Commit.id).join(Repo).where(Repo.user_id == user_id)),
+        "contribution_days": count(select(ContributionDay.day).where(ContributionDay.user_id == user_id)),
+        "sync_jobs": count(select(SyncJob.id).where(SyncJob.user_id == user_id)),
+    }
+
+
+@router.get("/me", response_model=MeOut)
+def me(user: User = Depends(current_user)) -> MeOut:
+    """"Verilerim" kartı için: ne kadar veri saklanıyor ve ne zaman otomatik silinir."""
+    with SessionLocal() as db:
+        counts = _counts(db, user.id)
+    return MeOut(
+        login=user.github_login, created_at=user.created_at, last_synced_at=user.last_synced_at,
+        last_active_at=user.last_active_at, delete_after=retention.delete_after(user.last_active_at),
+        retention_days=retention.RETENTION.days, counts=counts,
+    )
 
 
 def _rows(db, model, where, order_by) -> list[dict]:
@@ -92,17 +127,7 @@ def delete_me(body: DeleteRequest | None = None, user: User = Depends(current_us
                 status.HTTP_409_CONFLICT, "Senkron sürerken veriler silinemez; bitmesini bekle."
             )
 
-        def count(stmt) -> int:
-            return db.scalar(select(func.count()).select_from(stmt.subquery()))
-
-        deleted = {
-            "repos": count(select(Repo.id).where(Repo.user_id == user.id)),
-            "commits": count(select(Commit.id).join(Repo).where(Repo.user_id == user.id)),
-            "contribution_days": count(
-                select(ContributionDay.day).where(ContributionDay.user_id == user.id)
-            ),
-            "sync_jobs": count(select(SyncJob.id).where(SyncJob.user_id == user.id)),
-        }
+        deleted = _counts(db, user.id)
         # Tek komut: geri kalanını veritabanındaki ON DELETE CASCADE kuralları siler.
         db.execute(delete(User).where(User.id == user.id))
         db.commit()

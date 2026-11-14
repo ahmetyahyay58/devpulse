@@ -195,6 +195,14 @@ class FakeBackend {
       if (exportFails) return _json({'detail': 'Sunucuda bir hata oluştu.'}, 500);
       return _json({'user': {'github_login': 'ben'}, 'repos': [], 'commits': []});
     }
+    if (path == '/me' && request.method == 'GET') {
+      return _json({
+        'login': 'ben', 'created_at': '2026-11-01T10:00:00Z', 'last_synced_at': '2026-11-13T17:05:00Z',
+        'last_active_at': '2026-11-13T17:05:00Z', 'delete_after': '2027-02-11T17:05:00Z',
+        'retention_days': 90,
+        'counts': {'repos': 4, 'commits': 33, 'contribution_days': 1048, 'sync_jobs': 12},
+      });
+    }
     if (path == '/me' && request.method == 'DELETE') {
       final hasToken = (jsonDecode(request.body) as Map).containsKey('github_token');
       return _json({

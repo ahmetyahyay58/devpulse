@@ -1,6 +1,6 @@
 # DevPulse Aydınlatma Metni
 
-Son güncelleme: 13 Kasım 2026 · Taslak
+Son güncelleme: 14 Kasım 2026 · Taslak
 
 Bu metin, Harran Üniversitesi Bilgisayar Mühendisliği bitirme projesi olarak geliştirilen DevPulse uygulamasının hangi verileri neden işlediğini açıklar. Bir öğrenci projesi için hazırlanmış taslaktır; hukuki danışmanlık niteliği taşımaz.
 
@@ -14,7 +14,7 @@ GitHub hesabındaki herkese açık etkinlikten çalışma alışkanlıklarını 
 Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna erişemez, GitHub hesabında hiçbir şeyi değiştiremez.
 
 ## Saklanan veriler
-- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, saat dilimin, ilk kayıt ve son senkron zamanı.
+- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, saat dilimin, ilk kayıt, son senkron ve son etkinlik (giriş ya da senkron) zamanı.
 - Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı ve bayt boyutu (README'nin içeriği okunmaz), arşivlenip arşivlenmediği, dil dağılımı (dil başına bayt), kök dizindeki dosya adlarından tespit edilen araç adları (ör. Docker; dosya adları ve içerikleri saklanmaz), oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
 - Commit'lerin: kimliği (SHA), yazılma zamanı, mesajı, eklenen ve silinen satır sayısı, değişen dosya sayısı, birden fazla yazarı olup olmadığı.
 - Katkı takvimi: gün başına toplam katkı sayısı.
@@ -38,7 +38,7 @@ Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Verile
 Uygulamadaki "Verilerimi indir" seçeneği, sunucuda senin hakkında saklanan verilerin tamamını (yukarıdaki "Saklanan veriler" bölümünde sayılanlar) tek bir JSON dosyası olarak verir. Dosya yalnızca sana, oturumunla gönderilir; sunucuda ayrıca bir kopyası oluşturulmaz.
 
 ## Saklama süresi ve silme
-Veriler sen silene kadar saklanır. Uygulamadaki "Verilerimi sil" seçeneği hesabını ve yukarıda sayılan bütün verileri sunucudan anında ve kalıcı olarak siler; ayrı bir yedek tutulmaz. İstersen aynı anda GitHub'daki DevPulse iznin de kaldırılır. Silmeden sonra yeniden giriş yaparsan veriler GitHub'dan yeniden çekilir.
+Veriler en fazla, son etkinliğinden (giriş ya da senkron) sonraki 90 gün saklanır: 90 gün boyunca giriş yapmaz ve senkron başlatmazsan hesabın ve bütün verilerin otomatik olarak, kalıcı biçimde silinir. Sunucu bunu günde bir kez denetler; silinme tarihi uygulamadaki "Verilerim" kartında yazar. Daha önce kendin de silebilirsin: uygulamadaki "Verilerimi sil" seçeneği hesabını ve yukarıda sayılan bütün verileri sunucudan anında ve kalıcı olarak siler; ayrı bir yedek tutulmaz. İstersen aynı anda GitHub'daki DevPulse iznin de kaldırılır. Silmeden sonra yeniden giriş yaparsan veriler GitHub'dan yeniden çekilir.
 
 ## Hakların
 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun 11. maddesi kapsamında, verilerinin işlenip işlenmediğini öğrenme, düzeltilmesini ya da silinmesini isteme gibi hakların vardır. Verilerini görme ve silme işlemlerini uygulamadan kendin yapabilirsin; diğer talepler için yukarıdaki iletişim adresine yazabilirsin.

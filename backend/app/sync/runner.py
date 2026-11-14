@@ -47,7 +47,8 @@ def _now() -> datetime:
 
 
 def upsert_user(db: Session, profile: Profile, tz: str | None) -> int:
-    values = {"github_node_id": profile.node_id, "github_login": profile.login}
+    # Giriş de senkron başlangıcı da etkinliktir: 90 gün sayacı sıfırlanır (app/retention.py).
+    values = {"github_node_id": profile.node_id, "github_login": profile.login, "last_active_at": _now()}
     if tz:  # saat dilimi gönderilmediyse eskisini silme
         values["timezone"] = tz
     stmt = (
@@ -217,6 +218,7 @@ def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool
             job.phase = "done"
             job.finished_at = _now()
             db.get(User, user_id).last_synced_at = job.finished_at
+            db.get(User, user_id).last_active_at = job.finished_at
             db.commit()
         except Exception as exc:
             # rollback yalnız son commit'ten sonrasını geri alır; phase hatanın çıktığı

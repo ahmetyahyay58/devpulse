@@ -39,7 +39,7 @@ class ProjectsView extends StatelessWidget {
         final scored = data.projects.where((p) => p.scored).toList();
         final unscored = data.projects.where((p) => !p.scored).toList();
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: tabPadding,
           children: [
             Center(
               child: ConstrainedBox(

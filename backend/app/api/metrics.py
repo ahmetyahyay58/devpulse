@@ -6,6 +6,7 @@ GET /metrics/anomalies Olağan dışı yoğun günler (robust z / MAD)
 GET /metrics/commit-types  Commit türleri dağılımı (kural + model, gerekçeli örnekler)
 GET /metrics/change-points Haftalık commit sayısında değişim noktaları (PELT, istatistik)
 GET /metrics/technology Diller, çeşitlilik (betimleyici entropi), tespit edilen araçlar
+GET /metrics/collaboration İşbirliği: açılan PR'ların sonucu ve kod incelemeleri
 GET /metrics/achievements Rozetler (ilerlemeli) ve yıl kıyası (yılbaşından bugüne)
 GET /metrics/model-lab Model Laboratuvarı: commit sınıflandırmasının gerçek ölçümleri
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
@@ -26,12 +27,13 @@ from app.metrics.achievements import AchievementsOut, badges, year_compare
 from app.metrics.activity import CommitPoint
 from app.classify.model_lab import MODEL_LAB, ModelLabOut
 from app.metrics.catalog import CATALOG, CatalogOut
+from app.metrics.collaboration import CollaborationOut, PrFact, build_collaboration
 from app.metrics.change_points import ChangePointsOut, build_change_points
 from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
 from app.metrics.technology import RepoTech, TechnologyOut, build_technology
-from app.models import Commit, ContributionDay, Repo, User
+from app.models import Commit, ContributionDay, PullRequest, Repo, ReviewYear, User
 
 router = APIRouter(prefix="/metrics", tags=["metrikler"])
 
@@ -138,6 +140,19 @@ def _load_technology(user: User) -> TechnologyOut:
             select(Repo.is_owner, Repo.is_fork, Repo.languages, Repo.tools).where(Repo.user_id == user.id)
         ).all()
     return build_technology([RepoTech(o, f, dict(lang or {}), list(t or [])) for o, f, lang, t in rows])
+
+
+@router.get("/collaboration", response_model=CollaborationOut)
+def collaboration(user: User = Depends(current_user)) -> CollaborationOut:
+    """Açılan PR'ların sonucu (kendi repon / başkasının reposu ayrı) ve yıl yıl inceleme sayısı."""
+    with SessionLocal() as db:
+        prs = db.execute(
+            select(PullRequest.created_at, PullRequest.merged_at, PullRequest.closed_at,
+                   PullRequest.state, PullRequest.is_own_repo).where(PullRequest.user_id == user.id)
+        ).all()
+        reviews = dict(db.execute(select(ReviewYear.year, ReviewYear.count).where(ReviewYear.user_id == user.id)).all())
+    # GitHub yıl aralıkları UTC: "bu yıl" da UTC yıl.
+    return build_collaboration([PrFact(*row) for row in prs], reviews, datetime.now(ZoneInfo("UTC")).date())
 
 
 @router.get("/achievements", response_model=AchievementsOut)

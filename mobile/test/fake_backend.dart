@@ -311,6 +311,25 @@ class FakeBackend {
         },
       });
     }
+    if (path == '/metrics/collaboration') {
+      Map<String, dynamic> group(int o, int m, int c, int open, double? rate, double? hours) => {
+            'opened': o, 'merged': m, 'closed_unmerged': c, 'still_open': open,
+            'merge_rate': rate, 'median_merge_hours': hours,
+          };
+      return _json({
+        'total': group(12, 9, 2, 1, 0.818, 6.0),
+        'own': group(5, 5, 0, 0, 1.0, 2.0),
+        'others': group(7, 4, 2, 1, 0.667, 60.0),
+        'reviews_total': 18, 'reviews_this_year': 11,
+        'years': [
+          {'year': 2025, 'prs': 4, 'reviews': 7},
+          {'year': 2026, 'prs': 8, 'reviews': 11},
+        ],
+        'sufficiency': 'normal', 'basis': '11 sonuçlanmış PR, 18 inceleme',
+        'summary': 'Başkalarının repolarına açılan PR: 7, merge edilen: 4 (oran %67).',
+        'how': 'Test: işbirliği nasıl hesaplandı.',
+      });
+    }
     if (path == '/metrics/technology') {
       return _json(technology);
     }

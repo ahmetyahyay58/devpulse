@@ -67,6 +67,34 @@ class ContributionDay(Base):
     user: Mapped[User] = relationship(back_populates="contribution_days")
 
 
+class PullRequest(Base):
+    """Kullanıcının açtığı bir PR (İşbirliği metrikleri, docs/metrikler.md).
+
+    Başlık, repo adı, PR kimliği ve karşı tarafın kullanıcı adı saklanmaz; bu yüzden kayıtlar
+    güncellenemez, her senkronda kullanıcının tüm PR satırları silinip yeniden yazılır.
+    """
+
+    __tablename__ = "pull_requests"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    merged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    state: Mapped[str] = mapped_column(String(10))  # OPEN | MERGED | CLOSED
+    is_own_repo: Mapped[bool] = mapped_column(Boolean)  # kullanıcının kendi reposuna mı açıldı
+
+
+class ReviewYear(Base):
+    """GitHub'ın bir yılda saydığı kod incelemesi katkısı (yalnız sayı)."""
+
+    __tablename__ = "review_years"
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    year: Mapped[int] = mapped_column(Integer, primary_key=True)
+    count: Mapped[int] = mapped_column(Integer)
+
+
 class Repo(Base):
     __tablename__ = "repos"
     __table_args__ = (UniqueConstraint("user_id", "github_node_id"),)

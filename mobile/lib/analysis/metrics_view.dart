@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_features.dart';
+
 import '../api/api_client.dart';
 import '../overview/charts.dart';
 import '../overview/metric_card.dart';
@@ -50,7 +52,7 @@ class MetricsView extends StatelessWidget {
           );
         }
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: tabPadding,
           children: [
             Center(
               child: ConstrainedBox(

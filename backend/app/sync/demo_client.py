@@ -13,7 +13,9 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from app.config import settings
-from app.sync.source import CalendarDay, CommitData, Profile, RepoData, RequestStat
+from app.sync.source import (
+    CalendarDay, CollaborationData, CommitData, Profile, PullRequestData, RepoData, RequestStat,
+)
 
 DEFAULT_DEMO_FILE = Path(__file__).resolve().parent.parent.parent / "demo" / "demo_user.json"
 
@@ -75,6 +77,20 @@ class DemoClient:
         ]
         self._log("calendar", start)
         return days
+
+    def fetch_collaboration(self, profile: Profile) -> CollaborationData:
+        start = time.perf_counter()
+        prs = [
+            PullRequestData(**p | {"created_at": self._dt(p["created_at"]), "merged_at": self._dt(p["merged_at"]),
+                                   "closed_at": self._dt(p["closed_at"])})
+            for p in self._data.get("pull_requests", [])
+        ]
+        reviews: dict[int, int] = {}
+        for d in self._data.get("reviews", []):
+            year = (date.fromisoformat(d) + self._shift).year  # kaydırmadan sonra hangi yıla düştüğü
+            reviews[year] = reviews.get(year, 0) + 1
+        self._log("collaboration", start)
+        return CollaborationData(pull_requests=prs, reviews_by_year=reviews)
 
     def fetch_commits(self, repo: RepoData, profile: Profile) -> Iterator[CommitData]:
         start = time.perf_counter()

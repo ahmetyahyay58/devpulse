@@ -6,7 +6,9 @@ from datetime import date, datetime, timedelta, timezone
 import httpx
 
 from app.sync.tools import detect_tools
-from app.sync.source import CalendarDay, CommitData, Profile, RepoData, RequestStat
+from app.sync.source import (
+    CalendarDay, CollaborationData, CommitData, Profile, PullRequestData, RepoData, RequestStat,
+)
 
 GRAPHQL_URL = "https://api.github.com/graphql"
 RETRY_STATUSES = {502, 503, 504}  # GitHub büyük sorgularda ara sıra 502 verir
@@ -138,6 +140,26 @@ def _dt(value: str | None) -> datetime | None:
     # GitHub "2026-11-11T08:00:00Z" biçiminde UTC döner.
     return datetime.fromisoformat(value) if value else None
 
+# Kullanıcının açtığı PR'lar: yalnız tarih, durum ve hedef reponun sahibi (kendi mi?) istenir.
+# Başlık, repo adı ve PR kimliği bilerek istenmez.
+PULL_REQUESTS_FIELD = """
+    pullRequests(first: 100, after: $after, orderBy: {field: CREATED_AT, direction: DESC}) {
+      pageInfo { hasNextPage endCursor }
+      nodes { createdAt mergedAt closedAt state repository { owner { id } } }
+    }
+"""
+
+
+def collaboration_query(year_ranges: list[dict]) -> str:
+    """İlk sayfa: PR'lar + her yılın inceleme sayısı, GraphQL takma adlarıyla (y2025: ...) tek
+    istekte. Sonraki sayfalarda year_ranges boş verilir, yalnız PR'lar gelir."""
+    reviews = "".join(
+        f'    y{r["from"][:4]}: contributionsCollection(from: "{r["from"]}", to: "{r["to"]}") '
+        "{ totalPullRequestReviewContributions }\n"
+        for r in year_ranges
+    )
+    return "query($after: String) {\n  viewer {" + PULL_REQUESTS_FIELD + reviews + "  }\n  rateLimit { cost remaining }\n}"
+
 
 def _year_ranges(profile: Profile) -> list[dict]:
     """contributionsCollection en fazla 1 yıllık aralık kabul eder: hesap açılış
@@ -241,6 +263,26 @@ class LiveGitHubClient:
                 for d in week["contributionDays"]:
                     days[date.fromisoformat(d["date"])] = d["contributionCount"]
         return [CalendarDay(day=k, count=v) for k, v in sorted(days.items())]
+
+    def fetch_collaboration(self, profile: Profile) -> CollaborationData:
+        prs: list[PullRequestData] = []
+        reviews: dict[int, int] = {}
+        after, ranges = None, _year_ranges(profile)
+        while True:
+            viewer = self._query("collaboration", collaboration_query(ranges), {"after": after})["viewer"]
+            for r in ranges:
+                year = int(r["from"][:4])
+                reviews[year] = viewer[f"y{year}"]["totalPullRequestReviewContributions"]
+            page = viewer["pullRequests"]
+            for n in page["nodes"]:
+                prs.append(PullRequestData(
+                    created_at=_dt(n["createdAt"]), merged_at=_dt(n["mergedAt"]), closed_at=_dt(n["closedAt"]),
+                    state=n["state"], is_own_repo=n["repository"]["owner"]["id"] == profile.node_id,
+                ))
+            if not page["pageInfo"]["hasNextPage"]:
+                break
+            after, ranges = page["pageInfo"]["endCursor"], []  # inceleme sayıları ilk sayfada geldi
+        return CollaborationData(pull_requests=prs, reviews_by_year=reviews)
 
     def fetch_commits(self, repo: RepoData, profile: Profile) -> Iterator[CommitData]:
         after = None

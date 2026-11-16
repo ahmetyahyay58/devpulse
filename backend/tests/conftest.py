@@ -57,7 +57,8 @@ def clean_tables():
     """Her test boş tablolarla başlar."""
     with engine.begin() as conn:
         conn.execute(text(
-            "TRUNCATE users, repos, commits, sync_jobs, contribution_days RESTART IDENTITY CASCADE"
+            "TRUNCATE users, repos, commits, sync_jobs, contribution_days, pull_requests, review_years "
+            "RESTART IDENTITY CASCADE"
         ))
     yield
 

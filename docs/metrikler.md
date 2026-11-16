@@ -34,6 +34,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Değişim noktaları | < 12 hafta ya da < 10 commit | < 26 hafta | diğer |
 | Teknoloji | Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
 | Yıl kıyası | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
+| İşbirliği | Sonuçlanmış (merge edilmiş ya da kapatılmış) PR < 3 | Sonuçlanmış PR < 10 | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -201,6 +202,33 @@ kıyaslanmaz; bu yanıltıcı olurdu.
 | Yeterli veri yok | Düşük güven | Normal |
 |---|---|---|
 | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
+
+### İşbirliği (PR ve kod incelemeleri)
+**Ne ölçer:** Kullanıcının açtığı pull request'lerin (PR) nasıl sonuçlandığını ve başkalarının
+PR'larını ne kadar incelediğini. **Ne ölçmez:** PR'ların büyüklüğünü, kalitesini ya da ekip
+içindeki rolü.
+
+- **Kaynak:** Kullanıcının açtığı PR'lar (`viewer.pullRequests`; GitHub'ın kullanıcıya
+  gösterdiği, `read:user` kapsamında görünenler) ve yıl yıl `totalPullRequestReviewContributions`
+  (GitHub'ın saydığı kod incelemesi katkıları). Saklanan: PR'ın açılış, merge ve kapanış zamanı,
+  durumu, kendi reposuna mı açıldığı. PR başlığı, repo adı, PR kimliği ve karşı tarafın kullanıcı
+  adı saklanmaz; her senkronda kayıtlar baştan yazılır.
+- **Merge oranı** = merge edilen / (merge edilen + merge edilmeden kapatılan). Açık PR'lar
+  henüz sonuçlanmadığı için paydaya girmez.
+- **Merge süresi:** Açılıştan merge'e geçen süre; merge edilenlerin **medyanı** (saat ya da gün).
+  Ortalama yerine medyan: aylarca açık kalan tek bir PR ortalamayı bozar.
+- **Kendi repon / başkasının reposu ayrı gösterilir.** Kendi reposuna açılan PR'ı çoğu zaman
+  kişi kendisi merge eder; bu, oranı şişirir. Asıl işbirliği göstergesi başkasının reposuna
+  açılan PR'ların sonucudur.
+- **İnceleme sayısı:** Tüm yılların toplamı ve bu yıl (1 Ocak'tan bugüne, UTC yıl sınırı:
+  GitHub yıl aralıklarını UTC verir).
+- **Yıl yıl:** Açılan PR ve inceleme sayıları yıllara göre (çubuk grafik).
+- Bilinen sınırlama: Özel repolardaki PR'lar `read:user` kapsamıyla görünmeyebilir; sayılar
+  yalnızca herkese açık etkinliği betimler.
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| Sonuçlanmış PR < 3 | Sonuçlanmış PR < 10 | diğer |
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

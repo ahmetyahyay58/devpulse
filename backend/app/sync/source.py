@@ -55,9 +55,25 @@ class CalendarDay:
 
 
 @dataclass
+class PullRequestData:
+    """Kullanıcının açtığı bir PR. Başlık, repo adı ve PR kimliği bilerek alınmaz."""
+    created_at: datetime  # UTC
+    merged_at: datetime | None
+    closed_at: datetime | None
+    state: str  # OPEN | MERGED | CLOSED
+    is_own_repo: bool  # kullanıcının kendi reposuna mı açıldı
+
+
+@dataclass
+class CollaborationData:
+    pull_requests: list[PullRequestData]
+    reviews_by_year: dict[int, int]  # yıl -> GitHub'ın saydığı kod incelemesi katkısı
+
+
+@dataclass
 class RequestStat:
     """Tek bir API isteğinin ölçümü (sync_jobs.requests'e yazılır)."""
-    kind: str  # "profile", "repos", "contributed_repos", "commits", "calendar"
+    kind: str  # "profile", "repos", "contributed_repos", "commits", "calendar", "collaboration"
     cost: int  # GraphQL rateLimit puanı; demo için 0
     duration_ms: int
 
@@ -78,4 +94,8 @@ class GitHubSource(Protocol):
 
     def fetch_calendar(self, profile: Profile) -> list[CalendarDay]:
         """Hesabın açıldığı yıldan bugüne katkı takviminin günleri."""
+        ...
+
+    def fetch_collaboration(self, profile: Profile) -> CollaborationData:
+        """Kullanıcının açtığı PR'lar ve yıl yıl kod incelemesi sayıları."""
         ...

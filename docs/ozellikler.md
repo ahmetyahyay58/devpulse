@@ -62,7 +62,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### Analiz → İşbirliği
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| Merge edilen PR, merge oranı, ortalama merge süresi, review sayısı | Yeni | Yeni veri | `contributionsCollection` PR ve review katkıları (yıl yıl). |
+| Merge edilen PR, merge oranı, merge süresi, review sayısı | Yapıldı (16 Kas) | Yeni veri | `viewer.pullRequests` + yıl yıl `totalPullRequestReviewContributions` (takma adlarla tek istek, ~0,6 sn). Ortalama yerine medyan; kendi repon / başkasının reposu ayrı (kendi reponda oran şişkin). Tanım `docs/metrikler.md`. |
 | Aylık merge süresi grafiği, katkı dengesi çubukları | Yeni | Yeni veri | Katkı dengesi: kendi repoların / başkalarınınki, yalnız sayılar; başka kişilerin adları saklanmaz. |
 | "Aktif / Yeni kullanıcı" geçişi ve boş durum mesajı | Yeni | — | Veri yetersizse üç durumlu yeterlilik kuralı. |
 

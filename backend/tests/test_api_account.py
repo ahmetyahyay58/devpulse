@@ -1,4 +1,5 @@
 """Aydınlatma metni ve veri silme testleri."""
+import re
 import json
 
 import httpx
@@ -8,7 +9,7 @@ from app import github_oauth
 from app.config import settings
 from app.models import SyncJob
 
-TABLES = ["users", "repos", "commits", "sync_jobs", "contribution_days"]
+TABLES = ["users", "repos", "commits", "sync_jobs", "contribution_days", "pull_requests", "review_years"]
 
 
 def _rows_of(db, user_id: int) -> dict[str, int]:
@@ -19,6 +20,8 @@ def _rows_of(db, user_id: int) -> dict[str, int]:
         "commits": "SELECT count(*) FROM commits c JOIN repos r ON r.id = c.repo_id WHERE r.user_id = :u",
         "sync_jobs": "SELECT count(*) FROM sync_jobs WHERE user_id = :u",
         "contribution_days": "SELECT count(*) FROM contribution_days WHERE user_id = :u",
+        "pull_requests": "SELECT count(*) FROM pull_requests WHERE user_id = :u",
+        "review_years": "SELECT count(*) FROM review_years WHERE user_id = :u",
     }
     return {t: db.scalar(text(q[t]), {"u": user_id}) for t in TABLES}
 
@@ -61,7 +64,8 @@ def test_export_has_every_stored_column(api, db, demo_auth):
     api.post("/sync", json={}, headers=demo_auth)
     body = api.get("/me/export", headers=demo_auth).json()
     sections = {"users": [body["user"]], "repos": body["repos"], "commits": body["commits"],
-                "contribution_days": body["contribution_days"], "sync_jobs": body["sync_jobs"]}
+                "contribution_days": body["contribution_days"], "sync_jobs": body["sync_jobs"],
+                "pull_requests": body["pull_requests"], "review_years": body["review_years"]}
     for table, rows in sections.items():
         db_columns = set(db.scalars(text(
             "SELECT column_name FROM information_schema.columns WHERE table_name = :t"), {"t": table}))
@@ -79,12 +83,14 @@ def test_delete_removes_everything_of_user_only(api, db, demo_auth, login_as):
     other = login_as("U_other", "baskasi")
     # Numarası 2 olmayabilir: ON CONFLICT'li upsert'ler de sequence değeri harcar.
     other_id = db.scalar(text("SELECT id FROM users WHERE github_login = 'baskasi'"))
-    assert _rows_of(db, 1) == {"users": 1, "repos": 2, "commits": 6, "sync_jobs": 1, "contribution_days": 7}
+    assert _rows_of(db, 1) == {"users": 1, "repos": 2, "commits": 6, "sync_jobs": 1, "contribution_days": 7,
+                               "pull_requests": 4, "review_years": 2}
 
     resp = api.request("DELETE", "/me", headers=demo_auth)
     assert resp.status_code == 200
     assert resp.json() == {
-        "deleted": {"repos": 2, "commits": 6, "contribution_days": 7, "sync_jobs": 1},
+        "deleted": {"repos": 2, "commits": 6, "contribution_days": 7, "sync_jobs": 1,
+                    "pull_requests": 4, "review_years": 2},
         "github_grant_revoked": None,  # istenmedi
     }
     assert _rows_of(db, 1) == dict.fromkeys(TABLES, 0)  # hiçbir kalıntı yok
@@ -153,3 +159,19 @@ def test_failed_revoke_does_not_block_deletion(api, db, demo_auth, monkeypatch):
     assert resp.status_code == 200
     assert resp.json()["github_grant_revoked"] is False
     assert db.scalar(select(func.count()).select_from(text("users"))) == 0
+
+
+def test_export_covers_every_user_table(db):
+    # Kullanıcıya bağlı yeni bir tablo eklenip dışa aktarmaya konmazsa bu test kırılır.
+    from app.api.account import export_me
+    import inspect
+    source = inspect.getsource(export_me)
+    user_tables = set(db.scalars(text(
+        "SELECT DISTINCT tc.table_name FROM information_schema.table_constraints tc "
+        "JOIN information_schema.constraint_column_usage ccu ON tc.constraint_name = ccu.constraint_name "
+        "WHERE tc.constraint_type = 'FOREIGN KEY' AND ccu.table_name = 'users'")))
+    model_names = {"repos": "Repo", "contribution_days": "ContributionDay", "sync_jobs": "SyncJob",
+                   "pull_requests": "PullRequest", "review_years": "ReviewYear"}
+    assert user_tables == set(model_names)
+    for table, model in model_names.items():
+        assert re.search(rf'"{table}": _rows\(\s*db, {model},', source), table

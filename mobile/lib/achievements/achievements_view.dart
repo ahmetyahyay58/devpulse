@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_features.dart';
+
 import '../overview/metric_card.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_models.dart';
@@ -43,7 +45,7 @@ class AchievementsView extends StatelessWidget {
           );
         }
         return ListView(
-          padding: const EdgeInsets.all(16),
+          padding: tabPadding,
           children: [
             Center(
               child: ConstrainedBox(

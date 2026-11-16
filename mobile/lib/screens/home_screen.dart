@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: tabPadding,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Column(

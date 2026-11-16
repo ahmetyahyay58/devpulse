@@ -105,6 +105,39 @@ def _active_repos(days_before: int) -> list[tuple]:
     return [r for r in REPOS if r[8][0] >= days_before >= r[8][1]]
 
 
+# İşbirliği (PR ve inceleme): ayrı tohumla üretilir, commit'leri ve anomaliyi değiştirmez.
+# Kendi repolarına açılan PR'lar çoğunlukla aynı gün merge edilir; başkasının reposuna açılanlar
+# birkaç günde sonuçlanır, bir kısmı kapatılır ya da açık kalır (gerçek hayattaki gibi).
+OWN_PRS, OTHER_PRS, REVIEWS = 22, 16, 64
+
+
+def _collaboration(seed: int) -> tuple[list[dict], list[str]]:
+    r = random.Random(seed + 2)
+    prs = []
+    for own, count in ((True, OWN_PRS), (False, OTHER_PRS)):
+        for _ in range(count):
+            # Son ~2 yıla yayılır, son yıla ağırlık verilir (yıl kıyası demoda dolu görünsün).
+            days_before = int(r.triangular(1, PAST_DAYS, 60))
+            created = datetime.combine(ANCHOR - timedelta(days=days_before), time(r.randint(9, 22), r.randint(0, 59)), TZ)
+            roll = r.random()
+            if own or roll < 0.65:
+                hours = r.uniform(0.2, 8) if own else r.uniform(10, 24 * 9)
+                done = min(created + timedelta(hours=hours), datetime.combine(ANCHOR, time(23), TZ))
+                prs.append({"created_at": _utc_iso(created), "merged_at": _utc_iso(done),
+                            "closed_at": _utc_iso(done), "state": "MERGED", "is_own_repo": own})
+            elif roll < 0.85 and days_before > 7:
+                done = created + timedelta(days=r.uniform(1, 20))
+                prs.append({"created_at": _utc_iso(created), "merged_at": None,
+                            "closed_at": _utc_iso(done), "state": "CLOSED", "is_own_repo": own})
+            else:
+                prs.append({"created_at": _utc_iso(created), "merged_at": None, "closed_at": None,
+                            "state": "OPEN", "is_own_repo": own})
+    prs.sort(key=lambda p: p["created_at"])
+    reviews = sorted((ANCHOR - timedelta(days=int(r.triangular(1, PAST_DAYS, 30)))).isoformat()
+                     for _ in range(REVIEWS))
+    return prs, reviews
+
+
 def generate(seed: int = SEED) -> dict:
     rng = random.Random(seed)  # yalnızca bu örnek; global rastgelelik kullanılmaz
     commits_by_repo: dict[str, list[dict]] = {r[0]: [] for r in REPOS}
@@ -201,6 +234,7 @@ def generate(seed: int = SEED) -> dict:
         })
 
     burst_days = [ANCHOR - timedelta(days=d) for d in range(BURST[0], BURST[1] - 1, -1)]
+    prs, reviews = _collaboration(seed)
     return {
         "_not": "Sentetik demo verisi (app/sync/demo_generator.py ile üretildi). Gerçek bir "
                 "kişiye ait değildir; ML başarısını kanıtlamaz, yalnızca kodun çalıştığını gösterir.",
@@ -218,6 +252,8 @@ def generate(seed: int = SEED) -> dict:
                     "created_at": "2024-03-01T09:00:00Z"},
         "repos": repos_out,
         "calendar": [{"day": d.isoformat(), "count": n} for d, n in sorted(calendar.items())],
+        "pull_requests": prs,
+        "reviews": reviews,  # inceleme günleri; istemci yıllara göre sayar
     }
 
 
@@ -230,4 +266,5 @@ if __name__ == "__main__":
     data = generate()
     out.write_text(to_json(data), encoding="utf-8")
     n = sum(len(r["commits"]) for r in data["repos"])
-    print(f"{out} yazıldı: {len(data['repos'])} repo, {n} commit, {len(data['calendar'])} takvim günü")
+    print(f"{out} yazıldı: {len(data['repos'])} repo, {n} commit, {len(data['calendar'])} takvim günü, "
+          f"{len(data['pull_requests'])} PR, {len(data['reviews'])} inceleme")

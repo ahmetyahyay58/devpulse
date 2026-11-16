@@ -35,9 +35,10 @@ def test_demo_sync_writes_repos_and_commits(db):
 
 def test_request_log_is_recorded(db):
     job = db.get(SyncJob, run_sync(DemoClient(DEMO_FILE)))
-    # 1 profil + 1 repo listesi + her repo için 1 commit isteği + 1 takvim
-    assert [r["kind"] for r in job.requests] == ["profile", "repos", "commits", "commits", "calendar"]
-    assert job.request_count == 5
+    # 1 profil + 1 repo listesi + her repo için 1 commit isteği + 1 takvim + 1 işbirliği
+    assert [r["kind"] for r in job.requests] == ["profile", "repos", "commits", "commits", "calendar",
+                                                 "collaboration"]
+    assert job.request_count == 6
     assert job.total_cost == 0  # demo istemcisi puan harcamaz
 
 

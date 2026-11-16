@@ -17,7 +17,7 @@ from sqlalchemy import delete, func, select
 from app import github_oauth, retention
 from app.auth import current_user
 from app.db import SessionLocal
-from app.models import Commit, ContributionDay, Repo, SyncJob, User
+from app.models import Commit, ContributionDay, PullRequest, Repo, ReviewYear, SyncJob, User
 from app.sync.runner import STALE_AFTER
 
 router = APIRouter(tags=["hesap"])
@@ -51,6 +51,8 @@ def _counts(db, user_id: int) -> dict[str, int]:
         "commits": count(select(Commit.id).join(Repo).where(Repo.user_id == user_id)),
         "contribution_days": count(select(ContributionDay.day).where(ContributionDay.user_id == user_id)),
         "sync_jobs": count(select(SyncJob.id).where(SyncJob.user_id == user_id)),
+        "pull_requests": count(select(PullRequest.id).where(PullRequest.user_id == user_id)),
+        "review_years": count(select(ReviewYear.year).where(ReviewYear.user_id == user_id)),
     }
 
 
@@ -93,6 +95,8 @@ def export_me(user: User = Depends(current_user)) -> JSONResponse:
                 db, ContributionDay, ContributionDay.user_id == user.id, [ContributionDay.day]
             ),
             "sync_jobs": _rows(db, SyncJob, SyncJob.user_id == user.id, [SyncJob.id]),
+            "pull_requests": _rows(db, PullRequest, PullRequest.user_id == user.id, [PullRequest.created_at]),
+            "review_years": _rows(db, ReviewYear, ReviewYear.user_id == user.id, [ReviewYear.year]),
         }
     filename = f"devpulse-verilerim-{datetime.now(timezone.utc):%Y-%m-%d}.json"
     return JSONResponse(

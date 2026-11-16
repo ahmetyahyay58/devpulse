@@ -12,9 +12,9 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal
-from app.models import Commit, ContributionDay, Repo, SyncJob, User
+from app.models import Commit, ContributionDay, PullRequest, Repo, ReviewYear, SyncJob, User
 from app.sync.github_client import GitHubError
-from app.sync.source import CalendarDay, GitHubSource, Profile, RepoData
+from app.sync.source import CalendarDay, CollaborationData, GitHubSource, Profile, RepoData
 
 log = logging.getLogger(__name__)
 COMMIT_BATCH = 500
@@ -115,6 +115,19 @@ def _upsert_calendar(db: Session, user_id: int, days: list[CalendarDay]) -> int:
     return len(days)
 
 
+def _replace_collaboration(db: Session, user_id: int, data: CollaborationData) -> None:
+    """PR'ların kimliği saklanmadığı için güncelleme yapılamaz: kullanıcının PR ve inceleme
+    satırları silinip yeniden yazılır (birkaç yüz satır; tek işlem içinde)."""
+    db.execute(delete(PullRequest).where(PullRequest.user_id == user_id))
+    db.execute(delete(ReviewYear).where(ReviewYear.user_id == user_id))
+    db.add_all(
+        PullRequest(user_id=user_id, created_at=p.created_at, merged_at=p.merged_at, closed_at=p.closed_at,
+                    state=p.state, is_own_repo=p.is_own_repo)
+        for p in data.pull_requests
+    )
+    db.add_all(ReviewYear(user_id=user_id, year=y, count=n) for y, n in data.reviews_by_year.items())
+
+
 def _record_requests(job: SyncJob, source: GitHubSource) -> None:
     log = [asdict(s) for s in source.request_log]
     job.requests = log  # yeni liste atanır ki SQLAlchemy değişikliği fark etsin
@@ -147,6 +160,8 @@ def clear_synced_data(user_id: int) -> None:
     with SessionLocal() as db:
         db.execute(delete(Repo).where(Repo.user_id == user_id))  # commit'ler CASCADE ile gider
         db.execute(delete(ContributionDay).where(ContributionDay.user_id == user_id))
+        db.execute(delete(PullRequest).where(PullRequest.user_id == user_id))
+        db.execute(delete(ReviewYear).where(ReviewYear.user_id == user_id))
         db.commit()
 
 
@@ -214,6 +229,8 @@ def execute_sync(job_id: int, source: GitHubSource, profile: Profile, full: bool
             job.phase = "calendar"
             db.commit()
             job.calendar_days = _upsert_calendar(db, user_id, source.fetch_calendar(profile))
+            # İşbirliği (PR + inceleme) ayrı bir aşama değil: ekranda "Katkı takvimi" adımında çekilir.
+            _replace_collaboration(db, user_id, source.fetch_collaboration(profile))
             _record_requests(job, source)
 
             job.status = "done"

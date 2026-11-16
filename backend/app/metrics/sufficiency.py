@@ -71,3 +71,12 @@ def year_compare(this_year_commits: int, last_year_commits: int) -> Sufficiency:
     if min(this_year_commits, last_year_commits) < 10:
         return Sufficiency.LOW
     return Sufficiency.NORMAL
+
+
+def collaboration(resolved_prs: int) -> Sufficiency:
+    """Sonuçlanmış (merge edilmiş ya da kapatılmış) PR sayısına göre."""
+    if resolved_prs < 3:
+        return Sufficiency.NONE
+    if resolved_prs < 10:
+        return Sufficiency.LOW
+    return Sufficiency.NORMAL

@@ -1,5 +1,6 @@
 """Canlı GraphQL istemcisinin testleri: gerçek GitHub yerine sahte bir sunucu (MockTransport)."""
 import json
+import re
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -61,7 +62,20 @@ class FakeGitHub:
         query, var = body["query"], body["variables"]
         self.calls.append({"var": var, "auth": request.headers["Authorization"]})
 
-        if "contributionCalendar" in query:
+        if "pullRequests(" in query:
+            # İlk sayfada yıl takma adları (y2026) da gelir; ikinci sayfada yalnız PR'lar.
+            def pr(state, owner, created, merged=None, closed=None):
+                return {"createdAt": created, "mergedAt": merged, "closedAt": closed, "state": state,
+                        "repository": {"owner": {"id": owner}}}
+            if var["after"] is None:
+                prs = page([pr("MERGED", ME, "2026-02-01T10:00:00Z", "2026-02-01T12:00:00Z", "2026-02-01T12:00:00Z"),
+                            pr("CLOSED", OTHER, "2026-02-03T10:00:00Z", None, "2026-02-04T10:00:00Z")], "p1")
+            else:
+                prs = page([pr("OPEN", OTHER, "2026-02-05T10:00:00Z")])
+            data = {"viewer": {"pullRequests": prs}}
+            for alias in re.findall(r"(y\d{4}): contributionsCollection", query):
+                data["viewer"][alias] = {"totalPullRequestReviewContributions": 7}
+        elif "contributionCalendar" in query:
             # Her yıl için aynı iki gün; 2026-01-01 sıfır katkılı gün de saklanmalı.
             data = {"viewer": {"contributionsCollection": {"contributionCalendar": {"weeks": [
                 {"contributionDays": [
@@ -232,3 +246,13 @@ def test_network_error_is_retried_then_reported(monkeypatch):
     with pytest.raises(GitHubError, match="GitHub'a ulaşılamadı"):
         client.fetch_profile()
     assert len(calls) == github_client.MAX_ATTEMPTS
+
+
+def test_fetch_collaboration_pages_and_reviews(client, fake):
+    data = client.fetch_collaboration(client.fetch_profile())
+    assert [(p.state, p.is_own_repo) for p in data.pull_requests] == [
+        ("MERGED", True), ("CLOSED", False), ("OPEN", False)]
+    assert data.reviews_by_year == {2026: 7}  # hesap 2026'da açıldı: tek yıl
+    assert data.pull_requests[0].merged_at.hour == 12
+    # 1 profil + 2 PR sayfası; ikinci sayfa yıl takma adı istemez
+    assert [r.kind for r in client.request_log] == ["profile", "collaboration", "collaboration"]

@@ -18,6 +18,8 @@ Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna er
 - Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı ve bayt boyutu (README'nin içeriği okunmaz), arşivlenip arşivlenmediği, dil dağılımı (dil başına bayt), kök dizindeki dosya adlarından tespit edilen araç adları (ör. Docker; dosya adları ve içerikleri saklanmaz), oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
 - Commit'lerin: kimliği (SHA), yazılma zamanı, mesajı, eklenen ve silinen satır sayısı, değişen dosya sayısı, birden fazla yazarı olup olmadığı.
 - Katkı takvimi: gün başına toplam katkı sayısı.
+- Pull request'lerin: açtığın her PR'ın açılış, merge ve kapanış zamanı, durumu (açık / merge edildi / kapatıldı) ve kendi repona mı açıldığı. PR başlığı, repo adı ve karşı tarafın kullanıcı adı saklanmaz.
+- Kod incelemeleri: yıl başına GitHub'ın saydığı inceleme sayısı (yalnız sayı).
 - Senkron kayıtları: ne zaman yapıldığı, kaç istek sürdüğü, varsa hata mesajı.
 
 ## Saklanmayan veriler

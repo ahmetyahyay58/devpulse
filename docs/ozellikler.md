@@ -86,7 +86,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
 | 5 şablon: Klasik, Modern, Kompakt, Teknik, Öğrenci | Yeni | Mevcut | |
-| Yerinde düzenlenebilen metinler, "Taslağa dön" | Yeni | — | Düzenlemeler telefonda mı sunucuda mı saklanacak: o fazda karar (sunucudaysa aydınlatma metni). |
+| Yerinde düzenlenebilen metinler, "Taslağa dön" | Yeni | — | Karar (16 Kas): düzenlemeler telefonda; PDF telefonda; CV 5. sekme. Gerekçe ve kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |
 | Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Yeni | — | |

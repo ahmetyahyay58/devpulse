@@ -8,6 +8,8 @@ import '../api/health_api.dart';
 import '../api/sync_api.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
+import '../cv/cv_controller.dart';
+import '../cv/cv_view.dart';
 import '../overview/overview_controller.dart';
 import '../achievements/achievements_view.dart';
 import '../analysis/analysis_view.dart';
@@ -71,13 +73,16 @@ class _HomeScreenState extends State<HomeScreen> {
   late final ProjectsController _projects = ProjectsController(api: widget.api, onUnauthorized: widget.onLogout)
     ..load();
 
+  // CV taslağı (düzenlemeler telefonda; docs/cv.md).
+  late final CvController _cv = CvController(api: widget.api, onUnauthorized: widget.onLogout)..load();
+
   // AI katmanı: onay durumu ve hazır sorular (yüklenemezse AI kartı görünmez).
   late final AiController _ai = AiController(api: widget.api)
     ..load()
     ..loadPrefs();
 
   bool _wasRunning = false;
-  int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar
+  int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar, 4: CV
 
   @override
   void initState() {
@@ -109,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_wasRunning && !running && _sync.job?.status == 'done') {
       _overview.load();
       _projects.load();
+      _cv.load();
     }
     _wasRunning = running;
   }
@@ -131,6 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _sync.dispose();
     _overview.dispose();
     _projects.dispose();
+    _cv.dispose();
     _ai.dispose();
     super.dispose();
   }
@@ -175,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
             AnalysisView(controller: _overview, api: widget.api),
             ProjectsView(controller: _projects),
             AchievementsView(controller: _overview),
+            CvView(controller: _cv),
           ],
         ),
       ),
@@ -186,6 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(icon: Icon(Icons.query_stats), label: 'Analiz'),
           NavigationDestination(icon: Icon(Icons.folder_outlined), label: 'Projeler'),
           NavigationDestination(icon: Icon(Icons.emoji_events_outlined), label: 'Başarımlar'),
+          NavigationDestination(icon: Icon(Icons.description_outlined), label: 'CV'),
         ],
       ),
     );

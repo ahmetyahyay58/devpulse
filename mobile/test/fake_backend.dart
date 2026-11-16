@@ -311,6 +311,27 @@ class FakeBackend {
         },
       });
     }
+    if (path == '/cv/draft') {
+      final en = request.url.queryParameters['lang'] == 'en';
+      Map<String, dynamic> item(String id, String text, String source, {bool placeholder = false}) =>
+          {'id': id, 'text': text, 'source': source, 'placeholder': placeholder};
+      return _json({
+        'lang': en ? 'en' : 'tr', 'login': 'ben', 'profile_url': 'https://github.com/ben',
+        'summary': item('summary', en ? 'Mostly working with Dart.' : 'Ağırlıklı olarak Dart ile çalışıyorum.',
+            'Genel Bakış sayıları'),
+        'projects': [
+          {
+            'id': 'proj:R_a', 'name': 'proje-a',
+            'items': [
+              item('proj:R_a:desc', 'Hava durumu servisi', 'GitHub repo açıklaması'),
+              item('proj:R_a:impact', 'Etki: [ör. kullanıcı sayısı]', 'Bu sayıyı sen yazarsın', placeholder: true),
+            ],
+          },
+        ],
+        'skills': [item('skills:languages', 'Diller: Dart, Python', 'Dil dağılımı')],
+        'activity': [item('act:commits', 'Toplam commit: 33; aktif gün: 12; en uzun seri: 7 gün.', "Commit'ler")],
+      });
+    }
     if (path == '/metrics/collaboration') {
       Map<String, dynamic> group(int o, int m, int c, int open, double? rate, double? hours) => {
             'opened': o, 'merged': m, 'closed_unmerged': c, 'still_open': open,

@@ -1,6 +1,6 @@
 # DevPulse Aydınlatma Metni
 
-Son güncelleme: 14 Kasım 2026 · Taslak
+Son güncelleme: 16 Kasım 2026 · Taslak
 
 Bu metin, Harran Üniversitesi Bilgisayar Mühendisliği bitirme projesi olarak geliştirilen DevPulse uygulamasının hangi verileri neden işlediğini açıklar. Bir öğrenci projesi için hazırlanmış taslaktır; hukuki danışmanlık niteliği taşımaz.
 
@@ -14,7 +14,7 @@ GitHub hesabındaki herkese açık etkinlikten çalışma alışkanlıklarını 
 Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna erişemez, GitHub hesabında hiçbir şeyi değiştiremez.
 
 ## Saklanan veriler
-- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, profil fotoğrafının GitHub'daki adresi (fotoğrafın kendisi saklanmaz; uygulama onu doğrudan GitHub'dan yükler), saat dilimin, ilk kayıt, son senkron ve son etkinlik (giriş ya da senkron) zamanı.
+- Hesap: GitHub kullanıcı kimliğin (sayısal olmayan iç kimlik), kullanıcı adın, profil fotoğrafının GitHub'daki adresi (fotoğrafın kendisi saklanmaz; uygulama onu doğrudan GitHub'dan yükler), saat dilimin, ilk kayıt, son senkron ve son etkinlik (giriş ya da senkron) zamanı, yapay zekâ yorumlarına onay verdiysen onay zamanı.
 - Repolar: ad, açıklama, ana dil, topic'ler, lisans türü, README olup olmadığı ve bayt boyutu (README'nin içeriği okunmaz), arşivlenip arşivlenmediği, dil dağılımı (dil başına bayt), kök dizindeki dosya adlarından tespit edilen araç adları (ör. Docker; dosya adları ve içerikleri saklanmaz), oluşturma ve son push zamanı, fork ya da özel olup olmadığı. Başkasına ait repolarda sahibin kullanıcı adı saklanmaz.
 - Commit'lerin: kimliği (SHA), yazılma zamanı, mesajı, eklenen ve silinen satır sayısı, değişen dosya sayısı, birden fazla yazarı olup olmadığı.
 - Katkı takvimi: gün başına toplam katkı sayısı.
@@ -31,7 +31,7 @@ Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Verile
 
 ## Veri nereye gider
 - GitHub: verinin kaynağıdır; uygulama GitHub API'sinden okur.
-- Yapay zekâ hizmetleri: şu an hiçbirine veri gönderilmez. İleride isteğe bağlı bir yorum özelliği eklenirse yalnızca hesaplanmış toplu sayılar gönderilir (kullanıcı adı, repo adı, commit mesajı ya da kod gönderilmez) ve ayrıca onayın istenir.
+- Yapay zekâ hizmeti (Google Gemini API): yalnızca onay verirsen ve yalnızca bir yapay zekâ yorumu istediğinde kullanılır. Gönderilen tek şey hesaplanmış toplu sayılardır (ör. toplam commit, aktif gün, en uzun seri, gece çalışma oranı, proje sağlık ortalaması, en çok kullandığın dilin adı ve payı). Kullanıcı adın, repo adların, commit mesajların, kodun ve e-postan gönderilmez; gönderilen sayıları uygulamadaki "Yapay zekâya giden veri" ekranında görebilirsin. Uygulama Gemini'nin ücretsiz katmanını kullanır: Google, bu katmanda gönderilen içeriği ve cevapları kendi ürünlerini geliştirmek için kullanabilir ve insan inceleyiciler okuyabilir. Onayını Profil ekranından istediğin zaman geri alabilirsin; geri aldığında hiçbir şey gönderilmez ve yorumlar hazır şablon cümlelerle gösterilir.
 - Sunucu, proje süresince geliştiricinin denetimindeki bir makinede çalışır.
 
 ## Verilerini indirme

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_features.dart';
 import 'overview_models.dart';
 
 /// Veri yeterliliği rozeti: ikon + yazı (renk tek başına anlam taşımaz).
@@ -27,11 +28,12 @@ class SufficiencyBadge extends StatelessWidget {
 
 /// Bir metrik kartı: başlık, rozet, şablon özet, grafik/sayılar, "Nasıl hesaplandı?".
 class MetricCard extends StatelessWidget {
-  const MetricCard({super.key, required this.title, required this.section, this.body});
+  const MetricCard({super.key, required this.title, required this.section, this.body, this.whyId});
 
   final String title;
   final MetricSection section;
   final Widget? body; // veri yetersizse gösterilmez
+  final String? whyId; // "Neden?" düğmesinin hazır sorusu (AI katmanı); yoksa düğme yok
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,7 @@ class MetricCard extends StatelessWidget {
               Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
               SufficiencyBadge(section.sufficiency),
             ]),
+            if (whyId != null) Align(alignment: Alignment.centerLeft, child: WhyButton(questionId: whyId!)),
             const SizedBox(height: 12),
             Text(section.summary),
             if (enough && body != null) ...[const SizedBox(height: 16), body!],

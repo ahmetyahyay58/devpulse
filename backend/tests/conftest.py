@@ -11,6 +11,7 @@ SERVER = "devpulse:devpulse@localhost:5432"
 TEST_DB = "devpulse_test"
 os.environ["DATABASE_URL"] = f"postgresql+psycopg://{SERVER}/{TEST_DB}"
 os.environ["GITHUB_TOKEN"] = ""  # testler gerçek GitHub'a asla gitmez
+os.environ["GEMINI_API_KEY"] = ""  # testler gerçek Gemini'ye asla gitmez (sahte HTTP)
 os.environ["JWT_SECRET"] = "test-jwt-secret-yalnizca-testlerde-kullanilir-32b"
 os.environ["GITHUB_CLIENT_ID"] = "test-client-id"
 os.environ["GITHUB_CLIENT_SECRET"] = "test-client-secret"

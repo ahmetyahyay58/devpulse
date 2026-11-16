@@ -23,6 +23,27 @@ class FakeBackend {
   int? runningJobId; // doluysa POST /sync 409 döner (zaten süren iş)
   bool sessionExpired = false; // doluysa /sync uçları 401 döner
   bool exportFails = false; // doluysa /me/export 500 döner
+  // AI katmanı: sunucuda anahtar var mı ve kullanıcının onayı (POST /ai/consent değiştirir).
+  bool aiLlmReady = true;
+  bool aiConsent = false;
+  bool aiStatusFails = false;
+
+  static const aiFacts = {'toplam_commit': 33, 'aktif_gun': 12, 'gece_payi_yuzde': 22, 'baskin_dil': 'Dart',
+      'cesitlilik': 0.41, 'yil_degisim_yuzde': null, 'eksik_proje': {'lisans': 2}};
+
+  Map<String, dynamic> aiStatus() => {
+        'consent': aiConsent, 'consent_at': null, 'llm_ready': aiLlmReady, 'provider': 'Google Gemini',
+        'model': 'gemini-flash-latest',
+        'questions': [
+          {'id': 'ozet', 'kind': 'sor', 'text': 'Çalışma alışkanlığımı kısaca özetler misin?'},
+          {'id': 'guclu', 'kind': 'sor', 'text': 'Güçlü yanım ne?'},
+          {'id': 'gelistir', 'kind': 'sor', 'text': 'Neyi geliştirebilirim?'},
+          {'id': 'projeler', 'kind': 'sor', 'text': 'Projelerimi nasıl iyileştiririm?'},
+          {'id': 'ritim', 'kind': 'sor', 'text': 'Genelde ne zaman çalışıyorum?'},
+          {'id': 'neden_sureklilik', 'kind': 'neden', 'text': 'Süreklilik sonucum neden böyle?'},
+          {'id': 'ipucu', 'kind': 'ipucu', 'text': 'Bana tek cümlelik bir öneri verir misin?'},
+        ],
+      };
   int _jobReads = 0;
 
   static Map<String, dynamic> job(int id, String status,
@@ -194,6 +215,26 @@ class FakeBackend {
     if (path == '/me/export') {
       if (exportFails) return _json({'detail': 'Sunucuda bir hata oluştu.'}, 500);
       return _json({'user': {'github_login': 'ben'}, 'repos': [], 'commits': []});
+    }
+    if (path == '/ai/status') {
+      if (aiStatusFails) return _json({'detail': 'Sunucuda bir hata oluştu.'}, 500);
+      return _json(aiStatus());
+    }
+    if (path == '/ai/consent') {
+      aiConsent = (jsonDecode(request.body) as Map)['enabled'] as bool;
+      return _json(aiStatus());
+    }
+    if (path == '/ai/facts') return _json({'facts': aiFacts, 'note': 'Yalnızca bu sayılar gider.'});
+    if (path == '/ai/ask') {
+      final id = (jsonDecode(request.body) as Map)['question'] as String;
+      final llm = aiConsent && aiLlmReady;
+      return _json({
+        'question_id': id, 'question': id,
+        'answer': llm ? 'LLM cevabı: $id' : 'Şablon cevabı: $id',
+        'source': llm ? 'llm' : 'sablon',
+        'reason': llm ? null : (aiLlmReady ? 'Yapay zekâ yorumlarına onay vermedin.' : 'Sunucuda yapay zekâ anahtarı tanımlı değil.'),
+        'facts': aiFacts,
+      });
     }
     if (path == '/metrics/model-lab') {
       return _json({

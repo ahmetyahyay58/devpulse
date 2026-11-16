@@ -40,6 +40,8 @@ class User(Base):
     avatar_url: Mapped[str | None] = mapped_column(String(500))
     # 90 gün kuralı: son giriş ya da biten senkron (app/retention.py)
     last_active_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # AI yorumu onayı (docs/ai_katmani.md): boşsa sunucu LLM'e hiç istek atmaz.
+    ai_consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     repos: Mapped[list["Repo"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     sync_jobs: Mapped[list["SyncJob"]] = relationship(back_populates="user", cascade="all, delete-orphan")

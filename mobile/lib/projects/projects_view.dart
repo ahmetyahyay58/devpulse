@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_features.dart';
 import 'project_detail_screen.dart';
 import 'projects_controller.dart';
 import 'projects_models.dart';
@@ -80,7 +81,7 @@ class _SummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Proje sağlığı', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 8),
+            const Align(alignment: Alignment.centerLeft, child: WhyButton(questionId: 'neden_proje')),
             Text(data.summary),
             if (data.scoredCount > 0) ...[
               const SizedBox(height: 12),

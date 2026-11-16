@@ -31,7 +31,7 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Token kullanıcının telefonunda güvenli depoda durur; sunucu yalnızca senkron sırasında kullanır, kalıcı saklamaz.
 - Telefon backend'e kendi oturum belirteciyle bağlanır: HS256 JWT, 7 gün, yenileme yok; içinde yalnız kullanıcı id'si (sub). Süre dolunca GitHub ile yeniden giriş. (Uygulandı; onaylanırsa açık karardan çıkar.)
 - Giriş uç noktaları: `GET /auth/config`, `POST /auth/github` (kod + PKCE verifier → GitHub token'ı telefona + JWT), `POST /auth/demo`. OAuth kapsamı `read:user` (yalnız herkese açık veri). `/sync` JWT ister; gönderilen GitHub token'ı oturumdaki hesaba ait değilse 403.
-- LLM: ana yol şablon cümlelerdir; LLM isteğe bağlı ektir. LLM'e yalnızca hesaplanmış toplu sayılar gider; kullanıcı adı, repo adı, commit mesajı, kod gitmez.
+- LLM: ana yol şablon cümlelerdir; LLM isteğe bağlı ektir. LLM'e yalnızca hesaplanmış toplu sayılar gider; kullanıcı adı, repo adı, commit mesajı, kod gitmez. Sağlayıcı: Google Gemini API ücretsiz katman (16 Kas kararı; `GEMINI_API_KEY`, `GEMINI_MODEL` `.env`'de). Sözleşme `docs/ai_katmani.md`, kod `backend/app/ai/`. Onay sunucuda (`users.ai_consent_at`); yalnız hazır sorular, serbest metin yok.
 
 ## Doğrulanmış bulgular (11 Kasım 2026, geliştiricinin kendi hesabıyla)
 - `authoredDate` ve `committedDate` API'den UTC (`Z`) gelir, commit'in kendi saat farkı gelmez. Gece kuşu, aktif gün, seri hesapları için kullanıcının saat dilimi ayrıca gerekir. Hesaplarda yazar zamanı (`authoredDate`) kullanılır.

@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from app import retention
-from app.api import account, auth, metrics, projects, sync
+from app.api import account, ai, auth, metrics, projects, sync
 from app.classify import classifier
 from app.db import engine
 
@@ -39,6 +39,7 @@ app.include_router(sync.router)
 app.include_router(metrics.router)
 app.include_router(projects.router)
 app.include_router(account.router)
+app.include_router(ai.router)
 
 # Yalnızca Flutter web (tarayıcı) için gerekir; Android uygulaması CORS'tan etkilenmez.
 # Geliştirmede yerel adreslere, her porta izin verilir.

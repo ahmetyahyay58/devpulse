@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_controller.dart';
+import '../ai/ai_widgets.dart';
 import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
@@ -19,6 +21,7 @@ class AccountScreen extends StatelessWidget {
     this.saveFile = shareFile,
     this.achievements,
     this.bySource,
+    this.ai,
   });
 
   final Session session;
@@ -28,6 +31,7 @@ class AccountScreen extends StatelessWidget {
   final FileSaver saveFile; // testlerde sahtesi verilir
   final Map<String, dynamic>? achievements; // rozet vitrini için (yüklenmediyse null)
   final Map<String, int>? bySource; // kullanıcının commit'lerinde kural / model / belirsiz
+  final AiController? ai; // yapay zekâ onayı (ana ekrandan; verilmezse kart yok)
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +49,7 @@ class AccountScreen extends StatelessWidget {
                 session: session,
                 achievements: achievements,
                 bySource: bySource,
+                ai: ai,
               ),
               const SizedBox(height: 8),
               ListTile(
@@ -204,11 +209,12 @@ class _DeleteDialogState extends State<_DeleteDialog> {
 
 /// /me bir kez yüklenir; avatar başlığı ve Verilerim kartı aynı cevabı kullanır.
 class _ProfileSections extends StatefulWidget {
-  const _ProfileSections({required this.api, required this.session, this.achievements, this.bySource});
+  const _ProfileSections({required this.api, required this.session, this.achievements, this.bySource, this.ai});
   final ApiClient api;
   final Session session;
   final Map<String, dynamic>? achievements;
   final Map<String, int>? bySource;
+  final AiController? ai;
 
   @override
   State<_ProfileSections> createState() => _ProfileSectionsState();
@@ -242,6 +248,10 @@ class _ProfileSectionsState extends State<_ProfileSections> {
               )),
             ),
           ),
+          if (widget.ai != null) ...[
+            const SizedBox(height: 12),
+            AiSettingsCard(ai: widget.ai!),
+          ],
           const SizedBox(height: 12),
           if (snap.hasError)
             Card(

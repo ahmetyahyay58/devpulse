@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../ai/ai_controller.dart';
+import '../ai/ai_features.dart';
+import '../ai/ai_widgets.dart';
 import '../api/api_client.dart';
 import '../api/health_api.dart';
 import '../api/sync_api.dart';
@@ -62,15 +65,16 @@ class _HomeScreenState extends State<HomeScreen> {
     pollInterval: widget.pollInterval,
   );
 
-  late final OverviewController _overview = OverviewController(
-    api: widget.api,
-    onUnauthorized: widget.onLogout,
-  )..load();
+  late final OverviewController _overview = OverviewController(api: widget.api, onUnauthorized: widget.onLogout)
+    ..load();
 
-  late final ProjectsController _projects = ProjectsController(
-    api: widget.api,
-    onUnauthorized: widget.onLogout,
-  )..load();
+  late final ProjectsController _projects = ProjectsController(api: widget.api, onUnauthorized: widget.onLogout)
+    ..load();
+
+  // AI katmanı: onay durumu ve hazır sorular (yüklenemezse AI kartı görünmez).
+  late final AiController _ai = AiController(api: widget.api)
+    ..load()
+    ..loadPrefs();
 
   bool _wasRunning = false;
   int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar
@@ -116,10 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openSyncScreen() => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => SyncScreen(controller: _sync, stepDuration: widget.syncStepDuration),
-        ),
-      );
+    MaterialPageRoute<void>(
+      builder: (_) => SyncScreen(controller: _sync, stepDuration: widget.syncStepDuration),
+    ),
+  );
 
   @override
   void dispose() {
@@ -127,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _sync.dispose();
     _overview.dispose();
     _projects.dispose();
+    _ai.dispose();
     super.dispose();
   }
 
@@ -140,34 +145,38 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               tooltip: 'Profil',
               icon: const Icon(Icons.account_circle_outlined),
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                builder: (_) => AccountScreen(
-                  session: widget.session,
-                  auth: widget.auth!,
-                  onLogout: widget.onLogout,
-                  onDeleted: widget.onDeleted ?? (_) {},
-                  // Genel Bakış verisinden: rozet vitrini ve Model Laboratuvarı'ndaki kural/model payı
-                  achievements: _overview.achievements,
-                  bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => AccountScreen(
+                    session: widget.session,
+                    auth: widget.auth!,
+                    onLogout: widget.onLogout,
+                    onDeleted: widget.onDeleted ?? (_) {},
+                    // Genel Bakış verisinden: rozet vitrini ve Model Laboratuvarı'ndaki kural/model payı
+                    achievements: _overview.achievements,
+                    bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
+                    ai: _ai,
+                  ),
                 ),
-              )),
+              ),
             ),
-          IconButton(
-            tooltip: 'Çıkış yap',
-            onPressed: widget.onLogout,
-            icon: const Icon(Icons.logout),
-          ),
+          IconButton(tooltip: 'Çıkış yap', onPressed: widget.onLogout, icon: const Icon(Icons.logout)),
         ],
       ),
       // IndexedStack: sekmeler bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
-      body: IndexedStack(
-        index: _tab,
-        children: [
-          _overviewTab(context),
-          AnalysisView(controller: _overview, api: widget.api),
-          ProjectsView(controller: _projects),
-          AchievementsView(controller: _overview),
-        ],
+      floatingActionButton: AskFab(ai: _ai),
+      // AiScope: sekmelerdeki "Neden?" düğmeleri AI denetleyicisini buradan bulur.
+      body: AiScope(
+        ai: _ai,
+        child: IndexedStack(
+          index: _tab,
+          children: [
+            _overviewTab(context),
+            AnalysisView(controller: _overview, api: widget.api),
+            ProjectsView(controller: _projects),
+            AchievementsView(controller: _overview),
+          ],
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab,
@@ -201,11 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
               const SizedBox(height: 16),
+              AiTipLine(ai: _ai),
               SyncCard(controller: _sync, onStart: _startSync, onOpen: _openSyncScreen),
               const SizedBox(height: 24),
               Text('Genel Bakış', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
               OverviewSection(controller: _overview),
+              const SizedBox(height: 12),
+              AiCommentCard(ai: _ai),
               const SizedBox(height: 24),
               HealthCard(api: widget.healthApi), // geliştirme amaçlı; en altta
             ],

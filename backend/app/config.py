@@ -29,5 +29,12 @@ class Settings(BaseSettings):
     # Demo kullanıcının veri dosyası; boşsa backend/demo/demo_user.json (testler küçük dosya verir).
     demo_file: str | None = None
 
+    # AI katmanı (docs/ai_katmani.md): Google Gemini API. Anahtar yoksa her yerde şablon cevap.
+    gemini_api_key: str | None = None
+    # Lite: ölçümde hızlı ve erişilebilir (16 Kas: flash-latest 503 "yoğun talep" döndü). Ana model
+    # yoğun/kotasız/zaman aşımlıysa bir kez yedeğe düşülür (docs/ai_katmani.md).
+    gemini_model: str = "gemini-flash-lite-latest"
+    gemini_fallback_model: str | None = "gemini-flash-latest"
+
 
 settings = Settings()

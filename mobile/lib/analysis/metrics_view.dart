@@ -85,6 +85,7 @@ class MetricsView extends StatelessWidget {
     return MetricCard(
       title: 'Süreklilik',
       section: s,
+      whyId: 'neden_sureklilik',
       body: Column(children: [
         StatRow('Güncel seri', '${s.raw['current_streak']} gün'),
         StatRow('En uzun seri', '${s.raw['longest_streak']} gün'),
@@ -96,6 +97,7 @@ class MetricsView extends StatelessWidget {
   Widget _rhythm(Overview o) => MetricCard(
         title: 'Ritim',
         section: o.rhythm,
+        whyId: 'neden_ritim',
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,6 +127,7 @@ class MetricsView extends StatelessWidget {
 
     return MetricCard(
       title: 'Oturum ve yoğunluk',
+      whyId: 'neden_oturum',
       section: s,
       body: Column(children: [
         StatRow('Oturum sayısı', '${s.raw['count']}'),

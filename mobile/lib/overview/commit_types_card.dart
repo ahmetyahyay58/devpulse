@@ -21,6 +21,7 @@ class CommitTypesCard extends StatelessWidget {
     return MetricCard(
       title: 'Commit türleri',
       section: section,
+      whyId: 'neden_turler',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -120,7 +120,8 @@ Bağlı özellikler: AI yorumu ve soru çipleri, "Neden?" düğmeleri, ipucu sat
 - Tek altyapı: backend toplu sayıları hesaplar → LLM'e yalnız onlar gider → cevap gelmezse şablon cümle.
 - İsteğe bağlı: ilk kullanımda açık onay istenir (aydınlatma metni bunu zaten vaat ediyor); ayarlardan kapatılır.
 - Gönderilen sayılar kullanıcıya gösterilebilir olmalı ("LLM'e giden veri" açılır notu).
-- Hangi model/sağlayıcı: o fazda karar.
+- Sağlayıcı: Google Gemini API, ücretsiz katman (16 Kas). Ayrıntı: `docs/ai_katmani.md`.
+- Faz 6 yapıldı (16 Kas): altyapı, onay, giden veri ekranı; Genel Bakış'ta AI yorumu kartı ve ipucu satırı; Süreklilik, Ritim, Oturum, Commit türleri ve Proje sağlığı kartlarında "Neden?"; her sekmede Sor balonu (5 soru); Profil'de onay ve ipucu anahtarları. Daktilo efekti eklenmedi.
 
 ## Önerilen sıra
 Teslime (ocak ortası) yaklaşık 9 hafta var; son 2 hafta rapor ve sunuma ayrılır. Liste uzun olduğu için

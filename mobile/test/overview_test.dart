@@ -124,7 +124,11 @@ void main() {
 
   testWidgets('"Nasıl hesaplandı?" açılınca yöntem ve dayanak görünür', (tester) async {
     await _pumpHome(tester, FakeBackend());
-    await tester.tap(find.text('Nasıl hesaplandı?').first);
+    final how = find.text('Nasıl hesaplandı?').first;
+    // Sayfa uzun (AI kartı da var): alt çubuğun altında kalmasın diye ortaya kaydır.
+    await tester.runAsync(() => Scrollable.ensureVisible(tester.element(how), alignment: 0.5));
+    await tester.pumpAndSettle();
+    await tester.tap(how);
     await tester.pumpAndSettle();
     expect(find.text('Test: nasıl hesaplandı metni.'), findsOneWidget);
     expect(find.textContaining('Dayanak: test dayanağı'), findsOneWidget);

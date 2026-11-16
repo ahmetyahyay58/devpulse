@@ -4,6 +4,7 @@ Saf fonksiyon: veritabanını bilmez, metrik katmanının hazır çıktıların�
 veriden türetilir (konumdan değil); telefondaki düzenlemeler bu kimliklere bağlanır.
 """
 from dataclasses import dataclass, field
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel
@@ -23,6 +24,10 @@ class CvItem(BaseModel):
 class CvProject(BaseModel):
     id: str
     name: str
+    url: str
+    tech: list[str]  # ana dil + tespit edilen araçlar (Jake's: "Ad | teknolojiler")
+    start: date | None  # GitHub'daki oluşturma tarihi; uydurulmaz, yoksa None
+    end: date | None  # son push tarihi
     items: list[CvItem]
 
 
@@ -34,6 +39,8 @@ class CvDraftOut(BaseModel):
     projects: list[CvProject]
     skills: list[CvItem]
     activity: list[CvItem]
+    languages: list[str]  # formatlardaki "Teknik beceriler" satırları için ham liste
+    tools: list[str]
 
 
 @dataclass(frozen=True)
@@ -47,6 +54,8 @@ class CvRepo:
     score: int | None = None  # proje sağlık puanı (puanlanmıyorsa None)
     has_readme: bool = False
     has_license: bool = False
+    created_at: datetime | None = None
+    pushed_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -120,7 +129,7 @@ TEXT = {
 }
 
 
-def _project(repo: CvRepo, t: dict) -> CvProject:
+def _project(repo: CvRepo, t: dict, login: str) -> CvProject:
     pid = f"proj:{repo.node_id}"
     items: list[CvItem] = []
     if repo.description and repo.description.strip():
@@ -135,7 +144,13 @@ def _project(repo: CvRepo, t: dict) -> CvProject:
         text = t["work"].format(n=repo.commit_count) + (f"; {docs}" if docs else "") + "."
         items.append(CvItem(id=f"{pid}:work", text=text, source=t["src_work"]))
     items.append(CvItem(id=f"{pid}:impact", text=t["impact"], source=t["src_impact"], placeholder=True))
-    return CvProject(id=pid, name=repo.name, items=items)
+    return CvProject(
+        id=pid, name=repo.name, url=f"https://github.com/{login}/{repo.name}",
+        tech=([repo.language] if repo.language else []) + [x for x in repo.tools if x != repo.language],
+        start=repo.created_at.date() if repo.created_at else None,
+        end=repo.pushed_at.date() if repo.pushed_at else None,
+        items=items,
+    )
 
 
 def pick_projects(repos: list[CvRepo]) -> list[CvRepo]:
@@ -171,5 +186,6 @@ def build_draft(f: CvFacts, lang: Lang) -> CvDraftOut:
 
     return CvDraftOut(
         lang=lang, login=f.login, profile_url=f"https://github.com/{f.login}", summary=summary,
-        projects=[_project(r, t) for r in pick_projects(f.repos)], skills=skills, activity=activity,
+        projects=[_project(r, t, f.login) for r in pick_projects(f.repos)], skills=skills, activity=activity,
+        languages=f.languages[:MAX_LANGUAGES], tools=f.tools,
     )

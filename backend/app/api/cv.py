@@ -33,6 +33,7 @@ def cv_facts(user: User) -> CvFacts:
             node_id=r.github_node_id, name=r.name, description=r.description, language=r.primary_language,
             tools=list(r.tools or []), commit_count=p.commit_count if p else 0, score=p.score if p else None,
             has_readme=bool(r.has_readme), has_license=bool(r.license_spdx),
+            created_at=r.created_at, pushed_at=r.pushed_at,
         ))
     return CvFacts(
         login=user.github_login, total_commits=ov.kpi.total_commits, active_days=ov.kpi.active_days,

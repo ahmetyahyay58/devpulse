@@ -85,7 +85,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### CV
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| 5 şablon: Klasik, Modern, Kompakt, Teknik, Öğrenci | Yeni | Mevcut | |
+| 3 format: Jake's Resume, Harvard tarzı, Europass düzeni (tek sütun) | Yeni | Mevcut + kullanıcı girdisi | Karar (16 Kas): prototipteki 5 serbest şablon yerine piyasada tanınan üç format. Uyarlamalar `docs/cv.md`. |
 | Yerinde düzenlenebilen metinler, "Taslağa dön" | Yeni | — | Karar (16 Kas): düzenlemeler telefonda; PDF telefonda; CV 5. sekme. Gerekçe ve kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |

@@ -1,5 +1,6 @@
 """CV taslağı (docs/cv.md): saf fonksiyon ve uç nokta."""
 import re
+from datetime import date, datetime, timezone
 
 from app.cv.draft import CvFacts, CvRepo, build_draft, pick_projects
 
@@ -7,7 +8,8 @@ from app.cv.draft import CvFacts, CvRepo, build_draft, pick_projects
 def repo(name, score=80, commits=10, **kw):
     return CvRepo(node_id=f"R_{name}", name=name, description=kw.get("description", f"{name} açıklaması"),
                   language=kw.get("language", "Python"), tools=kw.get("tools", ["Docker"]), commit_count=commits,
-                  score=score, has_readme=kw.get("readme", True), has_license=kw.get("license", True))
+                  score=score, has_readme=kw.get("readme", True), has_license=kw.get("license", True),
+                  created_at=kw.get("created"), pushed_at=kw.get("pushed"))
 
 
 def facts(**kw):
@@ -76,3 +78,22 @@ def test_endpoint_with_small_demo(api, demo_auth):
     assert body["profile_url"] == "https://github.com/demo-gelistirici"
     assert body["projects"] and all(p["items"][-1]["placeholder"] for p in body["projects"])
     assert api.get("/cv/draft?lang=de", headers=demo_auth).status_code == 422
+
+
+def test_project_fields_for_formats_come_from_data():
+    r = repo("api", language="Python", tools=["Docker", "Python"],
+             created=datetime(2025, 3, 1, 10, tzinfo=timezone.utc), pushed=datetime(2026, 2, 7, tzinfo=timezone.utc))
+    p = build_draft(facts(repos=[r]), "en").projects[0]
+    assert p.url == "https://github.com/ben/api"
+    assert p.tech == ["Python", "Docker"]  # dil başta, tekrar yok
+    assert (p.start, p.end) == (date(2025, 3, 1), date(2026, 2, 7))
+
+
+def test_unknown_dates_stay_empty():
+    p = build_draft(facts(repos=[repo("x")]), "tr").projects[0]
+    assert p.start is None and p.end is None  # tarih uydurulmaz
+
+
+def test_skill_lists_for_formats():
+    d = build_draft(facts(), "tr")
+    assert d.languages == ["Python", "Dart", "Shell"] and d.tools == ["Docker", "GitHub Actions"]

@@ -12,6 +12,26 @@ Bu belge CV taslağının nasıl üretildiğini tanımlar. Kod (`backend/app/cv/
 - **CV alt çubukta 5. sekmedir.**
 - **Şablonların hepsi tek sütundur.** Biçim kontrolü "tablo/sütun yok" kuralını içerir; uygulama
   kendi kuralına uymayan şablon sunmaz.
+- **Üç yaygın format (geliştirici kararı, 16 Kas):** ilk taslak "gerçek bir CV gibi durmuyor"
+  bulundu; prototipteki 5 serbest şablon yerine piyasada tanınan üç formatın düzeni izlenir.
+
+## Formatlar
+Hiçbiri "ATS'den geçer" diye sunulmaz. Hepsi tek sütun; tarihler satır sonunda sağa yaslanır
+(sütun değildir). Düzen tek yerde, veri olarak tanımlıdır (`mobile/lib/cv/cv_formats.dart`);
+ekrandaki önizleme ve PDF aynı tanımı okur.
+
+| Format | Bölüm sırası | Notlar ve uyarlamalar |
+|---|---|---|
+| **Jake's Resume** | Eğitim → Deneyim → Projeler → Teknik beceriler | Yazılımcılar arasında yaygın tek sayfalık LaTeX şablonu (Overleaf). Proje satırı "Ad \| teknolojiler", tarih sağda. Özet yok. |
+| **Harvard tarzı** | Eğitim → Deneyim → Projeler → Beceriler | Tek bir resmî Harvard şablonu yok; Harvard kariyer rehberlerindeki ters kronolojik düzen izlenir: eğitim önce, özet yok, madde başına tek cümle, serif yazı tipi. Rehberde "Projeler" yok; GitHub projeleri Deneyim'den sonra konur (uyarlama). |
+| **Europass düzeni (tek sütun uyarlama)** | Kişisel bilgiler → Hakkımda → İş deneyimi → Eğitim → Dil becerileri → Dijital beceriler → Projeler | Resmî Europass, AB düzenleyicisinin ürettiği iki sütunlu bir formdur; burada aynı bölümler tek sütuna dizilir ve uygulamada "uyarlama" diye yazar. Dil düzeyi dil başına tek CEFR düzeyi (A1-C2) ya da "anadil" (resmî formdaki beş alt beceri sadeleştirildi). Özet ("Hakkımda") yalnız burada kullanılır. |
+
+Kaynaklar: Overleaf "Jake's Resume" şablonu; Harvard FAS ve HSPH kariyer rehberleri; Europass
+bölüm yapısını anlatan rehberler (europass.europa.eu resmî düzenleyicisi esastır).
+
+**Kullanıcının girdiği bölümler** (eğitim, deneyim, dil, iletişim) GitHub'da yoktur; telefonda
+saklanır, sunucuya gitmez. Boşsa sayfada görünmez; yalnız düzenleme ekranında "ekle" önerisi
+çıkar.
 
 ## Taslak (`GET /cv/draft?lang=tr|en`)
 Taslak deterministiktir: aynı veri aynı taslağı verir. LLM kullanılmaz.
@@ -41,6 +61,8 @@ konumdan değil. Yeniden senkronda sıra değişse de telefondaki düzenleme do�
    - `stack`: ana dil ve tespit edilen araçlar.
    - `work`: kullanıcının o repodaki commit sayısı; README ve lisans varsa "belgelendi".
    - `impact`: yer tutucu, "Etki: […]" (kullanıcı yazar).
+   - Ayrıca formatlar için: repo adresi, teknoloji listesi (ana dil + araçlar) ve tarih aralığı
+     (GitHub'daki oluşturma ve son push tarihi; uydurulmaz, yoksa boş).
 4. **Beceriler:** Dil dağılımında payı en büyük diller (%1 altı "Diğer" hariç) ve araçlar.
 5. **Etkinlik:** Toplam commit ve aktif gün; başkalarının repolarına açılan ve merge edilen PR
    (varsa); kod incelemesi sayısı (varsa).

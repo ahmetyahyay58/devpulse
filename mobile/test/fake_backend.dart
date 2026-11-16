@@ -321,15 +321,18 @@ class FakeBackend {
             'Genel Bakış sayıları'),
         'projects': [
           {
-            'id': 'proj:R_a', 'name': 'proje-a',
+            'id': 'proj:R_a', 'name': 'proje-a', 'url': 'https://github.com/ben/proje-a',
+            'tech': ['Dart', 'Docker'], 'start': '2025-03-01', 'end': '2026-02-07',
             'items': [
               item('proj:R_a:desc', 'Hava durumu servisi', 'GitHub repo açıklaması'),
+              item('proj:R_a:stack', 'Dart ile geliştirildi; araçlar: Docker.', 'Dil dağılımı'),
               item('proj:R_a:impact', 'Etki: [ör. kullanıcı sayısı]', 'Bu sayıyı sen yazarsın', placeholder: true),
             ],
           },
         ],
         'skills': [item('skills:languages', 'Diller: Dart, Python', 'Dil dağılımı')],
         'activity': [item('act:commits', 'Toplam commit: 33; aktif gün: 12; en uzun seri: 7 gün.', "Commit'ler")],
+        'languages': ['Dart', 'Python'], 'tools': ['Docker'],
       });
     }
     if (path == '/metrics/collaboration') {

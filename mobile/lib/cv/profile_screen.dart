@@ -210,8 +210,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// Hakkımda kutusu (dile göre). CV'nin o dildeki veri özeti varsa "Taslaktan başla" onu koyar.
   Widget _aboutField(String lang, String label) {
-    final summary = widget.controller.draft?.summary;
-    final canStart = summary != null && widget.controller.lang == lang;
+    final eff = widget.controller.effective;
+    final start = eff != null && eff.lang == lang ? aboutDraftText(eff) : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -233,17 +233,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _save();
           },
         ),
-        if (canStart)
+        if (start != null)
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               onPressed: () {
-                _about[lang]!.text = summary.text;
-                p.about[lang] = summary.text;
+                _about[lang]!.text = start;
+                p.about[lang] = start;
                 _save();
               },
               icon: const Icon(Icons.auto_fix_normal, size: 18),
-              label: const Text('Taslaktan başla (GitHub özet cümlesi)'),
+              label: const Text('Taslaktan başla (GitHub verinden hazır metin)'),
             ),
           ),
       ]),
@@ -302,8 +302,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text('Hakkımda', style: theme.textTheme.titleMedium),
                     const SizedBox(height: 4),
                     Text(
-                      '2-4 cümle: kim olduğun, neyle uğraştığın, ne aradığın. Yazarsan o dilin CV\'sinde '
-                      'GitHub özet cümlesinin yerine geçer; boş bırakırsan özet cümlesi görünür.',
+                      'Kendini tanıttığın bölüm: kim olduğun, neyle uğraştığın, ilgi alanların, ne aradığın. '
+                      'Boş bırakırsan GitHub verinden hazır bir metin görünür; yazarsan o dilin CV\'sinde onun yerine geçer.',
                       style: theme.textTheme.bodySmall,
                     ),
                     const SizedBox(height: 8),

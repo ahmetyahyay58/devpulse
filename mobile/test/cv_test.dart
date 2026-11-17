@@ -60,8 +60,12 @@ void main() {
     expect(find.text('proje-a | Dart, Docker', findRichText: true), findsOneWidget);
     expect(find.text('Mar 2025 – Şub 2026'), findsOneWidget);
     expect(find.textContaining('Dart ile geliştirildi'), findsNothing); // teknoloji başlıkta, tekrar yok
-    expect(find.text('HAKKIMDA'), findsOneWidget); // Hakkımda yazılmadıysa veri özeti görünür
-    expect(find.text('Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
+    expect(find.text('HAKKIMDA'), findsOneWidget); // Hakkımda yazılmadıysa veriden hazır metin görünür
+    expect(
+        find.text('Ağırlıklı olarak Dart ile çalışıyorum. Dart ve Python dillerinde proje geliştirdim. '
+            'Geliştirme sürecinde Docker gibi araçları kullanıyorum. Öne çıkan projelerim: proje-a, proje-b.'),
+        findsOneWidget);
+    expect(find.text('[Kendini tanıt: ilgi alanların, hedefin ve aradığın fırsat.]'), findsOneWidget); // sarı yer tutucu
     expect(find.text('EĞİTİM'), findsNothing); // kullanıcı girmediyse boş bölüm görünmez
   });
 
@@ -81,7 +85,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Kişisel bilgiler'), findsOneWidget);
     expect(find.text('Hakkımda'), findsOneWidget);
-    expect(find.text('Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
+    expect(find.textContaining('Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
     expect(find.text('Ek bilgiler'), findsOneWidget);
     expect(find.textContaining('tek sütun uyarlama'), findsOneWidget); // resmî form değil, söylenir
   });
@@ -299,9 +303,9 @@ void main() {
     final store = MemoryCvProfileStore();
     await _pump(tester, store: store);
     await openProfile(tester);
-    await tester.tap(find.text('Taslaktan başla (GitHub özet cümlesi)'));
+    await tester.tap(find.text('Taslaktan başla (GitHub verinden hazır metin)'));
     await tester.pump();
-    expect(find.widgetWithText(TextField, 'Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
+    expect(find.widgetWithText(TextField, aboutDraftText(_draftOf(tester))!), findsOneWidget);
 
     final add = find.widgetWithText(TextButton, 'Ekle').at(2); // Eğitim, Deneyim, Sertifikalar
     await tester.ensureVisible(add);
@@ -314,7 +318,7 @@ void main() {
 
     await tester.tap(saveButton());
     await tester.pump();
-    expect(store.saved!.aboutFor('tr'), 'Ağırlıklı olarak Dart ile çalışıyorum.');
+    expect(store.saved!.aboutFor('tr'), startsWith('Ağırlıklı olarak Dart ile çalışıyorum. Dart ve Python'));
     expect(store.saved!.certificates.single.name, 'Git ve GitHub');
     await tester.pumpAndSettle(const Duration(seconds: 5));
   });
@@ -338,8 +342,11 @@ void main() {
     for (final f in cvFormats) {
       final r = await buildCvPdf(draft: c.draft!, format: f, profile: _sample());
       expect(String.fromCharCodes(r.bytes.take(5)), '%PDF-');
-      expect(r.skippedPlaceholders, 1); // sahte taslakta tek "Etki: [...]" var
+      expect(r.skippedPlaceholders, 1); // sahte taslakta tek "Etki: [...]" var (Hakkımda yazılı)
     }
+    // Hakkımda boşsa varsayılan metin basılır, ilgi alanı yer tutucusu basılmaz.
+    final r = await buildCvPdf(draft: c.draft!, format: jakes, profile: CvProfile());
+    expect(r.skippedPlaceholders, 2);
   });
 
   test('PDF dosya adı Türkçe harfleri sadeleştirir', () {
@@ -361,10 +368,13 @@ void main() {
     await tester.pump();
     expect(saved.single.$2, 'cv-ahmet-yilmaz-jakes-tr.pdf');
     expect(String.fromCharCodes(saved.single.$1.take(5)), '%PDF-');
-    expect(find.text('PDF hazır: cv-ahmet-yilmaz-jakes-tr.pdf. Doldurulmamış 1 etki cümlesi dosyaya eklenmedi.'),
+    expect(find.text('PDF hazır: cv-ahmet-yilmaz-jakes-tr.pdf. Doldurulmamış 1 madde ([…]) dosyaya eklenmedi.'),
         findsOneWidget);
   });
 }
+
+/// Ekrandaki CV görünümünün çizdiği taslak (düzenlemeler uygulanmış).
+CvDraft _draftOf(WidgetTester tester) => tester.widget<CvView>(find.byType(CvView, skipOffstage: false)).controller.effective!;
 
 class _FailingStore extends MemoryCvProfileStore {
   @override

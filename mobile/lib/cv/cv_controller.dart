@@ -28,13 +28,58 @@ class CvItem {
   String get kind => id.split(':').last;
 }
 
-/// "Hakkımda" bölümünün maddesi: kullanıcı o dilde yazdıysa onun metni ("Senin yazdığın"),
-/// yazmadıysa GitHub verisinden gelen özet (gizlenmişse yok). docs/cv.md, "Eklenen bölümler".
-CvItem? aboutItem(CvDraft d, CvProfile p) {
+/// "a, b ve c" / "a, b and c".
+String _joinList(List<String> xs, String lang) {
+  if (xs.length < 2) return xs.join();
+  return '${xs.sublist(0, xs.length - 1).join(', ')} ${lang == 'en' ? 'and' : 've'} ${xs.last}';
+}
+
+/// Hakkımda'nın varsayılan metni: yalnız GitHub verisinden kurulan cümleler (özet, diller, araçlar,
+/// öne çıkan projeler). Sayılar backend'in özet cümlesinden gelir; burada yeni sayı üretilmez.
+/// Özet gizlendiyse (madde düzenleme) varsayılan metin de yoktur. Değişkenlerden sonra ek yok.
+String? aboutDraftText(CvDraft d) {
+  final summary = d.summary;
+  if (summary == null) return null;
+  final en = d.lang == 'en';
+  final langs = d.languages.take(3).toList();
+  final tools = d.tools.take(3).toList();
+  final projects = d.projects.take(2).map((p) => p.name).toList();
+  return [
+    summary.text,
+    if (langs.length >= 2)
+      en ? 'I have built projects in ${_joinList(langs, 'en')}.' : '${_joinList(langs, 'tr')} dillerinde proje geliştirdim.',
+    if (tools.isNotEmpty)
+      en
+          ? 'I use tools such as ${_joinList(tools, 'en')} in my workflow.'
+          : 'Geliştirme sürecinde ${_joinList(tools, 'tr')} gibi araçları kullanıyorum.',
+    if (projects.isNotEmpty) en ? 'Selected projects: ${projects.join(', ')}.' : 'Öne çıkan projelerim: ${projects.join(', ')}.',
+  ].join(' ');
+}
+
+/// "Hakkımda" bölümünün maddeleri (docs/cv.md, "Eklenen bölümler"):
+/// - kullanıcı o dilde yazdıysa yalnız onun metni ("Senin yazdığın");
+/// - yazmadıysa veriden kurulan varsayılan metin + ilgi alanları için yer tutucu (sarı; PDF'e basılmaz).
+List<CvItem> aboutItems(CvDraft d, CvProfile p) {
+  final en = d.lang == 'en';
   final own = p.aboutFor(d.lang);
-  if (own.isEmpty) return d.summary;
-  return CvItem.of(id: 'about:own', text: own, source: d.lang == 'en' ? 'Written by you' : 'Senin yazdığın',
-      edited: true);
+  if (own.isNotEmpty) {
+    return [CvItem.of(id: 'about:own', text: own, source: en ? 'Written by you' : 'Senin yazdığın', edited: true)];
+  }
+  final text = aboutDraftText(d);
+  if (text == null) return const [];
+  return [
+    CvItem.of(
+        id: 'about:data',
+        text: text,
+        source: en ? 'From your GitHub data; change it in My details' : "GitHub verinden; Bilgilerim'de değiştirebilirsin"),
+    CvItem.of(
+        id: 'about:interests',
+        text: en
+            ? '[Introduce yourself: your interests, goals and the opportunity you are looking for.]'
+            : '[Kendini tanıt: ilgi alanların, hedefin ve aradığın fırsat.]',
+        source: en ? 'You write this' : 'Bunu sen yazarsın',
+        placeholder: true),
+  ];
 }
 
 class CvProject {
@@ -63,7 +108,7 @@ class CvProject {
   final List<String> tech; // ana dil + araçlar
   final DateTime? start; // GitHub'daki oluşturma tarihi (uydurulmaz)
   final DateTime? end; // son push
-  final bool defaultSelected; // sağlık puanına göre ilk 4 (kullanıcı başkasını seçebilir)
+  final bool defaultSelected; // sağlık puanına göre ilk 6 (kullanıcı başkasını seçebilir)
   final List<CvItem> items;
 
   /// Madde türü kimliğin son parçasıdır: `proj:<id>:desc`, `stack`, `work` ya da `impact`.

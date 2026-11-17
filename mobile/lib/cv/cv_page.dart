@@ -66,7 +66,7 @@ class CvPage extends StatelessWidget {
   List<Widget> _section(CvSection s, TextStyle base, String lang) {
     final body = switch (s) {
       CvSection.personal => _personal(base, lang),
-      CvSection.about => [if (aboutItem(draft, profile) case final a?) _item(a, base)],
+      CvSection.about => [for (final a in aboutItems(draft, profile)) _item(a, base)],
       CvSection.projects => [for (final p in draft.projects) ..._project(p, base, lang)],
       CvSection.skills => _skills(base, lang),
       CvSection.digitalSkills => _skills(base, lang),

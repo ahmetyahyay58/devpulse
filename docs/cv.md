@@ -38,7 +38,7 @@ GitHub'da yoktur, yalnız cihazda kalır, LLM'e gitmez.
 
 | Bölüm | Kural |
 |---|---|
-| Hakkımda | Türkçe ve İngilizce ayrı yazılır, en çok 600 karakter (2-4 cümle). Yazılmışsa o dilin CV'sinde veri özetinin **yerine geçer** ve kaynak satırında "Senin yazdığın" der; boşsa GitHub verisinden gelen özet cümlesi görünür (eskisi gibi kilitli, gizlenebilir). "Taslaktan başla" o dildeki veri özetini metin kutusuna koyar; sonrası kullanıcının metnidir. Beş şablonun hepsinde vardır. |
+| Hakkımda | Kullanıcının kendini tanıttığı bölüm. Türkçe ve İngilizce ayrı yazılır, en çok 600 karakter. **Varsayılan (boşken):** telefonda yalnız GitHub verisinden kurulan birkaç cümle: backend'in özet cümlesi (sayılar buradan), en çok 3 programlama dili, en çok 3 araç, ilk 2 seçili proje; ardından sarı bir yer tutucu "[Kendini tanıt: ilgi alanların, hedefin ve aradığın fırsat.]" (PDF'e basılmaz). Yeni sayı üretilmez; değişkenlerden sonra ek kullanılmaz. Özet maddesi gizlenirse varsayılan metin de çıkmaz. **Kullanıcı yazarsa** o dilin CV'sinde varsayılanın yerine geçer ve kaynak satırında "Senin yazdığın" der. "Taslaktan başla" varsayılan metni kutuya koyar; sonrası kullanıcının metnidir (17 Kas, geliştirici isteği: "dolu ama değiştirilebilir"). Beş şablonun hepsinde vardır. |
 | Sertifikalar ve kurslar | Ad, veren kurum, tarih (serbest metin). Beş şablonda var; boşsa görünmez. |
 | İlgi alanları | Türkçe ve İngilizce ayrı, tek satır, en çok 150 karakter. Yalnız Türkiye klasik ve Europass'ta görünür (Jake's, Harvard ve Beceri odaklı düzenlerde bu bölüm geleneksel değil). |
 
@@ -64,7 +64,7 @@ Düzenlemeler yalnızca cihazda saklanır (anahtar `cv_edits`), "Kaydet" ile yaz
 | Veriden gelen sayılar | **Kilitli.** Sayı içeren maddeler (`work` commit sayısı, özet, etkinlik satırları) ve proje tarihleri düzenlenemez; yalnızca gizlenebilir. Uygulama CV'deki her sayının GitHub'dan geldiğini garanti eder. |
 | Serbest metin | Açıklama (`desc`), teknoloji (`stack`) ve etki (`impact`) düzenlenebilir; madde başına en çok **200 karakter** (Harvard rehberi: madde başına tek cümle). Etki "[…]" haliyle kalırsa PDF'e basılmaz. |
 | Ek madde | Proje başına en çok **2**; kaynak satırında "Senin eklemen". |
-| Projeler | Kullanıcının kendi, fork olmayan, arşivsiz, herkese açık repolarından **en çok 4** seçilir (varsayılan: sağlık puanına göre ilk 4). GitHub'da olmayan proje eklenemez; o tür işler "Deneyim"e yazılır. |
+| Projeler | Kullanıcının kendi, fork olmayan, arşivsiz, herkese açık repolarından **en çok 6** seçilir (varsayılan: sağlık puanına göre ilk 6; 17 Kas'ta 4'ten 6'ya çıkarıldı). GitHub'da olmayan proje eklenemez; o tür işler "Deneyim"e yazılır. |
 | Beceriler | Diller ve araçlar listeden çıkarılabilir (ör. Flutter'ın ürettiği C++/CMake); elle eklenen beceri "Senin eklemen" diye işaretlenir. |
 | Şeffaflık | Düzenlenen madde "Senin düzenlemen" diye işaretlenir (kaynakları göster açıkken görünür); tek madde ve tümü için "Taslağa dön". Uygulama düzenlenen metindeki sayıları doğrulayamaz; "doğrulandı" demez, yalnız "düzenlendi" der. |
 
@@ -107,7 +107,7 @@ konumdan değil. Yeniden senkronda sıra değişse de telefondaki düzenleme do�
    telefonda doldurur.
 2. **Özet:** Verideki sayılardan tek cümle (en çok kullanılan dil, repo ve commit sayısı). Aktif
    gün ve en uzun seri "Etkinlik" bölümündedir; aynı sayı iki kez yazılmaz.
-3. **Projeler (uygun repoların hepsi, sıralı; ilk 4 varsayılan seçili):** Kullanıcının kendi, fork olmayan, arşivlenmemiş ve herkese açık
+3. **Projeler (uygun repoların hepsi, sıralı; ilk 6 varsayılan seçili):** Kullanıcının kendi, fork olmayan, arşivlenmemiş ve herkese açık
    repoları (CV başkalarına gösterilen bir belgedir; özel repo listelenmez); proje
    sağlık puanına, eşitlikte commit sayısına göre sıralanır. Her proje için:
    - `desc`: GitHub açıklaması (yoksa madde yok).

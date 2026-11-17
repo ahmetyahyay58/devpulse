@@ -47,14 +47,14 @@ def test_impact_is_a_placeholder_for_every_project():
     assert all(i.placeholder and "[" in i.text for i in impacts)
 
 
-def test_projects_ordered_by_health_then_commits_first_four_selected():
+def test_projects_ordered_by_health_then_commits_first_six_selected():
     repos = [repo("low", score=40), repo("none", score=None, commits=99), repo("hi", score=90),
-             repo("hi2", score=90, commits=30), repo("mid", score=70)]
-    assert [r.name for r in order_projects(repos)] == ["hi2", "hi", "mid", "low", "none"]
+             repo("hi2", score=90, commits=30), repo("mid", score=70), repo("m2", score=60), repo("m3", score=50)]
+    assert [r.name for r in order_projects(repos)] == ["hi2", "hi", "mid", "m2", "m3", "low", "none"]
     d = build_draft(facts(repos=repos), "tr")
-    # Hepsi gönderilir (kullanıcı telefonda seçer); varsayılan seçili olan ilk 4.
+    # Hepsi gönderilir (kullanıcı telefonda seçer); varsayılan seçili olan ilk 6.
     assert [(p.name, p.default_selected) for p in d.projects] == [
-        ("hi2", True), ("hi", True), ("mid", True), ("low", True), ("none", False)]
+        ("hi2", True), ("hi", True), ("mid", True), ("m2", True), ("m3", True), ("low", True), ("none", False)]
 
 
 def test_languages_same_ids_in_both_languages():

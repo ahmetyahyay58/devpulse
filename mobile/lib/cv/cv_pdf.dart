@@ -15,7 +15,7 @@ import 'cv_profile.dart';
 class CvPdfResult {
   CvPdfResult(this.bytes, this.skippedPlaceholders);
   final Uint8List bytes;
-  final int skippedPlaceholders; // basılmayan "Etki: [...]" gibi doldurulmamış maddeler
+  final int skippedPlaceholders; // basılmayan "Etki: [...]" ya da Hakkımda yer tutucusu gibi doldurulmamış maddeler
 }
 
 /// Yazı tipi dosyasını yükler; testlerde de aynı varlıklar (assets) kullanılır.
@@ -104,7 +104,7 @@ class _Builder {
   List<pw.Widget> _section(CvSection s) {
     final body = switch (s) {
       CvSection.personal => _personal(),
-      CvSection.about => [if (aboutItem(draft, profile) case final a?) ..._item(a)],
+      CvSection.about => [for (final a in aboutItems(draft, profile)) ..._item(a)],
       CvSection.education => [for (final e in profile.education) ..._education(e)],
       CvSection.experience => [for (final e in profile.experience) ..._experience(e)],
       CvSection.certificates => [

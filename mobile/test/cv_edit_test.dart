@@ -31,14 +31,14 @@ Future<MemoryCvProfileStore> _pump(WidgetTester tester, {CvEdits? edits}) async 
 
 void main() {
   group('applyEdits (kurallar)', () {
-    test('varsayılan seçim: default_selected olanlar (en çok 4)', () async {
+    test('varsayılan seçim: default_selected olanlar (en çok 6)', () async {
       final d = await _draft();
       expect(applyEdits(d, CvEdits()).projects.map((p) => p.name), ['proje-a', 'proje-b']);
     });
 
-    test('kullanıcı seçimi en çok 4 ve taslakta olmayan kimlik yok sayılır', () async {
+    test('kullanıcı seçimi en çok 6 ve taslakta olmayan kimlik yok sayılır', () async {
       final d = await _draft();
-      final e = CvEdits(selected: ['proj:R_e', 'proj:R_d', 'proj:R_c', 'proj:R_b', 'proj:R_a', 'yok']);
+      final e = CvEdits(selected: ['proj:R_g', 'proj:R_f', 'proj:R_e', 'proj:R_d', 'proj:R_c', 'proj:R_b', 'proj:R_a', 'yok']);
       expect(applyEdits(d, e).projects, hasLength(maxProjects));
     });
 
@@ -114,12 +114,13 @@ void main() {
     expect(find.text('Maddeleri düzenle (düzenlendi)'), findsOneWidget);
   });
 
-  testWidgets('en çok 4 proje: dördü seçiliyken diğerleri pasif', (tester) async {
-    await _pump(tester, edits: CvEdits(selected: ['proj:R_a', 'proj:R_b', 'proj:R_c', 'proj:R_d']));
+  testWidgets('en çok 6 proje: altısı seçiliyken diğerleri pasif', (tester) async {
+    await _pump(tester,
+        edits: CvEdits(selected: ['proj:R_a', 'proj:R_b', 'proj:R_c', 'proj:R_d', 'proj:R_e', 'proj:R_f']));
     await tester.tap(find.text('Maddeleri düzenle (düzenlendi)'));
     await tester.pumpAndSettle();
-    expect(find.text('4/4 seçili'), findsOneWidget);
-    final e = tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'proje-e'));
+    expect(find.text('6/6 seçili'), findsOneWidget);
+    final e = tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'proje-g'));
     expect(e.onChanged, isNull);
   });
 

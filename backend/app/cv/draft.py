@@ -10,7 +10,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 Lang = Literal["tr", "en"]
-MAX_PROJECTS = 4  # varsayılan seçili proje sayısı; kullanıcı telefonda değiştirebilir (docs/cv.md)
+MAX_PROJECTS = 6  # varsayılan seçili proje sayısı; kullanıcı telefonda değiştirebilir (docs/cv.md)
 MAX_LISTED = 30  # seçim listesi için gönderilen en çok proje
 MAX_LANGUAGES = 6
 
@@ -29,7 +29,7 @@ class CvProject(BaseModel):
     tech: list[str]  # ana dil + tespit edilen araçlar (Jake's: "Ad | teknolojiler")
     start: date | None  # GitHub'daki oluşturma tarihi; uydurulmaz, yoksa None
     end: date | None  # son push tarihi
-    default_selected: bool  # sağlık puanına göre ilk 4; kullanıcı telefonda başka 4 seçebilir
+    default_selected: bool  # sağlık puanına göre ilk 6; kullanıcı telefonda başka 6 seçebilir
     items: list[CvItem]
 
 

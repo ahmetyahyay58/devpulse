@@ -330,8 +330,8 @@ class FakeBackend {
               item('proj:R_a:impact', 'Etki: [ör. kullanıcı sayısı]', 'Bu sayıyı sen yazarsın', placeholder: true),
             ],
           },
-          // Seçim listesi için: varsayılan seçili değil (sağlık puanına göre ilk 4 dışında kaldı).
-          for (final n in ['b', 'c', 'd', 'e'])
+          // Seçim listesi için: varsayılan seçili değil (sağlık puanına göre ilk 6 dışında kaldı).
+          for (final n in ['b', 'c', 'd', 'e', 'f', 'g'])
             {
               'id': 'proj:R_$n', 'name': 'proje-$n', 'url': 'https://github.com/ben/proje-$n', 'tech': ['Python'],
               'start': null, 'end': null, 'default_selected': n == 'b',

@@ -5,7 +5,7 @@ import 'cv_controller.dart';
 import 'cv_edits.dart';
 
 /// "Maddeleri düzenle": GitHub taslağını çıktıdan önce düzenleme (docs/cv.md). Kurallar cv_edits.dart'ta:
-/// sayılar kilitli (yalnız gizlenir), metin 200 karakter, proje başına 2 ek madde, en çok 4 proje.
+/// sayılar kilitli (yalnız gizlenir), metin 200 karakter, proje başına 2 ek madde, en çok 6 proje.
 /// Değişiklikler "Kaydet" ile yalnızca bu cihaza yazılır.
 class CvEditScreen extends StatefulWidget {
   const CvEditScreen({super.key, required this.controller});

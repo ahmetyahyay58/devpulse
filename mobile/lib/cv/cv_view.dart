@@ -145,7 +145,7 @@ class _PdfButtonState extends State<PdfButton> {
       await widget.saveFile(result.bytes, file);
       final skipped = result.skippedPlaceholders == 0
           ? ''
-          : ' Doldurulmamış ${result.skippedPlaceholders} etki cümlesi dosyaya eklenmedi.';
+          : ' Doldurulmamış ${result.skippedPlaceholders} madde ([…]) dosyaya eklenmedi.';
       if (mounted) showToast(context, '${kIsWeb ? 'PDF indirildi' : 'PDF hazır'}: $file.$skipped');
     } catch (_) {
       if (mounted) showToast(context, 'PDF oluşturulamadı. Lütfen tekrar dene.', success: false);

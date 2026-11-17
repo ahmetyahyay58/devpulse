@@ -1,12 +1,12 @@
 import 'cv_controller.dart';
 
 /// CV maddelerinin düzenlenmesi (docs/cv.md, "Maddeleri düzenleme"). Kurallar burada, tek yerde:
-/// sayılar kilitli, serbest metin 200 karakter, proje başına 2 ek madde, en çok 4 proje.
+/// sayılar kilitli, serbest metin 200 karakter, proje başına 2 ek madde, en çok 6 proje.
 /// Düzenlemeler yalnızca cihazda saklanır; sunucuya gitmez.
 
 const maxItemChars = 200;
 const maxExtraPerProject = 2;
-const maxProjects = 4;
+const maxProjects = 6;
 
 /// Düzenlenebilen madde türleri: verinin bilemeyeceği metinler. Diğerleri (commit sayısı, özet,
 /// etkinlik satırları) sayı içerir; kilitlidir, yalnızca gizlenebilir.
@@ -37,7 +37,7 @@ class CvEdits {
   final Map<String, String> texts;
   final Set<String> hidden; // gizlenen madde kimlikleri (iki dilde ortak)
   final Map<String, List<String>> extras; // "dil|proje kimliği" -> ek maddeler (en çok 2)
-  List<String>? selected; // seçilen proje kimlikleri (en çok 4); null: varsayılan ilk 4
+  List<String>? selected; // seçilen proje kimlikleri (en çok 6); null: varsayılan ilk 6
   final Set<String> removedSkills; // listeden çıkarılan dil/araç adları
   final List<String> addedLanguages; // elle eklenen ("Senin eklemen")
   final List<String> addedTools;
@@ -48,7 +48,7 @@ class CvEdits {
       texts.isEmpty && hidden.isEmpty && extras.values.every((l) => l.isEmpty) && selected == null &&
       removedSkills.isEmpty && addedLanguages.isEmpty && addedTools.isEmpty;
 
-  /// Seçili proje kimlikleri: kullanıcı seçimi (taslakta hâlâ var olanlar) ya da varsayılan ilk 4.
+  /// Seçili proje kimlikleri: kullanıcı seçimi (taslakta hâlâ var olanlar) ya da varsayılan ilk 6.
   List<String> selectedIds(CvDraft d) {
     final ids = d.projects.map((p) => p.id).toSet();
     final chosen = selected?.where(ids.contains).toList();

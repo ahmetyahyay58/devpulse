@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../api/api_client.dart';
+import 'cv_edits.dart';
 import 'cv_formats.dart';
 import 'cv_profile.dart';
 
@@ -11,11 +12,20 @@ class CvItem {
       : id = j['id'] as String,
         text = j['text'] as String,
         source = j['source'] as String,
-        placeholder = j['placeholder'] as bool? ?? false;
+        placeholder = j['placeholder'] as bool? ?? false,
+        edited = false;
+
+  /// Düzenleme uygulanmış madde (cv_edits.dart).
+  CvItem.of({required this.id, required this.text, required this.source, this.placeholder = false, this.edited = false});
+
   final String id;
   final String text;
-  final String source; // hangi veriden üretildi
+  final String source; // hangi veriden üretildi (düzenlendiyse "Senin düzenlemen")
   final bool placeholder; // [...] kısmını kullanıcı doldurur
+  final bool edited; // kullanıcı değiştirdi ya da ekledi (docs/cv.md, şeffaflık)
+
+  /// Madde türü: kimliğin son parçası (desc, stack, work, impact, extra...).
+  String get kind => id.split(':').last;
 }
 
 class CvProject {
@@ -26,13 +36,25 @@ class CvProject {
         tech = [for (final t in j['tech'] as List? ?? const []) t as String],
         start = j['start'] == null ? null : DateTime.parse(j['start'] as String),
         end = j['end'] == null ? null : DateTime.parse(j['end'] as String),
+        defaultSelected = j['default_selected'] as bool? ?? true,
         items = [for (final i in j['items'] as List) CvItem((i as Map).cast<String, dynamic>())];
+
+  CvProject.of(CvProject p, this.items)
+      : id = p.id,
+        name = p.name,
+        url = p.url,
+        tech = p.tech,
+        start = p.start,
+        end = p.end,
+        defaultSelected = p.defaultSelected;
+
   final String id;
   final String name;
   final String url;
   final List<String> tech; // ana dil + araçlar
   final DateTime? start; // GitHub'daki oluşturma tarihi (uydurulmaz)
   final DateTime? end; // son push
+  final bool defaultSelected; // sağlık puanına göre ilk 4 (kullanıcı başkasını seçebilir)
   final List<CvItem> items;
 
   /// Madde türü kimliğin son parçasıdır: `proj:<id>:desc`, `stack`, `work` ya da `impact`.
@@ -55,6 +77,15 @@ class CvDraft {
         activity = _items(j['activity']),
         languages = [for (final l in j['languages'] as List? ?? const []) l as String],
         tools = [for (final t in j['tools'] as List? ?? const []) t as String];
+
+  /// Düzenlemeler uygulanmış görünüm (sayfa ve PDF bunu çizer).
+  CvDraft.of(CvDraft d,
+      {required this.summary, required this.projects, required this.activity, required this.languages, required this.tools})
+      : lang = d.lang,
+        login = d.login,
+        profileUrl = d.profileUrl,
+        skills = d.skills;
+
   final String lang;
   final String login;
   final String profileUrl;
@@ -79,6 +110,10 @@ class CvController extends ChangeNotifier {
   final VoidCallback onUnauthorized;
   final CvProfileStore store; // "Bilgilerim": yalnız bu cihazda
   CvProfile profile = CvProfile();
+  CvEdits edits = CvEdits(); // madde düzenlemeleri (yalnız bu cihazda)
+
+  /// Sayfa ve PDF'in çizdiği son hal: taslak + düzenlemeler.
+  CvDraft? get effective => draft == null ? null : applyEdits(draft!, edits);
 
   String lang = 'tr';
   CvFormat format = jakes;
@@ -111,8 +146,10 @@ class CvController extends ChangeNotifier {
   Future<void> _loadProfile() async {
     if (_profileLoaded) return; // dil değişince yeniden okunmaz; düzenlemeler bellekte güncel
     final p = await store.read();
+    final e = await store.readEdits();
     _profileLoaded = true;
     profile = p;
+    if (e != null) edits = CvEdits.fromJson(e);
     _notify();
   }
 
@@ -127,6 +164,13 @@ class CvController extends ChangeNotifier {
   Future<void> saveProfile(CvProfile p) async {
     await store.write(p);
     profile = p;
+    _notify();
+  }
+
+  /// "Maddeleri düzenle" Kaydet: önce cihaza yazılır, başarılıysa sayfa güncellenir.
+  Future<void> saveEdits(CvEdits e) async {
+    await store.writeEdits(e.toJson());
+    edits = e;
     _notify();
   }
 

@@ -326,9 +326,17 @@ class FakeBackend {
             'items': [
               item('proj:R_a:desc', 'Hava durumu servisi', 'GitHub repo açıklaması'),
               item('proj:R_a:stack', 'Dart ile geliştirildi; araçlar: Docker.', 'Dil dağılımı'),
+              item('proj:R_a:work', 'Commit sayısı: 12; README ile belgelendi.', 'Senkronlanan commit\'ler'),
               item('proj:R_a:impact', 'Etki: [ör. kullanıcı sayısı]', 'Bu sayıyı sen yazarsın', placeholder: true),
             ],
           },
+          // Seçim listesi için: varsayılan seçili değil (sağlık puanına göre ilk 4 dışında kaldı).
+          for (final n in ['b', 'c', 'd', 'e'])
+            {
+              'id': 'proj:R_$n', 'name': 'proje-$n', 'url': 'https://github.com/ben/proje-$n', 'tech': ['Python'],
+              'start': null, 'end': null, 'default_selected': n == 'b',
+              'items': [item('proj:R_$n:desc', 'Proje $n açıklaması', 'GitHub repo açıklaması')],
+            },
         ],
         'skills': [item('skills:languages', 'Diller: Dart, Python', 'Dil dağılımı')],
         'activity': [item('act:commits', 'Toplam commit: 33; aktif gün: 12; en uzun seri: 7 gün.', "Commit'ler")],

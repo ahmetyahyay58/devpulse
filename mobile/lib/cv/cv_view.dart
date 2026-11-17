@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../ai/ai_features.dart';
 import '../screens/file_saver.dart';
+import '../ui/toast.dart';
 import 'cv_controller.dart';
+import 'cv_edit_screen.dart';
 import 'cv_formats.dart';
 import 'cv_page.dart';
 import 'cv_pdf.dart';
@@ -45,7 +47,7 @@ class CvView extends StatelessWidget {
           page = Material(
             elevation: 2,
             child: CvPage(
-              draft: d,
+              draft: controller.effective!,
               format: controller.format,
               profile: controller.profile,
               showSources: controller.showSources,
@@ -88,6 +90,14 @@ class CvView extends StatelessWidget {
                 ),
                 if (d != null && page is Material) ...[
                   const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => CvEditScreen(controller: controller)),
+                    ),
+                    icon: const Icon(Icons.edit_note),
+                    label: Text(controller.edits.isEmpty ? 'Maddeleri düzenle' : 'Maddeleri düzenle (düzenlendi)'),
+                  ),
+                  const SizedBox(height: 8),
                   PdfButton(controller: controller, saveFile: saveFile),
                 ],
                 SwitchListTile(
@@ -123,21 +133,18 @@ class _PdfButtonState extends State<PdfButton> {
 
   Future<void> _export() async {
     final c = widget.controller;
-    final messenger = ScaffoldMessenger.of(context);
     setState(() => _busy = true);
     try {
-      final result = await buildCvPdf(draft: c.draft!, format: c.format, profile: c.profile);
+      final result = await buildCvPdf(draft: c.effective!, format: c.format, profile: c.profile);
       final name = c.profile.fullName.trim().isEmpty ? c.draft!.login : c.profile.fullName;
       final file = cvFileName(name, c.format, c.lang);
       await widget.saveFile(result.bytes, file);
       final skipped = result.skippedPlaceholders == 0
           ? ''
           : ' Doldurulmamış ${result.skippedPlaceholders} etki cümlesi dosyaya eklenmedi.';
-      messenger.showSnackBar(SnackBar(
-        content: Text('${kIsWeb ? 'PDF indirildi' : 'PDF hazır'}: $file.$skipped'),
-      ));
+      if (mounted) showToast(context, '${kIsWeb ? 'PDF indirildi' : 'PDF hazır'}: $file.$skipped');
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('PDF oluşturulamadı. Lütfen tekrar dene.')));
+      if (mounted) showToast(context, 'PDF oluşturulamadı. Lütfen tekrar dene.', success: false);
     } finally {
       if (mounted) setState(() => _busy = false);
     }

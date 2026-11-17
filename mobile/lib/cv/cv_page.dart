@@ -103,8 +103,8 @@ class CvPage extends StatelessWidget {
             TextSpan(text: ' | ${p.tech.join(', ')}', style: italic),
           ]))
         : Text(p.name, style: bold);
-    // Jake's teknolojiyi başlıkta verir; diğerlerinde "stack" maddesi gövdede kalır.
-    final kinds = format.techInProjectTitle ? ['desc', 'work', 'impact'] : ['desc', 'stack', 'work', 'impact'];
+    // Jake's teknolojiyi başlıkta verir; diğerlerinde "stack" maddesi gövdede kalır. Sıra taslaktaki
+    // sıradır (açıklama, teknoloji, iş, etki), kullanıcının ek maddeleri sonda.
     return [
       Padding(
         padding: const EdgeInsets.only(top: 6),
@@ -115,8 +115,8 @@ class CvPage extends StatelessWidget {
       ),
       if (format.header == HeaderStyle.europass && p.url.isNotEmpty)
         Text(p.url.replaceFirst('https://', ''), style: base.copyWith(fontSize: 10, color: muted)),
-      for (final k in kinds)
-        if (p.item(k) != null) _item(p.item(k)!, base, bullet: true),
+      for (final i in p.items)
+        if (!(format.techInProjectTitle && i.kind == 'stack')) _item(i, base, bullet: true),
     ];
   }
 

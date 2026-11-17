@@ -10,7 +10,8 @@ from typing import Literal
 from pydantic import BaseModel
 
 Lang = Literal["tr", "en"]
-MAX_PROJECTS = 4
+MAX_PROJECTS = 4  # varsayılan seçili proje sayısı; kullanıcı telefonda değiştirebilir (docs/cv.md)
+MAX_LISTED = 30  # seçim listesi için gönderilen en çok proje
 MAX_LANGUAGES = 6
 
 
@@ -28,6 +29,7 @@ class CvProject(BaseModel):
     tech: list[str]  # ana dil + tespit edilen araçlar (Jake's: "Ad | teknolojiler")
     start: date | None  # GitHub'daki oluşturma tarihi; uydurulmaz, yoksa None
     end: date | None  # son push tarihi
+    default_selected: bool  # sağlık puanına göre ilk 4; kullanıcı telefonda başka 4 seçebilir
     items: list[CvItem]
 
 
@@ -129,7 +131,7 @@ TEXT = {
 }
 
 
-def _project(repo: CvRepo, t: dict, login: str) -> CvProject:
+def _project(repo: CvRepo, t: dict, login: str, selected: bool) -> CvProject:
     pid = f"proj:{repo.node_id}"
     items: list[CvItem] = []
     if repo.description and repo.description.strip():
@@ -149,13 +151,14 @@ def _project(repo: CvRepo, t: dict, login: str) -> CvProject:
         tech=([repo.language] if repo.language else []) + [x for x in repo.tools if x != repo.language],
         start=repo.created_at.date() if repo.created_at else None,
         end=repo.pushed_at.date() if repo.pushed_at else None,
+        default_selected=selected,
         items=items,
     )
 
 
-def pick_projects(repos: list[CvRepo]) -> list[CvRepo]:
+def order_projects(repos: list[CvRepo]) -> list[CvRepo]:
     """Sağlık puanı yüksekten düşüğe, eşitlikte commit sayısı; puanlanmayan en sonda."""
-    return sorted(repos, key=lambda r: (r.score is None, -(r.score or 0), -r.commit_count, r.name))[:MAX_PROJECTS]
+    return sorted(repos, key=lambda r: (r.score is None, -(r.score or 0), -r.commit_count, r.name))[:MAX_LISTED]
 
 
 def build_draft(f: CvFacts, lang: Lang) -> CvDraftOut:
@@ -186,6 +189,6 @@ def build_draft(f: CvFacts, lang: Lang) -> CvDraftOut:
 
     return CvDraftOut(
         lang=lang, login=f.login, profile_url=f"https://github.com/{f.login}", summary=summary,
-        projects=[_project(r, t, f.login) for r in pick_projects(f.repos)], skills=skills, activity=activity,
+        projects=[_project(r, t, f.login, i < MAX_PROJECTS) for i, r in enumerate(order_projects(f.repos))], skills=skills, activity=activity,
         languages=f.languages[:MAX_LANGUAGES], tools=f.tools,
     )

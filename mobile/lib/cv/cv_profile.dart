@@ -101,15 +101,40 @@ class CvProfile {
   }
 }
 
-/// Profilin cihazdaki deposu. Testlerde bellek içi sürümü kullanılır.
+/// CV'nin cihazdaki deposu: "Bilgilerim" profili ve madde düzenlemeleri (JSON). Testlerde bellek
+/// içi sürümü kullanılır. clear ikisini birden siler (çıkış ve "Verilerimi sil").
 abstract class CvProfileStore {
   Future<CvProfile> read();
   Future<void> write(CvProfile p);
+  Future<Map<String, dynamic>?> readEdits();
+  Future<void> writeEdits(Map<String, dynamic> edits);
   Future<void> clear();
 }
 
 class PrefsCvProfileStore implements CvProfileStore {
   static const key = 'cv_profile';
+  static const editsKey = 'cv_edits';
+
+  @override
+  Future<Map<String, dynamic>?> readEdits() async {
+    try {
+      final raw = (await SharedPreferences.getInstance()).getString(editsKey);
+      return raw == null ? null : jsonDecode(raw) as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint('CV düzenlemeleri okunamadı: $e');
+      return null;
+    }
+  }
+
+  @override
+  Future<void> writeEdits(Map<String, dynamic> edits) async {
+    try {
+      await (await SharedPreferences.getInstance()).setString(editsKey, jsonEncode(edits));
+    } catch (e) {
+      debugPrint('CV düzenlemeleri kaydedilemedi: $e');
+      rethrow;
+    }
+  }
 
   @override
   Future<CvProfile> read() async {
@@ -135,17 +160,27 @@ class PrefsCvProfileStore implements CvProfileStore {
   @override
   Future<void> clear() async {
     try {
-      await (await SharedPreferences.getInstance()).remove(key);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(key);
+      await prefs.remove(editsKey);
     } catch (_) {}
   }
 }
 
 class MemoryCvProfileStore implements CvProfileStore {
   CvProfile? saved;
+  Map<String, dynamic>? savedEdits;
+  @override
+  Future<Map<String, dynamic>?> readEdits() async => savedEdits;
+  @override
+  Future<void> writeEdits(Map<String, dynamic> edits) async => savedEdits = edits;
   @override
   Future<CvProfile> read() async => saved == null ? CvProfile() : CvProfile.fromJson(saved!.toJson());
   @override
   Future<void> write(CvProfile p) async => saved = CvProfile.fromJson(p.toJson());
   @override
-  Future<void> clear() async => saved = null;
+  Future<void> clear() async {
+    saved = null;
+    savedEdits = null;
+  }
 }

@@ -86,7 +86,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
 | 3 format: Jake's Resume, Harvard tarzı, Europass düzeni (tek sütun) | Yeni | Mevcut + kullanıcı girdisi | Karar (16 Kas): prototipteki 5 serbest şablon yerine piyasada tanınan üç format. Uyarlamalar `docs/cv.md`. |
-| Yerinde düzenlenebilen metinler, "Taslağa dön" | Yeni | — | Karar (16 Kas): düzenlemeler telefonda; PDF telefonda; CV 5. sekme. Gerekçe ve kurallar `docs/cv.md`. |
+| Yerinde düzenlenebilen metinler, "Taslağa dön" | Yapıldı (17 Kas) | — | "Maddeleri düzenle": sayılar kilitli, metin 200 karakter, proje başına 2 ek madde, en çok 4 proje seçimi, beceri çıkar/ekle, "senin düzenlemen" işareti; yalnız cihazda. Kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |
 | Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Kısmen | — | PDF yapıldı (17 Kas; telefonda, gömülü Noto yazı tipi). Biçim kontrolü kaldı. |

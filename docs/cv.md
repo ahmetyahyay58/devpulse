@@ -37,6 +37,27 @@ Değişiklikler "Kaydet" ile yazılır ve "Bilgilerin kaydedildi" mesajı göste
 hata mesajı çıkar ve sayfa eski haliyle kalır. Kaydetmeden çıkılırsa sorulur (kaydet / kaydetmeden
 çık / vazgeç).
 
+## Maddeleri düzenleme (geliştirici kararı, 17 Kas 2026)
+GitHub'dan gelen taslak çıktıdan önce düzenlenebilir; sınırlar "uydurma sayı yok" ilkesini korur.
+Düzenlemeler yalnızca cihazda saklanır (anahtar `cv_edits`), "Kaydet" ile yazılır; çıkış ve
+"Verilerimi sil" bunları da siler.
+
+| Konu | Kural |
+|---|---|
+| Veriden gelen sayılar | **Kilitli.** Sayı içeren maddeler (`work` commit sayısı, özet, etkinlik satırları) ve proje tarihleri düzenlenemez; yalnızca gizlenebilir. Uygulama CV'deki her sayının GitHub'dan geldiğini garanti eder. |
+| Serbest metin | Açıklama (`desc`), teknoloji (`stack`) ve etki (`impact`) düzenlenebilir; madde başına en çok **200 karakter** (Harvard rehberi: madde başına tek cümle). Etki "[…]" haliyle kalırsa PDF'e basılmaz. |
+| Ek madde | Proje başına en çok **2**; kaynak satırında "Senin eklemen". |
+| Projeler | Kullanıcının kendi, fork olmayan, arşivsiz, herkese açık repolarından **en çok 4** seçilir (varsayılan: sağlık puanına göre ilk 4). GitHub'da olmayan proje eklenemez; o tür işler "Deneyim"e yazılır. |
+| Beceriler | Diller ve araçlar listeden çıkarılabilir (ör. Flutter'ın ürettiği C++/CMake); elle eklenen beceri "Senin eklemen" diye işaretlenir. |
+| Şeffaflık | Düzenlenen madde "Senin düzenlemen" diye işaretlenir (kaynakları göster açıkken görünür); tek madde ve tümü için "Taslağa dön". Uygulama düzenlenen metindeki sayıları doğrulayamaz; "doğrulandı" demez, yalnız "düzenlendi" der. |
+
+Metin düzenlemeleri dile göre ayrı tutulur (Türkçe CV'de Türkçe, İngilizce CV'de İngilizce metin);
+gizleme, proje seçimi ve beceri değişiklikleri iki dilde ortaktır.
+
+**Bildirimler:** Kaydetme ve PDF sonuçları alttaki çubuk yerine ekranın üst ortasında beliren
+kısa bir mesaj balonuyla gösterilir (`mobile/lib/ui/toast.dart`; geliştirici tercihi, 17 Kas).
+Başarı ve hata hem simge hem renkle söylenir.
+
 ## PDF
 "PDF olarak indir" seçili format ve dilde PDF üretir (`mobile/lib/cv/cv_pdf.dart`, `pdf` paketi);
 web'de indirilir, Android'de paylaşım menüsü açılır. Ekrandaki sayfayla aynı format tanımını okur.
@@ -69,7 +90,7 @@ konumdan değil. Yeniden senkronda sıra değişse de telefondaki düzenleme do�
    telefonda doldurur.
 2. **Özet:** Verideki sayılardan tek cümle (en çok kullanılan dil, repo ve commit sayısı). Aktif
    gün ve en uzun seri "Etkinlik" bölümündedir; aynı sayı iki kez yazılmaz.
-3. **Projeler (en çok 4):** Kullanıcının kendi, fork olmayan, arşivlenmemiş ve herkese açık
+3. **Projeler (uygun repoların hepsi, sıralı; ilk 4 varsayılan seçili):** Kullanıcının kendi, fork olmayan, arşivlenmemiş ve herkese açık
    repoları (CV başkalarına gösterilen bir belgedir; özel repo listelenmez); proje
    sağlık puanına, eşitlikte commit sayısına göre sıralanır. Her proje için:
    - `desc`: GitHub açıklaması (yoksa madde yok).

@@ -2,7 +2,7 @@
 import re
 from datetime import date, datetime, timezone
 
-from app.cv.draft import CvFacts, CvRepo, build_draft, pick_projects
+from app.cv.draft import CvFacts, CvRepo, build_draft, order_projects
 
 
 def repo(name, score=80, commits=10, **kw):
@@ -47,10 +47,14 @@ def test_impact_is_a_placeholder_for_every_project():
     assert all(i.placeholder and "[" in i.text for i in impacts)
 
 
-def test_project_selection_by_health_then_commits_and_max_four():
+def test_projects_ordered_by_health_then_commits_first_four_selected():
     repos = [repo("low", score=40), repo("none", score=None, commits=99), repo("hi", score=90),
              repo("hi2", score=90, commits=30), repo("mid", score=70)]
-    assert [r.name for r in pick_projects(repos)] == ["hi2", "hi", "mid", "low"]
+    assert [r.name for r in order_projects(repos)] == ["hi2", "hi", "mid", "low", "none"]
+    d = build_draft(facts(repos=repos), "tr")
+    # Hepsi gönderilir (kullanıcı telefonda seçer); varsayılan seçili olan ilk 4.
+    assert [(p.name, p.default_selected) for p in d.projects] == [
+        ("hi2", True), ("hi", True), ("mid", True), ("low", True), ("none", False)]
 
 
 def test_languages_same_ids_in_both_languages():

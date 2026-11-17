@@ -87,7 +87,7 @@ void main() {
     expect(find.text('GitHub repo açıklaması'), findsNothing);
     await tester.tap(find.text('Maddelerin kaynağını göster'));
     await tester.pumpAndSettle();
-    expect(find.text('GitHub repo açıklaması'), findsOneWidget);
+    expect(find.text('GitHub repo açıklaması'), findsWidgets); // iki seçili projenin açıklaması
     expect(find.text('•  Etki: [ör. kullanıcı sayısı]'), findsOneWidget);
   });
 

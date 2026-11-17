@@ -218,7 +218,6 @@ class _Builder {
             ]),
           )
         : pw.Text(p.name, style: bold);
-    final kinds = format.techInProjectTitle ? ['desc', 'work', 'impact'] : ['desc', 'stack', 'work', 'impact'];
     return [
       pw.Padding(
         padding: const pw.EdgeInsets.only(top: 5),
@@ -229,8 +228,8 @@ class _Builder {
       ),
       if (format.header == HeaderStyle.europass && p.url.isNotEmpty)
         pw.Text(p.url.replaceFirst('https://', ''), style: base.copyWith(fontSize: 9, color: muted)),
-      for (final k in kinds)
-        if (p.item(k) != null) ..._item(p.item(k)!, bullet: true),
+      for (final i in p.items)
+        if (!(format.techInProjectTitle && i.kind == 'stack')) ..._item(i, bullet: true),
     ];
   }
 

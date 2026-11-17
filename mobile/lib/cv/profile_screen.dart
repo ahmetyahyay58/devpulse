@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ui/toast.dart';
 import 'cv_controller.dart';
 import 'cv_profile.dart';
 
@@ -24,15 +25,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   /// "Kaydet": cihaza yazar, sonucu kullanıcıya söyler. Başarılıysa true.
   Future<bool> _commit() async {
     setState(() => _saving = true);
-    final messenger = ScaffoldMessenger.of(context);
     try {
       await widget.controller.saveProfile(CvProfile.fromJson(p.toJson()));
       if (!mounted) return true;
       setState(() => _dirty = false);
-      messenger.showSnackBar(const SnackBar(content: Text('Bilgilerin kaydedildi.')));
+      showToast(context, 'Bilgilerin kaydedildi.');
       return true;
     } catch (_) {
-      messenger.showSnackBar(const SnackBar(content: Text('Kaydedilemedi. Lütfen tekrar dene.')));
+      if (mounted) showToast(context, 'Kaydedilemedi. Lütfen tekrar dene.', success: false);
       return false;
     } finally {
       if (mounted) setState(() => _saving = false);

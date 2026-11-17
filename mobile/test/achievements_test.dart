@@ -53,4 +53,19 @@ void main() {
     expect(find.text('-'), findsOneWidget); // repo: geçen yıl 0
     expect(find.textContaining('%50 daha fazla commit'), findsOneWidget);
   });
+
+  testWidgets('hedef koçu: 3 hazır soru çipi; seçilen sorunun cevabı kartta', (tester) async {
+    await _open(tester);
+    expect(find.text('Hedef koçu'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Sıradaki rozete nasıl ulaşırım?'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Bu hafta için gerçekçi hedefim ne olabilir?'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Hangi projemi önce tamamlamalıyım?'), findsOneWidget);
+    expect(find.widgetWithText(ChoiceChip, 'Güçlü yanım ne?'), findsNothing); // Genel Bakış soruları burada yok
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Sıradaki rozete nasıl ulaşırım?'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Onaylamıyorum')); // onay yok: şablon cevap gelir
+    await tester.pumpAndSettle();
+    expect(find.text('Şablon cevabı: hedef_rozet'), findsOneWidget);
+  });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../ai/ai_features.dart';
+import '../ai/ai_widgets.dart';
 
 import '../overview/metric_card.dart';
 import '../overview/overview_controller.dart';
@@ -39,6 +40,17 @@ class AchievementsView extends StatelessWidget {
               const SizedBox(height: 8),
               Text('Rozetler alışkanlığı ve proje bakımını tanır; commit sayısını ödüllendirmez.',
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              // Hedef koçu: rozet, haftalık hedef ve öncelikli proje için 3 hazır soru (docs/ai_katmani.md).
+              if (AiScope.maybeOf(context) case final ai?) ...[
+                const SizedBox(height: 16),
+                AiCommentCard(
+                  ai: ai,
+                  kind: 'hedef',
+                  title: 'Hedef koçu',
+                  icon: Icons.flag_outlined,
+                  subtitle: 'Verine göre küçük, ulaşılabilir bir sonraki adım.',
+                ),
+              ],
               const SizedBox(height: 16),
               _YearCard(year: a['year'] as Map<String, dynamic>),
             ],

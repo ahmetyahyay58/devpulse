@@ -73,8 +73,19 @@ class AiSourceLine extends StatelessWidget {
 
 /// Genel Bakış'taki AI yorumu kartı: üç hazır soru çipi, seçilenin cevabı.
 class AiCommentCard extends StatefulWidget {
-  const AiCommentCard({super.key, required this.ai});
+  const AiCommentCard({
+    super.key,
+    required this.ai,
+    this.kind = 'sor',
+    this.title = 'AI yorumu',
+    this.icon = Icons.auto_awesome,
+    this.subtitle,
+  });
   final AiController ai;
+  final String kind; // hangi hazır sorular çip olur: 'sor' (Genel Bakış) ya da 'hedef' (Başarımlar)
+  final String title;
+  final IconData icon;
+  final String? subtitle;
 
   @override
   State<AiCommentCard> createState() => _AiCommentCardState();
@@ -98,7 +109,7 @@ class _AiCommentCardState extends State<AiCommentCard> {
     return ListenableBuilder(
       listenable: widget.ai,
       builder: (context, _) {
-        final chips = widget.ai.ofKind('sor').take(3).toList();
+        final chips = widget.ai.ofKind(widget.kind).take(3).toList();
         if (chips.isEmpty) return const SizedBox.shrink(); // AI durumu yüklenemediyse kart yok
         final theme = Theme.of(context);
         return Card(
@@ -106,10 +117,14 @@ class _AiCommentCardState extends State<AiCommentCard> {
             padding: const EdgeInsets.all(16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Row(children: [
-                const Icon(Icons.auto_awesome, size: 18),
+                Icon(widget.icon, size: 18),
                 const SizedBox(width: 8),
-                Text('AI yorumu', style: theme.textTheme.titleMedium),
+                Text(widget.title, style: theme.textTheme.titleMedium),
               ]),
+              if (widget.subtitle != null) ...[
+                const SizedBox(height: 4),
+                Text(widget.subtitle!, style: theme.textTheme.bodySmall),
+              ],
               const SizedBox(height: 8),
               Wrap(spacing: 8, runSpacing: 4, children: [
                 for (final q in chips)
@@ -170,6 +185,7 @@ class AiFactsScreen extends StatelessWidget {
     'eksik_proje': 'Eksiği olan proje sayısı', 'dil_sayisi': 'Dil sayısı', 'baskin_dil': 'Baskın dil',
     'baskin_dil_yuzde': 'Baskın dil payı (%)', 'cesitlilik': 'Dil çeşitliliği (0-1)',
     'teknoloji_guveni': 'Teknoloji güveni', 'yil_degisim_yuzde': 'Yıllık değişim (%)', 'yil_guveni': 'Yıl kıyası güveni',
+    'acik_rozet': 'Açılan rozet', 'kilitli_rozetler': 'Kilitli rozetler (şu an/hedef)',
   };
   static const _levels = {'yetersiz': 'Yeterli veri yok', 'dusuk': 'Düşük güven', 'normal': 'Normal'};
 

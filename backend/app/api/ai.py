@@ -109,7 +109,8 @@ def _context(user: User) -> Context:
     return Context(
         overview=metrics.overview(user), commit_types=metrics.commit_types(user),
         anomalies=metrics.anomalies(user), projects=load_projects(user),
-        technology=metrics.technology(user), year=metrics.achievements(user).year,
+        technology=metrics.technology(user), year=(ach := metrics.achievements(user)).year,
+        badges=tuple(ach.badges),
     )
 
 

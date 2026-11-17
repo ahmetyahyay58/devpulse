@@ -42,6 +42,9 @@ class FakeBackend {
           {'id': 'ritim', 'kind': 'sor', 'text': 'Genelde ne zaman çalışıyorum?'},
           {'id': 'neden_sureklilik', 'kind': 'neden', 'text': 'Süreklilik sonucum neden böyle?'},
           {'id': 'ipucu', 'kind': 'ipucu', 'text': 'Bana tek cümlelik bir öneri verir misin?'},
+          {'id': 'hedef_rozet', 'kind': 'hedef', 'text': 'Sıradaki rozete nasıl ulaşırım?'},
+          {'id': 'hedef_hafta', 'kind': 'hedef', 'text': 'Bu hafta için gerçekçi hedefim ne olabilir?'},
+          {'id': 'hedef_proje', 'kind': 'hedef', 'text': 'Hangi projemi önce tamamlamalıyım?'},
         ],
       };
   int _jobReads = 0;

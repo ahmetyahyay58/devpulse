@@ -52,7 +52,7 @@ def test_status_lists_questions_and_starts_without_consent(api, synced):
     assert body["consent"] is False
     assert body["llm_ready"] is False  # testlerde anahtar boş
     kinds = [q["kind"] for q in body["questions"]]
-    assert kinds.count("sor") == 5 and kinds.count("neden") == 5 and kinds.count("ipucu") == 1
+    assert kinds.count("sor") == 5 and kinds.count("neden") == 5 and kinds.count("ipucu") == 1 and kinds.count("hedef") == 3
 
 
 def test_without_consent_template_and_no_request(api, synced, fake):
@@ -222,3 +222,36 @@ def test_interview_template_rules():
     ev = evidence(p, types)
     assert ev[0] == "Bağlantıyı hazır tut: github.com/ben/x" and any("README ekle" in e for e in ev)
     assert parse_questions("a\n\nb\nc") == ["a", "b", "c"] and parse_questions("a\nb") is None
+
+
+
+# --- Hedef koçu (Başarımlar) -------------------------------------------------------------------
+
+def test_goal_questions_templates_and_subsets(api, synced, fake):
+    badge = api.post("/ai/ask", json={"question": "hedef_rozet"}, headers=synced).json()
+    assert badge["source"] == "sablon" and badge["answer"].startswith("En yakın rozet: ")
+    assert set(badge["facts"]) == {"acik_rozet", "kilitli_rozetler"}
+    assert all("/" in v for v in badge["facts"]["kilitli_rozetler"].values())
+
+    week = api.post("/ai/ask", json={"question": "hedef_hafta"}, headers=synced).json()
+    assert "seri" in week["answer"] or "commit" in week["answer"]
+    assert "yil_degisim_yuzde" in week["facts"] and "kilitli_rozetler" not in week["facts"]
+
+    proj = api.post("/ai/ask", json={"question": "hedef_proje"}, headers=synced).json()
+    assert set(proj["facts"]) == {"puanlanan_proje", "ortalama_saglik", "eksik_proje"}
+    assert DEMO_REPO not in json.dumps(proj["facts"], ensure_ascii=False)  # repo adı yalnız şablonda
+
+
+def test_goal_week_template_rules():
+    from types import SimpleNamespace as NS
+
+    from app.ai.questions import _goal_week
+    from app.metrics.sufficiency import Sufficiency
+
+    def ctx(cur, longest):
+        cont = NS(sufficiency=Sufficiency.NORMAL, current_streak=cur, longest_streak=longest)
+        return NS(overview=NS(continuity=cont))
+
+    assert "3 farklı günde" in _goal_week(ctx(0, 9))
+    assert "Rekoru geçmek için 6 gün" in _goal_week(ctx(4, 9))
+    assert "en uzun serindesin: 9 gün" in _goal_week(ctx(9, 9))

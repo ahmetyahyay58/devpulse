@@ -7,7 +7,7 @@ commit'ler, kullanıcı adı ve özet cümleleri bilerek alınmaz.
 """
 from dataclasses import dataclass
 
-from app.metrics.achievements import YearCompareOut
+from app.metrics.achievements import BadgeOut, YearCompareOut
 from app.metrics.anomaly import AnomaliesOut
 from app.metrics.commit_types import CommitTypesOut
 from app.metrics.overview import Overview
@@ -31,6 +31,7 @@ class Context:
     projects: ProjectsOut
     technology: TechnologyOut
     year: YearCompareOut
+    badges: tuple[BadgeOut, ...] = ()
 
 
 def _pct(share: float | None) -> int | None:
@@ -68,4 +69,7 @@ def build_facts(ctx: Context) -> dict:
         "teknoloji_guveni": tech.sufficiency.value,
         "yil_degisim_yuzde": change,
         "yil_guveni": year.sufficiency.value,
+        "acik_rozet": sum(1 for b in ctx.badges if b.unlocked),
+        # Rozet adları uygulamanın genel adlarıdır ("Bir haftalık seri"), kişiyi tanımlamaz.
+        "kilitli_rozetler": {b.name: f"{b.current}/{b.target}" for b in ctx.badges if not b.unlocked},
     }

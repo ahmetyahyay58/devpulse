@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../share/share_card.dart';
 import '../ai/ai_controller.dart';
 import '../ai/ai_widgets.dart';
 import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
+import '../notify/weekly_notifications.dart';
+import '../notify/weekly_widgets.dart';
+import '../share/share_card.dart';
 import 'file_saver.dart';
 import 'model_lab_screen.dart';
 import 'privacy_screen.dart';
@@ -13,7 +15,7 @@ import 'privacy_screen.dart';
 /// Profil: avatar ve hesap, rozet vitrini, Model Laboratuvarı, Verilerim, aydınlatma metni,
 /// çıkış, veri indirme ve silme.
 class AccountScreen extends StatelessWidget {
-  const AccountScreen({
+  AccountScreen({
     super.key,
     required this.session,
     required this.auth,
@@ -21,9 +23,10 @@ class AccountScreen extends StatelessWidget {
     required this.onDeleted,
     this.saveFile = shareFile,
     this.achievements,
+    WeeklyReminder? reminder,
     this.bySource,
     this.ai,
-  });
+  }) : reminder = reminder ?? LocalWeeklyReminder.instance;
 
   final Session session;
   final AuthService auth;
@@ -33,6 +36,7 @@ class AccountScreen extends StatelessWidget {
   final Map<String, dynamic>? achievements; // rozet vitrini için (yüklenmediyse null)
   final Map<String, int>? bySource; // kullanıcının commit'lerinde kural / model / belirsiz
   final AiController? ai; // yapay zekâ onayı (ana ekrandan; verilmezse kart yok)
+  final WeeklyReminder reminder; // haftalık bildirim (yalnız Android); testlerde sahtesi
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +55,7 @@ class AccountScreen extends StatelessWidget {
                 achievements: achievements,
                 bySource: bySource,
                 ai: ai,
+                reminder: reminder,
               ),
               const SizedBox(height: 8),
               ListTile(
@@ -210,7 +215,9 @@ class _DeleteDialogState extends State<_DeleteDialog> {
 
 /// /me bir kez yüklenir; avatar başlığı ve Verilerim kartı aynı cevabı kullanır.
 class _ProfileSections extends StatefulWidget {
-  const _ProfileSections({required this.api, required this.session, this.achievements, this.bySource, this.ai});
+  const _ProfileSections(
+      {required this.api, required this.session, required this.reminder, this.achievements, this.bySource, this.ai});
+  final WeeklyReminder reminder;
   final ApiClient api;
   final Session session;
   final Map<String, dynamic>? achievements;
@@ -260,6 +267,10 @@ class _ProfileSectionsState extends State<_ProfileSections> {
           if (widget.ai != null) ...[
             const SizedBox(height: 12),
             AiSettingsCard(ai: widget.ai!),
+          ],
+          if (widget.reminder.supported) ...[
+            const SizedBox(height: 12),
+            WeeklyReminderTile(reminder: widget.reminder),
           ],
           const SizedBox(height: 12),
           if (snap.hasError)

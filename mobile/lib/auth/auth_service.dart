@@ -3,6 +3,7 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../api/api_client.dart';
 import '../cv/cv_profile.dart';
+import '../notify/weekly_notifications.dart';
 import 'pkce.dart';
 import 'session_store.dart';
 
@@ -23,14 +24,22 @@ Future<String> _flutterWebAuth(String url, String callbackScheme) =>
 
 /// GitHub girişi (yetki kodu + PKCE) ve oturum yönetimi.
 class AuthService {
-  AuthService({required this.api, required this.store, BrowserAuth? browserAuth, CvProfileStore? cvStore})
-      : _browserAuth = browserAuth ?? _flutterWebAuth,
-        cvStore = cvStore ?? PrefsCvProfileStore();
+  AuthService({
+    required this.api,
+    required this.store,
+    BrowserAuth? browserAuth,
+    CvProfileStore? cvStore,
+    WeeklyReminder? reminder,
+  })  : _browserAuth = browserAuth ?? _flutterWebAuth,
+        cvStore = cvStore ?? PrefsCvProfileStore(),
+        reminder = reminder ?? LocalWeeklyReminder.instance;
 
   final ApiClient api;
   final SessionStore store;
   // Telefondaki CV bilgileri (ad, iletişim, eğitim...): çıkışta ve "Verilerimi sil"de silinir.
   final CvProfileStore cvStore;
+  // Haftalık bildirim: çıkışta planlı bildirim iptal edilir (hesap yokken hatırlatma anlamsız).
+  final WeeklyReminder reminder;
   final BrowserAuth _browserAuth;
 
   // Web: uygulamanın kendi adresindeki auth.html. Android: devpulse:// şeması.
@@ -108,6 +117,9 @@ class AuthService {
     api.sessionToken = null;
     await store.clear();
     await cvStore.clear(); // deleteAccount da buradan geçer
+    try {
+      if (await reminder.isEnabled()) await reminder.setEnabled(false);
+    } catch (_) {}
   }
 
   Future<Session> _save(Map<String, dynamic> response) async {

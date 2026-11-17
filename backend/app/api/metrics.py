@@ -11,6 +11,7 @@ GET /metrics/achievements Rozetler (ilerlemeli) ve yıl kıyası (yılbaşından
 GET /metrics/model-lab Model Laboratuvarı: commit sınıflandırmasının gerçek ölçümleri
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
 GET /metrics/year-summary Yıllık özet slaytları (bu yıl ya da geçmiş bir yıl)
+GET /metrics/weekly    Bu hafta (Pazartesi-bugün) ve geçen haftanın aynı günleri
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
 from datetime import date, datetime, timedelta
@@ -34,6 +35,7 @@ from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
 from app.metrics.technology import RepoTech, TechnologyOut, build_technology
+from app.metrics.weekly import WeeklyOut, weekly
 from app.metrics.year_summary import YearCommit, YearSummaryOut
 from app.metrics.year_summary import year_summary as build_year_summary
 from app.models import Commit, ContributionDay, PullRequest, Repo, ReviewYear, User
@@ -200,3 +202,14 @@ def year_summary_endpoint(year: int | None = Query(default=None, ge=2008, le=210
     ach = achievements(user)
     return build_year_summary([YearCommit(t.astimezone(zone), lang) for t, lang in rows], y, today, reviews,
                               ach.unlocked, len(ach.badges))
+
+
+@router.get("/weekly", response_model=WeeklyOut)
+def weekly_endpoint(user: User = Depends(current_user)) -> WeeklyOut:
+    """Haftalık özet (docs/metrikler.md "Haftalık özet")."""
+    zone = ZoneInfo(user.timezone or "UTC")
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Commit.authored_at, Commit.repo_id).join(Repo).where(Repo.user_id == user.id)
+        ).all()
+    return weekly([(t.astimezone(zone), r) for t, r in rows], datetime.now(zone).date())

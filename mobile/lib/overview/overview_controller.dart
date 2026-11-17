@@ -18,6 +18,7 @@ class OverviewController extends ChangeNotifier {
   MetricSection? technology; // diller, çeşitlilik, araçlar
   MetricSection? collaboration; // PR sonuçları ve kod incelemeleri
   Map<String, dynamic>? achievements; // rozetler + yıl kıyası
+  Map<String, dynamic>? weekly; // bu hafta / geçen haftanın aynı günleri
   String? error;
   bool loading = false;
   bool _disposed = false;
@@ -37,6 +38,7 @@ class OverviewController extends ChangeNotifier {
         api.get('/metrics/technology'),
         api.get('/metrics/achievements'),
         api.get('/metrics/collaboration'),
+        api.get('/metrics/weekly'),
       ]);
       overview = Overview.fromJson(results[0]);
       calendar = CalendarData.fromJson(results[1]);
@@ -46,6 +48,7 @@ class OverviewController extends ChangeNotifier {
       technology = MetricSection.fromJson(results[5]);
       achievements = results[6];
       collaboration = MetricSection.fromJson(results[7]);
+      weekly = results[8];
     } on ApiException catch (e) {
       if (e.isUnauthorized) {
         onUnauthorized();

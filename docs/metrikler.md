@@ -38,6 +38,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | İşbirliği | Sonuçlanmış (merge edilmiş ya da kapatılmış) PR < 3 | Sonuçlanmış PR < 10 | diğer |
 | Yıllık özet | Dönemde < 10 commit | < 50 commit | diğer |
 | Repo kümeleri | < 5 kendi repo | 5-9 repo | diğer |
+| Haftalık özet | İki dönemde de commit yok | — | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -258,6 +259,26 @@ içindeki rolü.
 | Yeterli veri yok | Düşük güven | Normal |
 |---|---|---|
 | Sonuçlanmış PR < 3 | Sonuçlanmış PR < 10 | diğer |
+
+### Haftalık özet (Faz 9)
+Genel Bakış'taki "Bu hafta" kartı ve haftalık bildirimin içeriği. Kod
+`backend/app/metrics/weekly.py`, uç nokta `GET /metrics/weekly`.
+
+- **Dönem:** Bu haftanın Pazartesi'sinden bugüne (yerel saat). Kıyas: geçen haftanın aynı günleri
+  (Pazartesi'den geçen haftanın bugününe). Yarım hafta tam haftayla kıyaslanmaz.
+- **Değerler:** commit sayısı, aktif gün, commit atılan repo sayısı (iki dönem için).
+- Dil betimleyicidir: "geçen haftanın aynı günlerine göre 3 commit fazla". Yüzde verilmez (küçük
+  sayılarda yüzde yanıltıcıdır).
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| İki dönemde de hiç commit yok | — | diğer |
+
+**Haftalık bildirim (yalnız Android, isteğe bağlı):** Profil'den açılır (varsayılan kapalı;
+tercih yalnız telefonda). Açılınca Android 13+ bildirim izni sorulur; her Pazartesi 10:00 civarı
+(yaklaşık zamanlı, tam zamanlı alarm izni istenmez) "Yeni hafta başladı; geçen haftanın özeti
+DevPulse'ta" bildirimi gösterilir. Bildirim telefonda planlanır; sunucu push yoktur ve bildirim
+metninde sayı yoktur (sayılar uygulama açılınca güncel hesaplanır).
 
 ### Repo kümeleri (gözetimsiz, k-means; Faz 9)
 Projeler sekmesindeki "Liste / Kümeler" geçişi. Benzer repoları gruplar; **gözetimsizdir**

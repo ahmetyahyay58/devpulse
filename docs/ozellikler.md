@@ -98,7 +98,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 |---|---|---|---|
 | Avatar ve "GitHub'a bağlı" etiketi | Yeni | Yeni veri | `avatarUrl`; aydınlatma metninde belirtilir. |
 | Paylaşılabilir profil kartı, rozet vitrini, "Paylaş" | Yapıldı (17 Kas) | Mevcut | Profil'den ve yıllık özetin son slaytından. Kart telefonda PNG olarak üretilir (önizleme gösterilir); içinde yalnız kullanıcı adı, bu yılın toplu sayıları ve açılan rozet adları var. Android'de paylaşım menüsü, web'de indirme; kullanıcı paylaşmadıkça telefondan çıkmaz, sunucuya yeni veri gitmez. |
-| Yıllık özet kartı, haftalık bildirim kartı | Yeni | Mevcut | Bildirim: yerel bildirim (sunucu push yok). |
+| Yıllık özet kartı, haftalık bildirim kartı | Yapıldı (17 Kas) | Mevcut | Yıllık özet Başarımlar'da; "Bu hafta" kartı Genel Bakış'ta (`GET /metrics/weekly`); haftalık bildirim yalnız Android, Profil'den açılır, varsayılan kapalı, yerel ve yaklaşık zamanlı (sunucu push yok, metinde sayı yok). |
 | Ayarlar: AI ipuçları aç/kapa, veri kapsamı, indir/sil, senkronu yeniden oynat | Kısmen | Mevcut | İndir/sil var. |
 | Verilerim kartı: saklanan/saklanmayan, 90 gün kuralı | Kısmen | Mevcut | Aydınlatma metninden; 90 gün kuralı uygulanınca. |
 | Model Laboratuvarı kartı | Yeni | Mevcut | Gerçek ölçümler (bkz. çelişki çözümleri). |

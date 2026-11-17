@@ -303,6 +303,14 @@ class FakeBackend {
       return _json(anomalies);
     }
     if (path == '/metrics/year-summary') return _json(yearSummary);
+    if (path == '/metrics/weekly') {
+      return _json({
+        'this_week': {'start': '2026-11-09', 'end': '2026-11-11', 'commits': 5, 'active_days': 2, 'repos': 1},
+        'last_week': {'start': '2026-11-02', 'end': '2026-11-04', 'commits': 3, 'active_days': 3, 'repos': 2},
+        'difference': 2, 'sufficiency': 'normal',
+        'summary': 'Bu hafta 5 commit, 2 aktif gün; geçen haftanın aynı günlerine göre 2 commit fazla.',
+      });
+    }
     if (path == '/projects/clusters') {
       return _json({
         'sufficiency': 'dusuk', 'repo_count': 6, 'k': 2, 'silhouette': null,

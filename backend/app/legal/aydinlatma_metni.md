@@ -30,6 +30,8 @@ Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna er
 
 ## Yalnızca telefonunda duran veriler
 - CV bilgilerin ("Bilgilerim"): adın, e-postan, telefonun, şehrin, LinkedIn adresin, eğitim, deneyim ve sertifika kayıtların, dil düzeylerin, "Hakkımda" metnin ve ilgi alanların yalnızca bu cihazda saklanır (web sürümünde tarayıcının yerel deposunda) ve sunucuya hiç gönderilmez; bu yüzden "Verilerimi indir" dosyasında da yer almaz. Çıkış yaptığında ya da "Verilerimi sil" dediğinde cihazdan da silinir. Yapay zekâya da gönderilmez.
+- Haftalık bildirim tercihin (Android, varsayılan kapalı): telefonunda tutulur. Bildirim telefonda planlanır, sunucudan gönderilmez ve içinde sayı yoktur; çıkış yaptığında iptal edilir.
+- Paylaşım kartı telefonunda üretilir; yalnızca sen "Paylaş" dersen telefondan çıkar.
 
 ## Verinin işlenme amacı
 Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Veriler satılmaz, reklam için kullanılmaz, başka kişilerle paylaşılmaz.

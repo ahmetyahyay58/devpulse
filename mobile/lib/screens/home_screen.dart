@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../notify/weekly_widgets.dart';
 import '../ai/ai_controller.dart';
 import '../ai/ai_features.dart';
 import '../ai/ai_widgets.dart';
@@ -224,6 +225,16 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               Text('Genel Bakış', style: theme.textTheme.titleLarge),
               const SizedBox(height: 12),
+              // "Bu hafta": Genel Bakış verisiyle birlikte yüklenir.
+              ListenableBuilder(
+                listenable: _overview,
+                builder: (context, _) => _overview.weekly == null
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: WeeklyCard(weekly: _overview.weekly!),
+                      ),
+              ),
               OverviewSection(controller: _overview),
               const SizedBox(height: 12),
               AiCommentCard(ai: _ai),

@@ -2,6 +2,7 @@ import 'package:devpulse/api/api_client.dart';
 import 'package:devpulse/auth/auth_service.dart';
 import 'package:devpulse/auth/pkce.dart';
 import 'package:devpulse/auth/session_store.dart';
+import 'package:devpulse/cv/cv_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_backend.dart';
@@ -88,5 +89,24 @@ void main() {
     await fresh.logout();
     expect(await store.read(), isNull);
     expect(fresh.api.sessionToken, isNull);
+  });
+
+  test('çıkış ve hesap silme telefondaki CV bilgilerini de siler', () async {
+    for (final deleteAccount in [false, true]) {
+      final cv = MemoryCvProfileStore();
+      await cv.write(CvProfile(fullName: 'Ad Soyad', email: 'a@example.com'));
+      await store.write(const Session(sessionToken: 'jwt', githubToken: null, userId: 1, login: 'ben'));
+      final s = AuthService(
+        api: ApiClient(baseUrl: 'http://test', client: backend.client)..sessionToken = 'jwt',
+        store: store,
+        cvStore: cv,
+      );
+      if (deleteAccount) {
+        await s.deleteAccount(revokeGitHub: false);
+      } else {
+        await s.logout();
+      }
+      expect(cv.saved, isNull, reason: deleteAccount ? 'Verilerimi sil' : 'çıkış');
+    }
   });
 }

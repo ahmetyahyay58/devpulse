@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb, Uint8List;
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
 import '../api/api_client.dart';
+import '../cv/cv_profile.dart';
 import 'pkce.dart';
 import 'session_store.dart';
 
@@ -22,11 +23,14 @@ Future<String> _flutterWebAuth(String url, String callbackScheme) =>
 
 /// GitHub girişi (yetki kodu + PKCE) ve oturum yönetimi.
 class AuthService {
-  AuthService({required this.api, required this.store, BrowserAuth? browserAuth})
-      : _browserAuth = browserAuth ?? _flutterWebAuth;
+  AuthService({required this.api, required this.store, BrowserAuth? browserAuth, CvProfileStore? cvStore})
+      : _browserAuth = browserAuth ?? _flutterWebAuth,
+        cvStore = cvStore ?? PrefsCvProfileStore();
 
   final ApiClient api;
   final SessionStore store;
+  // Telefondaki CV bilgileri (ad, iletişim, eğitim...): çıkışta ve "Verilerimi sil"de silinir.
+  final CvProfileStore cvStore;
   final BrowserAuth _browserAuth;
 
   // Web: uygulamanın kendi adresindeki auth.html. Android: devpulse:// şeması.
@@ -103,6 +107,7 @@ class AuthService {
   Future<void> logout() async {
     api.sessionToken = null;
     await store.clear();
+    await cvStore.clear(); // deleteAccount da buradan geçer
   }
 
   Future<Session> _save(Map<String, dynamic> response) async {

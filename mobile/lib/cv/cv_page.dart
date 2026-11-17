@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'cv_controller.dart';
 import 'cv_formats.dart';
+import 'cv_profile.dart';
 
 /// CV'nin kağıt görünümü: beyaz sayfa, siyah yazı, seçili formatın düzeni (cv_formats.dart).
 /// Tema (açık/koyu) sayfayı etkilemez; gerçek bir CV gibi görünür. Yer tutucular yalnız ekranda
 /// sarı vurgulanır; kaynak satırları isteğe bağlıdır (PDF'e ikisi de basılmaz).
 class CvPage extends StatelessWidget {
-  const CvPage({super.key, required this.draft, required this.format, this.showSources = false});
+  const CvPage({super.key, required this.draft, required this.format, required this.profile, this.showSources = false});
 
   final CvDraft draft;
   final CvFormat format;
+  final CvProfile profile; // "Bilgilerim": ad, iletişim, eğitim, deneyim, diller (telefonda)
   final bool showSources;
 
   static const ink = Color(0xFF111111);
@@ -38,29 +40,36 @@ class CvPage extends StatelessWidget {
 
   String get _github => draft.profileUrl.replaceFirst('https://', '');
 
+  /// Ad girilmediyse GitHub kullanıcı adı gösterilir.
+  String get _name => profile.fullName.trim().isEmpty ? draft.login : profile.fullName.trim();
+
   Widget _centeredHeader(TextStyle base) => Column(children: [
-        Text(draft.login, // ad, "Bilgilerim" formu gelince kullanıcının adı olur
+        Text(_name,
             textAlign: TextAlign.center,
             style: base.copyWith(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: 0.3)),
         const SizedBox(height: 2),
-        Text(_github, textAlign: TextAlign.center, style: base.copyWith(fontSize: 10.5)),
+        // Jake's: "telefon | e-posta | ...", Harvard: "telefon · e-posta · ..."
+        Text([...profile.contacts(), _github].join(format.techInProjectTitle ? '  |  ' : '  ·  '),
+            textAlign: TextAlign.center, style: base.copyWith(fontSize: 10.5)),
       ]);
 
   // --- Bölümler -----------------------------------------------------------------------------
 
   List<Widget> _section(CvSection s, TextStyle base, String lang) {
     final body = switch (s) {
-      CvSection.personal => [
-          Text(draft.login, style: base.copyWith(fontSize: 18, fontWeight: FontWeight.w700)),
-          _labelled(lang == 'en' ? 'GitHub' : 'GitHub', _github, base),
-        ],
+      CvSection.personal => _personal(base, lang),
       CvSection.about => [if (draft.summary != null) _item(draft.summary!, base)],
       CvSection.projects => [for (final p in draft.projects) ..._project(p, base, lang)],
       CvSection.skills => _skills(base, lang),
       CvSection.digitalSkills => _skills(base, lang),
       CvSection.additional => [for (final i in draft.activity) _item(i, base, bullet: true)],
-      // Kullanıcının gireceği bölümler: veri yoksa sayfada hiç görünmez (docs/cv.md).
-      CvSection.education || CvSection.experience || CvSection.spokenLanguages => <Widget>[],
+      // Kullanıcının girdiği bölümler: veri yoksa sayfada hiç görünmez (docs/cv.md).
+      CvSection.education => [for (final e in profile.education) ..._education(e, base)],
+      CvSection.experience => [for (final e in profile.experience) ..._experience(e, base)],
+      CvSection.spokenLanguages => [
+          for (final l in profile.languages)
+            if (l.name.trim().isNotEmpty) _labelled(l.name.trim(), l.levelLabel(lang), base),
+        ],
     };
     if (body.isEmpty) return const [];
     return [_heading(sectionTitle(format, s, lang), base, lang), ...body];
@@ -111,13 +120,89 @@ class CvPage extends StatelessWidget {
     ];
   }
 
-  List<Widget> _skills(TextStyle base, String lang) {
+  List<Widget> _personal(TextStyle base, String lang) {
     final en = lang == 'en';
     return [
+      Text(_name, style: base.copyWith(fontSize: 18, fontWeight: FontWeight.w700)),
+      for (final (label, value) in [
+        (en ? 'Email' : 'E-posta', profile.email),
+        (en ? 'Phone' : 'Telefon', profile.phone),
+        (en ? 'Location' : 'Şehir', profile.location),
+        ('LinkedIn', profile.linkedin),
+        ('GitHub', _github),
+      ])
+        if (value.trim().isNotEmpty) _labelled(label, value.trim(), base),
+    ];
+  }
+
+  /// Satır: solda metin, sağda (sağa yaslı) tarih ya da yer. Sütun değil, tek satır.
+  Widget _row(String left, String right, TextStyle leftStyle, TextStyle base, {double top = 6}) => Padding(
+        padding: EdgeInsets.only(top: top),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(child: Text(left, style: leftStyle)),
+          if (right.isNotEmpty) Text(right, style: base.copyWith(fontSize: 10.5)),
+        ]),
+      );
+
+  Widget _dates(String dates, TextStyle base) =>
+      Padding(padding: const EdgeInsets.only(top: 6), child: Text(dates, style: base.copyWith(color: muted)));
+
+  List<Widget> _education(Education e, TextStyle base) {
+    final bold = base.copyWith(fontWeight: FontWeight.w700);
+    final italic = base.copyWith(fontStyle: FontStyle.italic);
+    if (format.header == HeaderStyle.europass) {
+      return [
+        if (e.dates.isNotEmpty) _dates(e.dates, base),
+        Text(e.degree.isEmpty ? e.school : e.degree, style: bold),
+        if (e.degree.isNotEmpty) Text([e.school, e.location].where((s) => s.isNotEmpty).join(', ')),
+        if (e.note.isNotEmpty) Text(e.note),
+      ];
+    }
+    return [
+      _row(e.school, e.location, bold, base),
+      if (e.degree.isNotEmpty || e.dates.isNotEmpty) _row(e.degree, e.dates, italic, base, top: 0),
+      if (e.note.isNotEmpty) Text(e.note),
+    ];
+  }
+
+  List<Widget> _experience(Experience e, TextStyle base) {
+    final bold = base.copyWith(fontWeight: FontWeight.w700);
+    final italic = base.copyWith(fontStyle: FontStyle.italic);
+    final bullets = [
+      for (final b in e.bullets) Padding(padding: const EdgeInsets.only(top: 2, left: 8), child: Text('•  $b')),
+    ];
+    if (format.header == HeaderStyle.europass) {
+      return [
+        if (e.dates.isNotEmpty) _dates(e.dates, base),
+        Text(e.role, style: bold),
+        if (e.org.isNotEmpty || e.location.isNotEmpty) Text([e.org, e.location].where((s) => s.isNotEmpty).join(', ')),
+        ...bullets,
+      ];
+    }
+    // Jake's: pozisyon + tarih, altında kurum + şehir. Harvard: kurum + şehir, altında pozisyon + tarih.
+    final (top, topRight, bottom, bottomRight) =
+        format.techInProjectTitle ? (e.role, e.dates, e.org, e.location) : (e.org, e.location, e.role, e.dates);
+    return [
+      _row(top, topRight, bold, base),
+      if (bottom.isNotEmpty || bottomRight.isNotEmpty) _row(bottom, bottomRight, italic, base, top: 0),
+      ...bullets,
+    ];
+  }
+
+  List<Widget> _skills(TextStyle base, String lang) {
+    final en = lang == 'en';
+    final spoken = [
+      for (final l in profile.languages)
+        if (l.name.trim().isNotEmpty) '${l.name.trim()} (${l.levelLabel(lang)})',
+    ].join(', ');
+    return [
       if (draft.languages.isNotEmpty)
-        _labelled(en ? 'Languages' : 'Diller', draft.languages.join(', '), base),
+        _labelled(en ? 'Languages' : 'Programlama dilleri', draft.languages.join(', '), base),
       if (draft.tools.isNotEmpty)
         _labelled(en ? 'Developer tools' : 'Geliştirici araçları', draft.tools.join(', '), base),
+      // Harvard "Skills & Interests" konuşulan dilleri de içerir; Europass'ta ayrı bölüm var.
+      if (format.id == 'harvard' && spoken.isNotEmpty)
+        _labelled(en ? 'Spoken languages' : 'Yabancı dil ve anadil', spoken, base),
     ];
   }
 

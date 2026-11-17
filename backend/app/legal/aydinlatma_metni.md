@@ -1,6 +1,6 @@
 # DevPulse Aydınlatma Metni
 
-Son güncelleme: 16 Kasım 2026 · Taslak
+Son güncelleme: 17 Kasım 2026 · Taslak
 
 Bu metin, Harran Üniversitesi Bilgisayar Mühendisliği bitirme projesi olarak geliştirilen DevPulse uygulamasının hangi verileri neden işlediğini açıklar. Bir öğrenci projesi için hazırlanmış taslaktır; hukuki danışmanlık niteliği taşımaz.
 
@@ -27,6 +27,9 @@ Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna er
 - Başka kişilerin kullanıcı adları (yalnızca sayılar tutulur).
 - Kodunun içeriği.
 - GitHub erişim anahtarın (token): yalnızca telefonunun güvenli deposunda durur; sunucu onu yalnızca senkron sırasında kullanır ve hiçbir yere yazmaz.
+
+## Yalnızca telefonunda duran veriler
+- CV bilgilerin ("Bilgilerim"): adın, e-postan, telefonun, şehrin, LinkedIn adresin, eğitim ve deneyim kayıtların ile dil düzeylerin yalnızca bu cihazda saklanır (web sürümünde tarayıcının yerel deposunda) ve sunucuya hiç gönderilmez; bu yüzden "Verilerimi indir" dosyasında da yer almaz. Çıkış yaptığında ya da "Verilerimi sil" dediğinde cihazdan da silinir. Yapay zekâya da gönderilmez.
 
 ## Verinin işlenme amacı
 Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Veriler satılmaz, reklam için kullanılmaz, başka kişilerle paylaşılmaz.

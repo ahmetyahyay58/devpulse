@@ -29,8 +29,10 @@ ekrandaki önizleme ve PDF aynı tanımı okur.
 Kaynaklar: Overleaf "Jake's Resume" şablonu; Harvard FAS ve HSPH kariyer rehberleri; Europass
 bölüm yapısını anlatan rehberler (europass.europa.eu resmî düzenleyicisi esastır).
 
-**Kullanıcının girdiği bölümler** (eğitim, deneyim, dil, iletişim) GitHub'da yoktur; telefonda
-saklanır, sunucuya gitmez. Boşsa sayfada görünmez; yalnız düzenleme ekranında "ekle" önerisi
+**Kullanıcının girdiği bölümler** ("Bilgilerim": ad, iletişim, eğitim, deneyim, dil) GitHub'da
+yoktur; telefonda saklanır (`shared_preferences`, anahtar `cv_profile`; web'de tarayıcının yerel
+deposu), sunucuya gitmez. Çıkış ve "Verilerimi sil" `AuthService.logout` üzerinden bunu da siler.
+Tarihler serbest metindir (ör. "Eyl 2022 – Haz 2026"); kayıtların kimliği kalıcıdır. Boşsa sayfada görünmez; yalnız düzenleme ekranında "ekle" önerisi
 çıkar.
 
 ## Taslak (`GET /cv/draft?lang=tr|en`)

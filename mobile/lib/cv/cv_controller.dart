@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../api/api_client.dart';
 import 'cv_formats.dart';
+import 'cv_profile.dart';
 
 /// CV taslağının bir maddesi (backend app/cv/draft.py). [id] veriden türetilir, konumdan değil:
 /// telefondaki düzenlemeler bu kimliğe bağlanır (docs/cv.md).
@@ -71,10 +72,13 @@ class CvDraft {
 /// CV sekmesinin verisi: seçili dildeki taslak. Taslak sunucuda veriden üretilir; kullanıcının
 /// düzenlemeleri sunucuya gitmez (docs/cv.md).
 class CvController extends ChangeNotifier {
-  CvController({required this.api, required this.onUnauthorized});
+  CvController({required this.api, required this.onUnauthorized, CvProfileStore? store})
+      : store = store ?? PrefsCvProfileStore();
 
   final ApiClient api;
   final VoidCallback onUnauthorized;
+  final CvProfileStore store; // "Bilgilerim": yalnız bu cihazda
+  CvProfile profile = CvProfile();
 
   String lang = 'tr';
   CvFormat format = jakes;
@@ -86,6 +90,8 @@ class CvController extends ChangeNotifier {
   Future<void> load() async {
     error = null;
     _notify();
+    // Profil ayrı yüklenir: cihaz deposu yavaş ya da erişilemez olsa da taslak gelir.
+    _loadProfile();
     try {
       draft = CvDraft(await api.get('/cv/draft?lang=$lang'));
     } on ApiException catch (e) {
@@ -100,11 +106,28 @@ class CvController extends ChangeNotifier {
     _notify();
   }
 
+  bool _profileLoaded = false;
+
+  Future<void> _loadProfile() async {
+    if (_profileLoaded) return; // dil değişince yeniden okunmaz; düzenlemeler bellekte güncel
+    final p = await store.read();
+    _profileLoaded = true;
+    profile = p;
+    _notify();
+  }
+
   Future<void> setLang(String value) async {
     if (value == lang) return;
     lang = value;
     draft = null; // eski dildeki taslak kısa süre bile görünmesin
     await load();
+  }
+
+  /// Bilgilerim formu her değişiklikte kaydeder; sayfa hemen güncellenir.
+  Future<void> saveProfile(CvProfile p) async {
+    profile = p;
+    _notify();
+    await store.write(p);
   }
 
   void setFormat(CvFormat f) {

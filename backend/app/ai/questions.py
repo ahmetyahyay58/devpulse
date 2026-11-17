@@ -59,44 +59,12 @@ def _why(section: str) -> Callable[[Context], str]:
     return answer
 
 
-def _goal_badge(c: Context) -> str:
-    locked = [b for b in c.badges if not b.unlocked]
-    if not locked:
-        return "Bütün rozetleri açtın; şimdilik yeni bir rozet hedefi yok."
-    b = max(locked, key=lambda b: (b.current / b.target, -b.target))
-    return f"En yakın rozet: {b.name} ({b.current}/{b.target}). Koşul: {b.description}"
-
-
-def _goal_week(c: Context) -> str:
-    cont = c.overview.continuity
-    if cont.sufficiency == Sufficiency.NONE:
-        return "Hedef koymak için henüz yeterli veri yok; bu hafta 3 farklı günde küçük bir commit atmayı dene."
-    if cont.current_streak == 0:
-        return "Şu an aktif bir serin yok. Bu hafta için gerçekçi hedef: 3 farklı günde küçük de olsa bir commit."
-    if cont.current_streak < cont.longest_streak:
-        need = cont.longest_streak - cont.current_streak + 1
-        return (f"Güncel serin {cont.current_streak} gün, en uzun serin {cont.longest_streak} gün. "
-                f"Rekoru geçmek için {need} gün daha art arda commit gerekir; bu hafta her gün küçük bir adım yeter.")
-    return (f"Şu an en uzun serindesin: {cont.current_streak} gün. Bu hafta hedefi seriyi korumak olsun; "
-            "her gün küçük bir commit yeter.")
-
-
-def _goal_project(c: Context) -> str:
-    candidates = [p for p in c.projects.projects
-                  if p.is_owner and not p.is_fork and p.score is not None and p.suggestion]
-    if not candidates:
-        return "Puanlanan projelerinde belirgin bir eksik görünmüyor; yeni bir projeye başlamak için iyi bir zaman."
-    p = max(candidates, key=lambda p: (p.commit_count, -(p.score or 0)))
-    return f"Önce en çok emek verdiğin projeyi tamamla: {p.name} (puan {p.score}). İlk adım: {p.suggestion}"
-
-
 # Soruya göre giden sayı grupları: alakasız sayıyı göndermemek hem doğruluğu hem gizliliği artırır.
 CONTINUITY = ("toplam_commit", "aktif_gun", "guncel_seri_gun", "en_uzun_seri_gun", "sureklilik_guveni")
 RHYTHM = ("en_yogun_saat", "gece_payi_yuzde", "hafta_sonu_payi_yuzde", "ritim_guveni")
 SESSIONS = ("oturum_sayisi", "oturum_basi_commit", "ortalama_oturum_dk", "oturum_guveni")
 TYPES = ("toplam_commit", "commit_turleri_yuzde", "tur_guveni")
 PROJECTS = ("puanlanan_proje", "ortalama_saglik", "eksik_proje")
-BADGES = ("acik_rozet", "kilitli_rozetler")
 
 QUESTIONS: list[Question] = [
     Question("ozet", "sor", "Çalışma alışkanlığımı kısaca özetler misin?",
@@ -113,10 +81,5 @@ QUESTIONS: list[Question] = [
     Question("neden_proje", "neden", "Proje sağlık puanlarım neden böyle?", lambda c: c.projects.summary.summary,
              PROJECTS),
     Question("ipucu", "ipucu", "Bana tek cümlelik bir öneri verir misin?", _tip, CONTINUITY + PROJECTS),
-    # Hedef koçu (Başarımlar sekmesi)
-    Question("hedef_rozet", "hedef", "Sıradaki rozete nasıl ulaşırım?", _goal_badge, BADGES),
-    Question("hedef_hafta", "hedef", "Bu hafta için gerçekçi hedefim ne olabilir?", _goal_week,
-             CONTINUITY + ("yil_degisim_yuzde", "yil_guveni")),
-    Question("hedef_proje", "hedef", "Hangi projemi önce tamamlamalıyım?", _goal_project, PROJECTS),
 ]
 BY_ID = {q.id: q for q in QUESTIONS}

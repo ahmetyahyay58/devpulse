@@ -19,8 +19,6 @@ SYSTEM = (
     "baskin_dil, baskin_dil_yuzde: kodun bayt olarak en büyük dili ve payı (commit payı değil); "
     "cesitlilik: 0-1 arası dil çeşitliliği (betimleyici, puan değil); "
     "yil_degisim_yuzde: bu yıl ile geçen yılın aynı dönemindeki commit sayısı farkı; "
-    "acik_rozet, kilitli_rozetler: uygulamadaki rozetler; kilitli olanlarda 'şu an/hedef' ilerlemesi "
-    "(seri rozetleri en uzun seriye bakar); "
     "*_guveni: yetersiz / dusuk / normal veri yeterliliği. "
     "Kurallar: "
     "1) Yalnızca verilen sayılara dayan; sayı uydurma, verilmeyen bir bilgiden söz etme, sayıları anlamları dışında birbirine bağlama. "

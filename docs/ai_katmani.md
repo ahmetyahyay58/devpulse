@@ -46,7 +46,6 @@ yapmamasını, "dusuk"ta temkinli olmasını söyler.
 | `puanlanan_proje`, `ortalama_saglik`, `eksik_proje` (eksik adı → repo sayısı) | Proje sağlığı |
 | `dil_sayisi`, `baskin_dil`, `baskin_dil_yuzde`, `cesitlilik`, `teknoloji_guveni` | Teknoloji |
 | `yil_degisim_yuzde`, `yil_guveni` | Yıl kıyası |
-| `acik_rozet`, `kilitli_rozetler` (rozet adı → "şu an/hedef") | Başarımlar |
 
 Dil adı (ör. "Python") ve tür adı ("Hata düzeltme") genel kategorilerdir, kişiyi tanımlamaz.
 
@@ -68,14 +67,6 @@ kişisel veri riski olmaz). Soru kimlikleri `app/ai/questions.py` içindedir.
 - **"Neden?" (5):** süreklilik, ritim, oturum, commit türleri, proje sağlığı. Şablon cevabı o
   metriğin "nasıl hesaplandı" özetidir.
 - **İpucu (1):** tek cümlelik öneri; Profil'den kapatılabilir (telefonda tutulan bir tercih).
-- **Hedef koçu (3, Başarımlar sekmesi; Faz 8e, 17 Kas 2026):** "Sıradaki rozete nasıl ulaşırım?",
-  "Bu hafta için gerçekçi hedefim ne olabilir?", "Hangi projemi önce tamamlamalıyım?". Şablon
-  cevaplar: (1) kilitli rozetlerden ilerleme oranı en yüksek olan ve kalan miktar; (2) güncel ve en
-  uzun seriden haftalık hedef (seri yoksa "3 farklı günde küçük commit"); (3) eksik belgesi olan
-  projelerden en çok commit'li olanın ilk önerisi (repo adı yalnız şablonda, telefonda görünür).
-  LLM'e giden alt kümeler: rozet sorusu `kilitli_rozetler` (rozet adı → "şu an/hedef"; rozet adları
-  uygulamanın genel adlarıdır) ve `acik_rozet`; hafta sorusu süreklilik sayıları ve
-  `yil_degisim_yuzde`; proje sorusu proje sağlığı sayıları (repo adı gitmez).
 
 ## Mülakat koçu (Faz 8d, 17 Kas 2026)
 CV sekmesinde "Mülakat koçu": kullanıcı CV'sindeki projelerden birini seçer; uygulama o proje

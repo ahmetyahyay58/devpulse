@@ -1,10 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:devpulse/api/api_client.dart';
 import 'package:devpulse/cv/cv_controller.dart';
 import 'package:devpulse/cv/cv_formats.dart';
+import 'package:devpulse/cv/cv_pdf.dart';
 import 'package:devpulse/cv/cv_profile.dart';
 import 'package:devpulse/cv/cv_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pdf/pdf.dart' show TtfParser;
 
 import 'fake_backend.dart';
 
@@ -22,7 +27,8 @@ CvProfile _sample() => CvProfile(
       languages: [SpokenLanguage(name: 'Türkçe', level: 'Anadil'), SpokenLanguage(name: 'İngilizce', level: 'B2')],
     );
 
-Future<FakeBackend> _pump(WidgetTester tester, {CvProfile? profile, MemoryCvProfileStore? store}) async {
+Future<FakeBackend> _pump(WidgetTester tester,
+    {CvProfile? profile, MemoryCvProfileStore? store, List<(Uint8List, String)>? saved}) async {
   tester.view.physicalSize = const Size(1080, 5000);
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
@@ -34,7 +40,11 @@ Future<FakeBackend> _pump(WidgetTester tester, {CvProfile? profile, MemoryCvProf
     onUnauthorized: () {},
     store: store,
   )..load();
-  await tester.pumpWidget(MaterialApp(home: Scaffold(body: CvView(controller: c))));
+  await tester.pumpWidget(MaterialApp(
+    home: Scaffold(
+      body: CvView(controller: c, saveFile: (bytes, name) async => saved?.add((bytes, name))),
+    ),
+  ));
   await tester.pumpAndSettle();
   return backend;
 }
@@ -58,7 +68,7 @@ void main() {
     expect(find.text('BECERİLER'), findsOneWidget);
     expect(find.text('•  Dart ile geliştirildi; araçlar: Docker.'), findsOneWidget);
     final style = DefaultTextStyle.of(tester.element(find.text('proje-a'))).style;
-    expect(style.fontFamily, 'serif');
+    expect(style.fontFamily, 'NotoSerif');
   });
 
   testWidgets('Europass: özet "Hakkımda"da, etkinlik "Ek bilgiler"de, uyarlama notu', (tester) async {
@@ -144,24 +154,81 @@ void main() {
     expect(find.text('Türkçe: Native', findRichText: true), findsOneWidget);
   });
 
-  testWidgets('Bilgilerim: eğitim eklenir, cihaza kaydedilir ve sayfada görünür', (tester) async {
-    final store = MemoryCvProfileStore();
-    await _pump(tester, store: store);
+  Future<void> openProfile(WidgetTester tester) async {
     await tester.tap(find.text('Bilgilerim: ad, iletişim, eğitim, deneyim ekle'));
     await tester.pumpAndSettle();
+  }
+
+  // Formun sonundaki Kaydet düğmesi (üst çubukta da aynısı var).
+  Finder saveButton() => find.widgetWithText(FilledButton, 'Kaydet').last;
+
+  testWidgets('Bilgilerim: Kaydet ile cihaza yazılır, başarı mesajı çıkar, sayfa güncellenir', (tester) async {
+    final store = MemoryCvProfileStore();
+    await _pump(tester, store: store);
+    await openProfile(tester);
+    expect(find.widgetWithText(FilledButton, 'Kaydedildi'), findsWidgets); // değişiklik yokken pasif
+
     await tester.enterText(find.widgetWithText(TextFormField, 'Ad soyad'), 'Ayşe Kaya');
     await tester.tap(find.widgetWithText(TextButton, 'Ekle').first); // Eğitim
     await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextField, 'Okul'), 'Harran Üniversitesi');
-    await tester.tap(find.text('Kaydet'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Kaydet').last); // penceredeki Kaydet
     await tester.pumpAndSettle();
+    expect(store.saved, isNull); // "Kaydet"e basılmadan cihaza yazılmaz
 
+    await tester.tap(saveButton());
+    await tester.pump();
+    expect(find.text('Bilgilerin kaydedildi.'), findsOneWidget);
     expect(store.saved!.fullName, 'Ayşe Kaya');
     expect(store.saved!.education.single.school, 'Harran Üniversitesi');
-    await tester.pageBack();
+
+    await tester.pumpAndSettle(const Duration(seconds: 5)); // mesaj kapansın
+    await tester.pageBack(); // kaydedildiği için soru sorulmadan döner
     await tester.pumpAndSettle();
     expect(find.text('Ayşe Kaya'), findsOneWidget);
     expect(find.text('EĞİTİM'), findsOneWidget);
+  });
+
+  testWidgets('kaydetmeden çıkılırsa sorulur; "Kaydetmeden çık" değişikliği atar', (tester) async {
+    final store = MemoryCvProfileStore();
+    await _pump(tester, store: store);
+    await openProfile(tester);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Ad soyad'), 'Geçici Ad');
+    await tester.pump();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Kaydedilmemiş değişiklikler var'), findsOneWidget);
+
+    await tester.tap(find.text('Kaydetmeden çık'));
+    await tester.pumpAndSettle();
+    expect(store.saved, isNull);
+    expect(find.text('Geçici Ad'), findsNothing);
+    expect(find.text('ben'), findsOneWidget); // sayfa eski haliyle
+  });
+
+  testWidgets('"Kaydet ve çık" kaydedip döner', (tester) async {
+    final store = MemoryCvProfileStore();
+    await _pump(tester, store: store);
+    await openProfile(tester);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Ad soyad'), 'Kalıcı Ad');
+    await tester.pump();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Kaydet ve çık'));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+    expect(store.saved!.fullName, 'Kalıcı Ad');
+    expect(find.text('Kalıcı Ad'), findsOneWidget);
+  });
+
+  testWidgets('kayıt başarısızsa hata mesajı, sayfa değişmez', (tester) async {
+    await _pump(tester, store: _FailingStore());
+    await openProfile(tester);
+    await tester.enterText(find.widgetWithText(TextFormField, 'Ad soyad'), 'Yazılamayan');
+    await tester.pump();
+    await tester.tap(saveButton());
+    await tester.pump();
+    expect(find.text('Kaydedilemedi. Lütfen tekrar dene.'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Kaydet'), findsWidgets); // hâlâ kaydedilmemiş
   });
 
   test('profil JSON gidiş-dönüşü kimlikleri korur', () {
@@ -171,4 +238,55 @@ void main() {
     expect(back.languages.last.level, 'B2');
     expect(CvProfile().isEmpty, isTrue);
   });
+
+  test('gömülü yazı tipleri Türkçe harfleri içerir', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    for (final f in ['NotoSans-Regular', 'NotoSans-Bold', 'NotoSans-Italic', 'NotoSerif-Regular', 'NotoSerif-Bold', 'NotoSerif-Italic']) {
+      final font = TtfParser(await rootBundle.load('assets/fonts/$f.ttf'));
+      for (final ch in 'şŞğĞıİöÖüÜçÇ'.runes) {
+        expect(font.charToGlyphIndexMap.containsKey(ch), isTrue, reason: '$f: ${String.fromCharCode(ch)}');
+      }
+    }
+  });
+
+  test('PDF: geçerli dosya; doldurulmamış yer tutucu basılmaz ve sayılır', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    final backend = FakeBackend();
+    final c = CvController(api: ApiClient(baseUrl: 'http://test', client: backend.client), onUnauthorized: () {},
+        store: MemoryCvProfileStore());
+    await c.load();
+    for (final f in cvFormats) {
+      final r = await buildCvPdf(draft: c.draft!, format: f, profile: _sample());
+      expect(String.fromCharCodes(r.bytes.take(5)), '%PDF-');
+      expect(r.skippedPlaceholders, 1); // sahte taslakta tek "Etki: [...]" var
+    }
+  });
+
+  test('PDF dosya adı Türkçe harfleri sadeleştirir', () {
+    expect(cvFileName('Ayşe Kaya', harvard, 'en'), 'cv-ayse-kaya-harvard-en.pdf');
+    expect(cvFileName('İlkay Öztürk', jakes, 'tr'), 'cv-ilkay-ozturk-jakes-tr.pdf');
+    expect(cvFileName('', europass, 'tr'), 'cv-devpulse-europass-tr.pdf');
+  });
+
+  testWidgets('"PDF olarak indir": dosya verilir, sonuç mesajı çıkar', (tester) async {
+    final saved = <(Uint8List, String)>[];
+    await _pump(tester, profile: _sample(), saved: saved);
+    await tester.runAsync(() async {
+      await tester.tap(find.text('PDF olarak indir'));
+      // PDF üretimi gerçek zamanlı iş: bitene kadar bekle.
+      for (var i = 0; i < 100 && saved.isEmpty; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+    });
+    await tester.pump();
+    expect(saved.single.$2, 'cv-ahmet-yilmaz-jakes-tr.pdf');
+    expect(String.fromCharCodes(saved.single.$1.take(5)), '%PDF-');
+    expect(find.text('PDF hazır: cv-ahmet-yilmaz-jakes-tr.pdf. Doldurulmamış 1 etki cümlesi dosyaya eklenmedi.'),
+        findsOneWidget);
+  });
+}
+
+class _FailingStore extends MemoryCvProfileStore {
+  @override
+  Future<void> write(CvProfile p) async => throw Exception('depo dolu');
 }

@@ -1,17 +1,21 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../ai/ai_features.dart';
+import '../screens/file_saver.dart';
 import 'cv_controller.dart';
 import 'cv_formats.dart';
 import 'cv_page.dart';
+import 'cv_pdf.dart';
 import 'profile_screen.dart';
 
 /// CV sekmesi: dil ve format seçimi, altında kağıt görünümünde CV (docs/cv.md). Taslak GitHub
 /// verisinden gelir; eğitim, deneyim ve iletişim bilgileri "Bilgilerim"de, yalnız bu cihazda tutulur.
 class CvView extends StatelessWidget {
-  const CvView({super.key, required this.controller});
+  const CvView({super.key, required this.controller, this.saveFile = shareFile});
 
   final CvController controller;
+  final FileSaver saveFile; // web: indirme, Android: paylaşım menüsü; testlerde sahtesi
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,10 @@ class CvView extends StatelessWidget {
                       ? 'Bilgilerim: ad, iletişim, eğitim, deneyim ekle'
                       : 'Bilgilerimi düzenle'),
                 ),
+                if (d != null && page is Material) ...[
+                  const SizedBox(height: 8),
+                  PdfButton(controller: controller, saveFile: saveFile),
+                ],
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   dense: true,
@@ -98,4 +106,49 @@ class CvView extends StatelessWidget {
       },
     );
   }
+}
+
+/// "PDF olarak indir": seçili format ve dilde PDF üretir, kullanıcıya verir ve sonucu söyler.
+class PdfButton extends StatefulWidget {
+  const PdfButton({super.key, required this.controller, required this.saveFile});
+  final CvController controller;
+  final FileSaver saveFile;
+
+  @override
+  State<PdfButton> createState() => _PdfButtonState();
+}
+
+class _PdfButtonState extends State<PdfButton> {
+  bool _busy = false;
+
+  Future<void> _export() async {
+    final c = widget.controller;
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    try {
+      final result = await buildCvPdf(draft: c.draft!, format: c.format, profile: c.profile);
+      final name = c.profile.fullName.trim().isEmpty ? c.draft!.login : c.profile.fullName;
+      final file = cvFileName(name, c.format, c.lang);
+      await widget.saveFile(result.bytes, file);
+      final skipped = result.skippedPlaceholders == 0
+          ? ''
+          : ' Doldurulmamış ${result.skippedPlaceholders} etki cümlesi dosyaya eklenmedi.';
+      messenger.showSnackBar(SnackBar(
+        content: Text('${kIsWeb ? 'PDF indirildi' : 'PDF hazır'}: $file.$skipped'),
+      ));
+    } catch (_) {
+      messenger.showSnackBar(const SnackBar(content: Text('PDF oluşturulamadı. Lütfen tekrar dene.')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => FilledButton.icon(
+        onPressed: _busy ? null : _export,
+        icon: _busy
+            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+            : const Icon(Icons.picture_as_pdf_outlined),
+        label: Text(_busy ? 'PDF hazırlanıyor…' : 'PDF olarak indir'),
+      );
 }

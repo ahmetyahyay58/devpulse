@@ -21,7 +21,7 @@ class CvPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lang = draft.lang;
-    final family = format.serif ? 'serif' : null; // Android'de Noto Serif; web'de tarayıcının serif'i
+    final family = format.serif ? 'NotoSerif' : 'NotoSans'; // uygulamaya gömülü; PDF de aynısını kullanır
     final base = TextStyle(color: ink, fontSize: 11, height: 1.35, fontFamily: family);
     return DefaultTextStyle(
       style: base,

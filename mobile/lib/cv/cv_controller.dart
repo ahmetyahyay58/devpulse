@@ -123,11 +123,11 @@ class CvController extends ChangeNotifier {
     await load();
   }
 
-  /// Bilgilerim formu her değişiklikte kaydeder; sayfa hemen güncellenir.
+  /// Bilgilerim "Kaydet": önce cihaza yazılır, başarılıysa sayfa güncellenir (hata çağırana gider).
   Future<void> saveProfile(CvProfile p) async {
+    await store.write(p);
     profile = p;
     _notify();
-    await store.write(p);
   }
 
   void setFormat(CvFormat f) {

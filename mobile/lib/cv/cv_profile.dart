@@ -127,7 +127,8 @@ class PrefsCvProfileStore implements CvProfileStore {
     try {
       await (await SharedPreferences.getInstance()).setString(key, jsonEncode(p.toJson()));
     } catch (e, st) {
-      debugPrint('CV profili kaydedilemedi: $e\n$st'); // sessizce kaybolmasın
+      debugPrint('CV profili kaydedilemedi: $e\n$st');
+      rethrow; // ekran "kaydedilemedi" desin; sessizce kaybolmasın
     }
   }
 

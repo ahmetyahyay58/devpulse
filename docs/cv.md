@@ -32,7 +32,20 @@ bölüm yapısını anlatan rehberler (europass.europa.eu resmî düzenleyicisi 
 **Kullanıcının girdiği bölümler** ("Bilgilerim": ad, iletişim, eğitim, deneyim, dil) GitHub'da
 yoktur; telefonda saklanır (`shared_preferences`, anahtar `cv_profile`; web'de tarayıcının yerel
 deposu), sunucuya gitmez. Çıkış ve "Verilerimi sil" `AuthService.logout` üzerinden bunu da siler.
-Tarihler serbest metindir (ör. "Eyl 2022 – Haz 2026"); kayıtların kimliği kalıcıdır. Boşsa sayfada görünmez; yalnız düzenleme ekranında "ekle" önerisi
+Tarihler serbest metindir (ör. "Eyl 2022 – Haz 2026"); kayıtların kimliği kalıcıdır.
+Değişiklikler "Kaydet" ile yazılır ve "Bilgilerin kaydedildi" mesajı gösterilir; kayıt başarısızsa
+hata mesajı çıkar ve sayfa eski haliyle kalır. Kaydetmeden çıkılırsa sorulur (kaydet / kaydetmeden
+çık / vazgeç).
+
+## PDF
+"PDF olarak indir" seçili format ve dilde PDF üretir (`mobile/lib/cv/cv_pdf.dart`, `pdf` paketi);
+web'de indirilir, Android'de paylaşım menüsü açılır. Ekrandaki sayfayla aynı format tanımını okur.
+- Yazı tipi: Noto Sans ve Noto Serif (normal, kalın, italik), `mobile/assets/fonts/` (SIL OFL,
+  `OFL.txt`; kaynak notofonts GitHub). Varsayılan PDF yazı tiplerinde ş, ğ, ı, İ yok; test,
+  gömülü yazı tiplerinin bu harfleri içerdiğini denetler. Ekrandaki önizleme de aynı yazı tiplerini
+  kullanır (Harvard serif).
+- Basılmayanlar: doldurulmamış yer tutucular (sayısı kullanıcıya söylenir) ve kaynak satırları.
+- Dosya adı `cv-ad-format-dil.pdf`. Boşsa sayfada görünmez; yalnız düzenleme ekranında "ekle" önerisi
 çıkar.
 
 ## Taslak (`GET /cv/draft?lang=tr|en`)

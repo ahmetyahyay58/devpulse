@@ -42,6 +42,13 @@ dependencies:
   share_plus: ^13.3.1
   web: ^1.1.1
   shared_preferences: ^2.5.6
+  pdf: ^3.12.0
+
+# pdf paketi image ^4 ister; image 4.11, burada çözülebilen archive 4.0.9'da olmayan bir fonksiyon
+# (ZLibDecoder.decodeLazy) kullandığı için derleme hatası verir. image kodda doğrudan kullanılmıyor;
+# archive ile uyumlu sürüme sabitlenir (17 Kas). archive güncellenebildiğinde kaldırılabilir.
+dependency_overrides:
+  image: 4.5.4
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +71,24 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # CV yazı tipleri (Noto, SIL OFL; lisans assets/fonts/OFL.txt). Ekrandaki CV önizlemesi ve PDF
+  # aynı dosyaları kullanır; PDF'te Türkçe harfler (ş, ğ, ı, İ) bunlar sayesinde doğru basılır.
+  fonts:
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans-Regular.ttf
+        - asset: assets/fonts/NotoSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSans-Italic.ttf
+          style: italic
+    - family: NotoSerif
+      fonts:
+        - asset: assets/fonts/NotoSerif-Regular.ttf
+        - asset: assets/fonts/NotoSerif-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSerif-Italic.ttf
+          style: italic
 
   # To add assets to your application, add an assets section, like this:
   # assets:

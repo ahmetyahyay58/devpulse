@@ -89,7 +89,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Yerinde düzenlenebilen metinler, "Taslağa dön" | Yeni | — | Karar (16 Kas): düzenlemeler telefonda; PDF telefonda; CV 5. sekme. Gerekçe ve kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |
-| Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Yeni | — | |
+| Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Kısmen | — | PDF yapıldı (17 Kas; telefonda, gömülü Noto yazı tipi). Biçim kontrolü kaldı. |
 | Türkçe / English geçişi | Yeni | — | |
 | Mülakat koçu: proje seçince 3 soru ve kanıt önerisi | Yeni | Mevcut | AI katmanı; LLM'e repo adı değil, projenin sayıları gider. Kanıt önerisi telefonda, yerel veriden. |
 

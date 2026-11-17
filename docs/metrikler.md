@@ -35,6 +35,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Teknoloji | Dil bilgisi olan kendi reposu yok | < 3 repo | diğer |
 | Yıl kıyası | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
 | İşbirliği | Sonuçlanmış (merge edilmiş ya da kapatılmış) PR < 3 | Sonuçlanmış PR < 10 | diğer |
+| Yıllık özet | Dönemde < 10 commit | < 50 commit | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -202,6 +203,32 @@ kıyaslanmaz; bu yanıltıcı olurdu.
 | Yeterli veri yok | Düşük güven | Normal |
 |---|---|---|
 | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
+
+### Yıllık özet (Faz 9)
+Hikâye gibi kayan slaytlar; yeni bir hesap yapmaz, var olan tanımları tek yıla uygular. Kod
+`backend/app/metrics/year_summary.py`, uç nokta `GET /metrics/year-summary?year=YYYY`.
+
+**Dönem:** Bu yıl için 1 Ocak'tan bugüne (yerel saat), geçmiş bir yıl için 1 Ocak – 31 Aralık.
+Dönem her slaytta yazılır. Kaynak: senkronlanan commit'ler (kendi ve katkı verilen repolar).
+
+| Slayt | Tanım |
+|---|---|
+| Yıl toplamı | Dönemdeki commit sayısı ve aktif gün sayısı. |
+| En yoğun ay | En çok commit atılan ay (eşitlikte erken olan). |
+| En çok dil | Commit'ler, atıldıkları reponun **ana diline** göre gruplanır; en çok commit'li dil (eşitlikte alfabetik) ve payı. Teknoloji sekmesindeki bayt payı değildir (o tüm zamanlar içindir); slayt bunu söyler. Ana dili bilinmeyen repolardaki commit'ler bu slayta girmez. |
+| Gece payı | Ritim tanımındaki gece (00:00-06:00) commit oranı ve en yoğun saat. |
+| En uzun seri | Dönem içindeki en uzun art arda aktif gün. |
+| Kodlama süresi (tahmin) | Oturum kuralıyla (2 saat boşluk) bulunan oturumların sürelerinin toplamı, saate yuvarlanır. Tek commit'lik oturum 0 dakikadır; bu yüzden **alt sınırdır** ve slaytta "tahmin, en az" diye yazar. |
+| Dil yolculuğu | Dönemde commit atılan ana diller, o dilde ilk commit'in tarihine göre sıralı (ilk ay ile). |
+| Kod incelemesi | GitHub'ın o yıl için saydığı inceleme katkısı (`review_years`); veri yoksa slayt gösterilmez. |
+| Son kart | Açılan rozet sayısı; "Paylaş" düğmesi. |
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| Dönemde < 10 commit | < 50 commit | diğer |
+
+"Yeterli veri yok"ta slaytlar yerine tek bir "bu yıl için yeterli veri yok" kartı gösterilir.
+Metinler betimleyicidir; sayıdan sonra Türkçe ek kullanılmaz ("Gece payı: %12").
 
 ### İşbirliği (PR ve kod incelemeleri)
 **Ne ölçer:** Kullanıcının açtığı pull request'lerin (PR) nasıl sonuçlandığını ve başkalarının

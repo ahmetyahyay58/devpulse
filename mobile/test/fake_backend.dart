@@ -44,6 +44,17 @@ class FakeBackend {
           {'id': 'ipucu', 'kind': 'ipucu', 'text': 'Bana tek cümlelik bir öneri verir misin?'},
         ],
       };
+  /// Yıllık özet (GET /metrics/year-summary); testler alanları değiştirebilir.
+  Map<String, dynamic> yearSummary = {
+    'year': 2026, 'period_start': '2026-01-01', 'period_end': '2026-11-14', 'commits': 120, 'active_days': 40,
+    'busiest_month': 3, 'busiest_month_commits': 30, 'top_language': 'Dart', 'top_language_share': 0.6,
+    'night_share': 0.25, 'peak_hour': 23, 'longest_streak': 7, 'coding_hours': 18, 'sessions': 50,
+    'language_journey': [
+      {'language': 'Python', 'first_month': 1, 'commits': 40},
+      {'language': 'Dart', 'first_month': 3, 'commits': 72},
+    ],
+    'reviews': 4, 'badges_unlocked': 2, 'badges_total': 8, 'sufficiency': 'normal',
+  };
   int _jobReads = 0;
 
   static Map<String, dynamic> job(int id, String status,
@@ -291,6 +302,7 @@ class FakeBackend {
     if (path == '/metrics/anomalies') {
       return _json(anomalies);
     }
+    if (path == '/metrics/year-summary') return _json(yearSummary);
     if (path == '/metrics/achievements') {
       Map<String, dynamic> badge(String key, String name, int current, int target) => {
             'key': key, 'name': name, 'description': '$name açıklaması.',

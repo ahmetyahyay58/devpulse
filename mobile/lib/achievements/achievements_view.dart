@@ -5,6 +5,7 @@ import '../ai/ai_features.dart';
 import '../overview/metric_card.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_models.dart';
+import '../year/year_summary_screen.dart';
 
 /// Başarımlar: 8 rozet (kilitliler soluk, ilerlemeli) ve yıl kıyası.
 /// Rozetler alışkanlığı ve proje bakımını tanır; ham commit sayısını ödüllendirmez.
@@ -41,6 +42,16 @@ class AchievementsView extends StatelessWidget {
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               const SizedBox(height: 16),
               _YearCard(year: a['year'] as Map<String, dynamic>),
+              const SizedBox(height: 12),
+              // Yıllık özet: hikâye gibi kayan slaytlar (docs/metrikler.md "Yıllık özet").
+              FilledButton.tonalIcon(
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                  fullscreenDialog: true,
+                  builder: (_) => YearSummaryScreen(api: controller.api),
+                )),
+                icon: const Icon(Icons.auto_stories_outlined),
+                label: Text('${(a['year'] as Map)['this_year']} yıllık özetini aç'),
+              ),
             ],
           );
         }

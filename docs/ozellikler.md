@@ -106,9 +106,9 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### Yıllık özet
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| Hikâye gibi otomatik slaytlar, üstte ilerleme çubukları, İleri/Kapat | Yeni | Mevcut | |
-| Slaytlar: yıl toplamı, en yoğun ay, en çok dil, gece kuşu, en uzun seri, kodlama saati, dil yolculuğu, review sayısı, son kart | Yeni | Kısmen | Dil yolculuğu Teknoloji verisine, review sayısı İşbirliği verisine bağlı. "Kodlama saati" oturum kuralından tahmindir; öyle yazılır. |
-| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Yeni | — | |
+| Hikâye gibi otomatik slaytlar, üstte ilerleme çubukları, İleri/Kapat | Yapıldı (17 Kas) | Mevcut | Başarımlar'dan açılır; dokunarak ileri/geri. |
+| Slaytlar: yıl toplamı, en yoğun ay, en çok dil, gece kuşu, en uzun seri, kodlama saati, dil yolculuğu, review sayısı, son kart | Yapıldı (17 Kas) | Mevcut | Dil yolculuğu Teknoloji verisine, review sayısı İşbirliği verisine bağlı. "Kodlama saati" oturum kuralından tahmindir; öyle yazılır. |
+| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Kısmen | — | Slayt başına renk geçişi var; sürekli dönen animasyon ve parıltı yok (pil ve test kararlılığı). |
 
 ### Sor balonu
 | Madde | Durum | Veri | Not |

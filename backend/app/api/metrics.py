@@ -10,12 +10,13 @@ GET /metrics/collaboration İşbirliği: açılan PR'ların sonucu ve kod incele
 GET /metrics/achievements Rozetler (ilerlemeli) ve yıl kıyası (yılbaşından bugüne)
 GET /metrics/model-lab Model Laboratuvarı: commit sınıflandırmasının gerçek ölçümleri
 GET /metrics/catalog   Metrik kataloğu (tanım, birim, yorum, güvenilirlik koşulu)
+GET /metrics/year-summary Yıllık özet slaytları (bu yıl ya da geçmiş bir yıl)
 Hesap mantığı app/metrics içinde (saf fonksiyonlar); burası yalnızca veriyi okur.
 """
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
@@ -33,6 +34,8 @@ from app.metrics.anomaly import AnomaliesOut, build_anomalies
 from app.metrics.commit_types import CommitText, CommitTypesOut, build_commit_types
 from app.metrics.overview import Overview, build_overview
 from app.metrics.technology import RepoTech, TechnologyOut, build_technology
+from app.metrics.year_summary import YearCommit, YearSummaryOut
+from app.metrics.year_summary import year_summary as build_year_summary
 from app.models import Commit, ContributionDay, PullRequest, Repo, ReviewYear, User
 
 router = APIRouter(prefix="/metrics", tags=["metrikler"])
@@ -178,3 +181,22 @@ def achievements(user: User = Depends(current_user)) -> AchievementsOut:
 def model_lab(user: User = Depends(current_user)) -> ModelLabOut:
     """Sabit: docs/olcumler.md'deki ölçümler (kullanıcıya göre değişmez)."""
     return MODEL_LAB
+
+
+@router.get("/year-summary", response_model=YearSummaryOut)
+def year_summary_endpoint(year: int | None = Query(default=None, ge=2008, le=2100),
+                          user: User = Depends(current_user)) -> YearSummaryOut:
+    """Yıllık özet slaytları (docs/metrikler.md "Yıllık özet"). Varsayılan: bu yıl, 1 Ocak'tan bugüne."""
+    zone = ZoneInfo(user.timezone or "UTC")
+    today = datetime.now(zone).date()
+    y = year or today.year
+    if y > today.year:
+        raise HTTPException(status_code=400, detail="Gelecek yıl için özet olmaz.")
+    with SessionLocal() as db:
+        rows = db.execute(
+            select(Commit.authored_at, Repo.primary_language).join(Repo).where(Repo.user_id == user.id)
+        ).all()
+        reviews = db.scalar(select(ReviewYear.count).where(ReviewYear.user_id == user.id, ReviewYear.year == y))
+    ach = achievements(user)
+    return build_year_summary([YearCommit(t.astimezone(zone), lang) for t, lang in rows], y, today, reviews,
+                              ach.unlocked, len(ach.badges))

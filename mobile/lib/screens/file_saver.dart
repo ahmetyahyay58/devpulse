@@ -8,9 +8,13 @@ import 'download_stub.dart' if (dart.library.js_interop) 'download_web.dart';
 /// Bir dosyayı kullanıcıya verir. Testlerde sahtesi verilir.
 typedef FileSaver = Future<void> Function(Uint8List bytes, String filename);
 
-/// Dosya türü uzantıdan: verilerim .json, CV .pdf.
-String mimeTypeOf(String filename) =>
-    filename.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/json';
+/// Dosya türü uzantıdan: verilerim .json, CV .pdf, paylaşım kartı .png.
+String mimeTypeOf(String filename) {
+  final f = filename.toLowerCase();
+  if (f.endsWith('.pdf')) return 'application/pdf';
+  if (f.endsWith('.png')) return 'image/png';
+  return 'application/json';
+}
 
 /// Web'de dosyayı doğrudan indirir. Android'de paylaşım menüsünü açar
 /// (Dosyalar'a kaydet, Drive'a yükle, gönder...).

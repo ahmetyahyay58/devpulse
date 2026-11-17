@@ -5,6 +5,7 @@ import '../ai/ai_features.dart';
 import '../overview/metric_card.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_models.dart';
+import '../share/share_card.dart';
 import '../year/year_summary_screen.dart';
 
 /// Başarımlar: 8 rozet (kilitliler soluk, ilerlemeli) ve yıl kıyası.
@@ -47,7 +48,12 @@ class AchievementsView extends StatelessWidget {
               FilledButton.tonalIcon(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
                   fullscreenDialog: true,
-                  builder: (_) => YearSummaryScreen(api: controller.api),
+                  builder: (_) => YearSummaryScreen(
+                    api: controller.api,
+                    onShare: (ctx, s) => Navigator.of(ctx).push(MaterialPageRoute<void>(
+                      builder: (_) => ShareCardScreen(api: controller.api, summary: s),
+                    )),
+                  ),
                 )),
                 icon: const Icon(Icons.auto_stories_outlined),
                 label: Text('${(a['year'] as Map)['this_year']} yıllık özetini aç'),

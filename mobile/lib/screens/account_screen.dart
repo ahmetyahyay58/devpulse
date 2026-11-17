@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../share/share_card.dart';
 import '../ai/ai_controller.dart';
 import '../ai/ai_widgets.dart';
 import '../api/api_client.dart';
@@ -235,6 +236,14 @@ class _ProfileSectionsState extends State<_ProfileSections> {
             const SizedBox(height: 12),
             BadgeShowcase(achievements: widget.achievements!),
           ],
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => ShareCardScreen(api: widget.api),
+            )),
+            icon: const Icon(Icons.ios_share),
+            label: const Text('Paylaşılabilir kart'),
+          ),
           const SizedBox(height: 12),
           Card(
             margin: EdgeInsets.zero,

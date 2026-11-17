@@ -80,7 +80,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 |---|---|---|---|
 | 8 rozet: kilitliler soluk, ilerleme çubuklu | Yeni | Mevcut | Kurallar `metrikler.md`'de tanımlanır. |
 | Yıl kıyası: iki yıl yan yana, yüzde değişim | Yeni | Mevcut | Betimleyici dil. |
-| Hedef koçu: 3 soru çipi | Yeni | Mevcut | AI katmanı. |
+| Hedef koçu: 3 soru çipi | Çıkarıldı (17 Kas) | Mevcut | Yapıldı, sonra geliştirici kararıyla şimdilik kaldırıldı (geri alma commit'leri cb668d3, 5e759bf); ileride geri gelebilir. |
 
 ### CV
 | Madde | Durum | Veri | Not |

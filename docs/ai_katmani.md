@@ -68,6 +68,32 @@ kişisel veri riski olmaz). Soru kimlikleri `app/ai/questions.py` içindedir.
   metriğin "nasıl hesaplandı" özetidir.
 - **İpucu (1):** tek cümlelik öneri; Profil'den kapatılabilir (telefonda tutulan bir tercih).
 
+## Mülakat koçu (Faz 8d, 17 Kas 2026)
+CV sekmesinde "Mülakat koçu": kullanıcı CV'sindeki projelerden birini seçer; uygulama o proje
+hakkında görüşmede sorulabilecek **3 soru** ve **kanıt önerileri** gösterir. Uç nokta
+`POST /ai/interview` (`{"project_id": "proj:<node_id>"}`); yalnız kullanıcının kendi, fork olmayan,
+arşivsiz, herkese açık repoları (CV ile aynı küme). Kod `app/ai/interview.py`.
+
+**Giden sayılar (yalnız seçilen proje):** `ana_dil`, `araclar` (Docker gibi genel araç adları),
+`commit_sayisi`, `aktif_gun` (o repoda commit atılan farklı gün), `sure_ay` (oluşturma ile son push
+arası, ay), `saglik_puani`, `eksik_belgeler` (README, lisans... adları), `commit_turleri_yuzde` ve
+`tur_guveni` (o reponun commit'leri, aynı sınıflandırıcı). **Repo adı, açıklaması, README'si,
+commit mesajları gitmez**; istem projeye "bu proje" der.
+
+- **Sorular:** Şablon yol kurallıdır: (1) teknoloji seçimi (dil ve araçlar), (2) sürece dair soru
+  (o repoda en büyük paylı commit türüne göre: hata düzeltme → en zor hata; yeni özellik → en önemli
+  özellik; bakım → yeniden düzenleme; belgelendirme → başkasının başlaması; test → test kurgusu;
+  tür verisi yetersizse projenin süresi), (3) projeyi anlatma/yeniden yapma (README ya da açıklama
+  eksikse "iki dakikada anlat", değilse "bugün yeniden yapsan"). LLM yolu (onay + anahtar): aynı
+  sayılarla ayrı bir sistem talimatı ("teknik mülakatçı"), cevap tam 3 satır olmalı, satır başına en
+  çok 220 karakter; uymazsa şablon. İstem, sağlık puanı ve commit türü yüzdelerinin uygulamanın iç
+  ölçüsü olduğunu, soruda geçmemesini söyler (ilk denemede bir soru "sağlık puanını artırmak" diyordu).
+- **Kanıt önerileri LLM'e gitmez:** sunucuda veriden kurallı üretilir ve yalnız telefona döner
+  (repo bağlantısı, eksik README/açıklama/lisans, konuşurken söylenebilecek sayılar, CV'deki etki
+  cümlesi). Burada repo adı ve bağlantısı görünebilir; çünkü dışarı çıkmaz.
+- Önbellek ve onay kuralları `/ai/ask` ile aynı. Cevabın altında kaynak ("Yapay zekâ" / "Şablon")
+  ve giden sayılar gösterilir.
+
 ## Doğrulama
 - LLM cevabı 600 karakteri aşarsa ya da boşsa atılır, şablon gösterilir.
 - Testler gerçek Gemini'ye gitmez (sahte HTTP); onaysız ve anahtarsız durumda dış istek

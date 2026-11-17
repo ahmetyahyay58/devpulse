@@ -11,6 +11,7 @@ import 'cv_edit_screen.dart';
 import 'cv_formats.dart';
 import 'cv_page.dart';
 import 'cv_pdf.dart';
+import 'interview_screen.dart';
 import 'profile_screen.dart';
 
 /// CV sekmesi: dil ve format seçimi, altında kağıt görünümünde CV (docs/cv.md). Taslak GitHub
@@ -106,6 +107,14 @@ class CvView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _checkButton(context),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => InterviewScreen(controller: controller)),
+                    ),
+                    icon: const Icon(Icons.record_voice_over_outlined),
+                    label: const Text('Mülakat koçu'),
+                  ),
                   const SizedBox(height: 8),
                   PdfButton(controller: controller, saveFile: saveFile),
                 ],

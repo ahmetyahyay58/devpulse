@@ -236,6 +236,17 @@ class FakeBackend {
         'facts': aiFacts,
       });
     }
+    if (path == '/ai/interview') {
+      final id = (jsonDecode(request.body) as Map)['project_id'] as String;
+      return _json({
+        'project_id': id,
+        'questions': ['Soru 1 ($id)', 'Soru 2', 'Soru 3'],
+        'evidence': ['Bağlantıyı hazır tut: github.com/ben/proje-a', 'README ekle.'],
+        'source': 'sablon',
+        'reason': 'Yapay zekâ yorumlarına onay vermedin.',
+        'facts': {'ana_dil': 'Dart', 'araclar': ['Docker'], 'commit_sayisi': 12, 'eksik_belgeler': <String>[]},
+      });
+    }
     if (path == '/metrics/model-lab') {
       return _json({
         'system': 'Önce kurallar, sonra model.',

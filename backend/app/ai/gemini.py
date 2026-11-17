@@ -37,9 +37,10 @@ class GeminiError(Exception):
         self.retryable = retryable  # yoğunluk/kota/zaman aşımı: başka modelle denemeye değer
 
 
-def generate(prompt: str, *, api_key: str, model: str, transport: httpx.BaseTransport | None = None) -> str:
+def generate(prompt: str, *, api_key: str, model: str, transport: httpx.BaseTransport | None = None,
+             system: str = SYSTEM, max_chars: int = MAX_ANSWER_CHARS) -> str:
     body = {
-        "systemInstruction": {"parts": [{"text": SYSTEM}]},
+        "systemInstruction": {"parts": [{"text": system}]},
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         # Düşük sıcaklık: aynı sayılara benzer cevap. Sınır cömert: "düşünen" modeller payı kullanır.
         "generationConfig": {"temperature": 0.3, "maxOutputTokens": 1024},
@@ -58,19 +59,19 @@ def generate(prompt: str, *, api_key: str, model: str, transport: httpx.BaseTran
         text = "".join(p.get("text", "") for p in parts if not p.get("thought")).strip()
     except (KeyError, IndexError, TypeError, ValueError) as exc:
         raise GeminiError("cevap biçimi beklenmedik") from exc
-    if not text or len(text) > MAX_ANSWER_CHARS:
+    if not text or len(text) > max_chars:
         raise GeminiError("cevap boş ya da çok uzun")
     return text
 
 
 def generate_with_fallback(prompt: str, *, api_key: str, models: list[str],
-                           transport: httpx.BaseTransport | None = None) -> tuple[str, str]:
+                           transport: httpx.BaseTransport | None = None, **kw) -> tuple[str, str]:
     """Modelleri sırayla dener; yalnızca yoğunluk/kota/zaman aşımında bir sonrakine geçer.
     (cevap, kullanılan model) döner; hepsi başarısızsa son hatayı fırlatır."""
     last: GeminiError | None = None
     for model in dict.fromkeys(m for m in models if m):  # sırayı koruyarak tekrarları at
         try:
-            return generate(prompt, api_key=api_key, model=model, transport=transport), model
+            return generate(prompt, api_key=api_key, model=model, transport=transport, **kw), model
         except GeminiError as exc:
             last = exc
             if not exc.retryable:

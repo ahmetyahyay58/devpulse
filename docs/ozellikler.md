@@ -91,7 +91,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |
 | Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Yapıldı | — | PDF yapıldı (17 Kas; telefonda, gömülü Noto yazı tipi). Biçim kontrolü yapıldı (17 Kas): sabit kurallar, eksik/öneri, PDF'in gerçek sayfa sayısı, "ATS" iddiası yok; `docs/cv.md`. |
 | Türkçe / English geçişi | Yeni | — | |
-| Mülakat koçu: proje seçince 3 soru ve kanıt önerisi | Yeni | Mevcut | AI katmanı; LLM'e repo adı değil, projenin sayıları gider. Kanıt önerisi telefonda, yerel veriden. |
+| Mülakat koçu: proje seçince 3 soru ve kanıt önerisi | Yapıldı (17 Kas) | Mevcut | AI katmanı (`POST /ai/interview`); LLM'e repo adı değil, yalnız seçilen projenin sayıları gider. Kanıt önerisi veriden kurallı, LLM'e gitmez. `docs/ai_katmani.md`. |
 
 ### Profil
 | Madde | Durum | Veri | Not |

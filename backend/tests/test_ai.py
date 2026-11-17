@@ -165,3 +165,60 @@ def test_question_sends_only_related_numbers(api, synced, fake):
     assert set(body["facts"]) == {"en_yogun_saat", "gece_payi_yuzde", "hafta_sonu_payi_yuzde", "ritim_guveni"}
     prompt = json.loads(fake.requests[0].content)["contents"][0]["parts"][0]["text"]
     assert "toplam_commit" not in prompt and "eksik_proje" not in prompt
+
+
+# --- Mülakat koçu (docs/ai_katmani.md, "Mülakat koçu") ---------------------------------------
+
+def _project_id(api, headers):
+    projects = api.get("/cv/draft", headers=headers).json()["projects"]
+    return next(p for p in projects if p["name"] == DEMO_REPO)["id"]
+
+
+def test_interview_template_without_consent(api, synced, fake):
+    body = api.post("/ai/interview", json={"project_id": _project_id(api, synced)}, headers=synced).json()
+    assert body["source"] == "sablon" and "onay" in body["reason"]
+    assert len(body["questions"]) == 3
+    assert any(DEMO_REPO in e for e in body["evidence"])  # bağlantı telefona döner
+    assert DEMO_REPO not in json.dumps(body["facts"], ensure_ascii=False)  # LLM'e gidecek veride ad yok
+    assert body["facts"]["commit_sayisi"] > 0
+    assert fake.requests == []
+
+
+def test_interview_llm_sends_only_project_numbers(api, synced, fake):
+    consent(api, synced)
+    fake.text = "1. Neden bu dili seçtin?\n2. En zor hatayı nasıl çözdün?\n- Bugün neyi farklı yapardın?"
+    body = api.post("/ai/interview", json={"project_id": _project_id(api, synced)}, headers=synced).json()
+    assert body["source"] == "llm"
+    assert body["questions"] == ["Neden bu dili seçtin?", "En zor hatayı nasıl çözdün?", "Bugün neyi farklı yapardın?"]
+    sent = fake.requests[0].content.decode()
+    assert DEMO_REPO not in sent and DEMO_MESSAGE not in sent
+    assert "teknik mülakatçı" in sent  # kendi sistem talimatı
+
+
+def test_interview_bad_llm_format_falls_back(api, synced, fake):
+    consent(api, synced)
+    fake.text = "Tek bir uzun paragraf, üç soru değil."
+    body = api.post("/ai/interview", json={"project_id": _project_id(api, synced)}, headers=synced).json()
+    assert body["source"] == "sablon" and "biçim" in body["reason"]
+    assert len(body["questions"]) == 3
+
+
+def test_interview_unknown_project_404(api, synced):
+    assert api.post("/ai/interview", json={"project_id": "proj:yok"}, headers=synced).status_code == 404
+
+
+def test_interview_template_rules():
+    from datetime import datetime, timezone
+
+    from app.ai.interview import ProjectFacts, evidence, parse_questions, template_questions
+    from app.metrics.commit_types import CommitText, build_commit_types
+
+    at = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    types = build_commit_types([CommitText("fix: hata düzeltildi", at, "x")] * 12)
+    p = ProjectFacts(name="x", url="https://github.com/ben/x", language="Python", tools=["Docker"],
+                     commit_count=12, active_days=4, months=3, missing=["README"])
+    q = template_questions(p, types)
+    assert "Python ve Docker" in q[0] and "en zor hata" in q[1] and "iki dakikada" in q[2]
+    ev = evidence(p, types)
+    assert ev[0] == "Bağlantıyı hazır tut: github.com/ben/x" and any("README ekle" in e for e in ev)
+    assert parse_questions("a\n\nb\nc") == ["a", "b", "c"] and parse_questions("a\nb") is None

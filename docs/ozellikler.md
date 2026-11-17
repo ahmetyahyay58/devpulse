@@ -89,7 +89,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Yerinde düzenlenebilen metinler, "Taslağa dön" | Yapıldı (17 Kas) | — | "Maddeleri düzenle": sayılar kilitli, metin 200 karakter, proje başına 2 ek madde, en çok 6 proje seçimi, beceri çıkar/ekle, "senin düzenlemen" işareti; yalnız cihazda. Kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |
-| Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Kısmen | — | PDF yapıldı (17 Kas; telefonda, gömülü Noto yazı tipi). Biçim kontrolü kaldı. |
+| Biçim kontrolü kartı (ATS yerine) ve "PDF olarak indir" | Yapıldı | — | PDF yapıldı (17 Kas; telefonda, gömülü Noto yazı tipi). Biçim kontrolü yapıldı (17 Kas): sabit kurallar, eksik/öneri, PDF'in gerçek sayfa sayısı, "ATS" iddiası yok; `docs/cv.md`. |
 | Türkçe / English geçişi | Yeni | — | |
 | Mülakat koçu: proje seçince 3 soru ve kanıt önerisi | Yeni | Mevcut | AI katmanı; LLM'e repo adı değil, projenin sayıları gider. Kanıt önerisi telefonda, yerel veriden. |
 

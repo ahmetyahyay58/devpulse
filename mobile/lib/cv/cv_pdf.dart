@@ -13,8 +13,9 @@ import 'cv_profile.dart';
 /// Yazı tipi gömülüdür (Noto); varsayılan PDF yazı tipleri Türkçe harfleri (ş, ğ, ı, İ) içermez.
 
 class CvPdfResult {
-  CvPdfResult(this.bytes, this.skippedPlaceholders);
+  CvPdfResult(this.bytes, this.skippedPlaceholders, this.pages);
   final Uint8List bytes;
+  final int pages; // üretilen gerçek sayfa sayısı (biçim kontrolü bunu kullanır)
   final int skippedPlaceholders; // basılmayan "Etki: [...]" ya da Hakkımda yer tutucusu gibi doldurulmamış maddeler
 }
 
@@ -58,7 +59,8 @@ Future<CvPdfResult> buildCvPdf({
     theme: await _theme(format.serif, loadFont ?? rootBundle.load),
     build: (_) => b.build(),
   ));
-  return CvPdfResult(await doc.save(), b.skipped);
+  final bytes = await doc.save();
+  return CvPdfResult(bytes, b.skipped, doc.document.pdfPageList.pages.length);
 }
 
 class _Builder {

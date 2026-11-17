@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../ai/ai_features.dart';
 import '../screens/file_saver.dart';
 import '../ui/toast.dart';
+import 'cv_check.dart';
+import 'cv_check_screen.dart';
 import 'cv_controller.dart';
 import 'cv_edit_screen.dart';
 import 'cv_formats.dart';
@@ -14,10 +16,11 @@ import 'profile_screen.dart';
 /// CV sekmesi: dil ve format seçimi, altında kağıt görünümünde CV (docs/cv.md). Taslak GitHub
 /// verisinden gelir; eğitim, deneyim ve iletişim bilgileri "Bilgilerim"de, yalnız bu cihazda tutulur.
 class CvView extends StatelessWidget {
-  const CvView({super.key, required this.controller, this.saveFile = shareFile});
+  const CvView({super.key, required this.controller, this.saveFile = shareFile, this.countPages = countPdfPages});
 
   final CvController controller;
   final FileSaver saveFile; // web: indirme, Android: paylaşım menüsü; testlerde sahtesi
+  final PageCounter countPages; // biçim kontrolündeki sayfa sayısı; testlerde sahtesi
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +105,8 @@ class CvView extends StatelessWidget {
                     label: Text(controller.edits.isEmpty ? 'Maddeleri düzenle' : 'Maddeleri düzenle (düzenlendi)'),
                   ),
                   const SizedBox(height: 8),
+                  _checkButton(context),
+                  const SizedBox(height: 8),
                   PdfButton(controller: controller, saveFile: saveFile),
                 ],
                 SwitchListTile(
@@ -118,6 +123,22 @@ class CvView extends StatelessWidget {
           ),
         ]);
       },
+    );
+  }
+}
+
+extension on CvView {
+  /// "Biçim kontrolü (N eksik)": sayı sayfa kuralı olmadan, anında hesaplanır; ekran PDF'i de sayar.
+  Widget _checkButton(BuildContext context) {
+    final missing = checkCv(draft: controller.effective!, profile: controller.profile, format: controller.format)
+        .where((c) => c.level == CheckLevel.missing)
+        .length;
+    return OutlinedButton.icon(
+      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (_) => CvCheckScreen(controller: controller, countPages: countPages),
+      )),
+      icon: Icon(missing == 0 ? Icons.task_alt : Icons.rule),
+      label: Text(missing == 0 ? 'Biçim kontrolü' : 'Biçim kontrolü ($missing eksik)'),
     );
   }
 }

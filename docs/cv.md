@@ -10,8 +10,8 @@ Bu belge CV taslağının nasıl üretildiğini tanımlar. Kod (`backend/app/cv/
 - **PDF telefonda üretilir** (Dart `pdf` paketi, Türkçe karakter için gömülü yazı tipi). Web'de
   doğrudan indirme, Android'de paylaşım menüsü.
 - **CV alt çubukta 5. sekmedir.**
-- **Şablonların hepsi tek sütundur.** Biçim kontrolü "tablo/sütun yok" kuralını içerir; uygulama
-  kendi kuralına uymayan şablon sunmaz.
+- **Şablonların hepsi tek sütundur.** Tablo ve sütun kullanılmadığı tasarımla garanti edildiği için
+  biçim kontrolünde ayrıca denetlenmez; uygulama bu kurala uymayan şablon sunmaz.
 - **Üç yaygın format (geliştirici kararı, 16 Kas):** ilk taslak "gerçek bir CV gibi durmuyor"
   bulundu; prototipteki 5 serbest şablon yerine piyasada tanınan üç formatın düzeni izlenir.
 
@@ -74,6 +74,31 @@ gizleme, proje seçimi ve beceri değişiklikleri iki dilde ortaktır.
 **Bildirimler:** Kaydetme ve PDF sonuçları alttaki çubuk yerine ekranın üst ortasında beliren
 kısa bir mesaj balonuyla gösterilir (`mobile/lib/ui/toast.dart`; geliştirici tercihi, 17 Kas).
 Başarı ve hata hem simge hem renkle söylenir.
+
+## Biçim kontrolü (Faz 8c, 17 Kas 2026)
+CV sekmesindeki "Biçim kontrolü" seçili format ve dildeki CV'yi (düzenlemeler uygulanmış hal +
+Bilgilerim) denetler. Tamamen telefonda çalışır; LLM ve sunucu kullanılmaz. Kod
+`mobile/lib/cv/cv_check.dart` (saf fonksiyon, testli). **"ATS'den geçer" denmez:** ekranda
+"Bu kontrol düzen ve eksiklikler içindir; işe alım yazılımlarından (ATS) geçeceğini garanti etmez."
+yazar. Kurallar sabittir ve iki düzeydedir: **Eksik** (CV'de açık bir boşluk) ve **Öneri**.
+
+| Kural | Düzey | Ne zaman |
+|---|---|---|
+| Ad soyad | Eksik | Ad yazılmamış (başlıkta GitHub kullanıcı adı görünür). |
+| E-posta | Eksik | E-posta yok. |
+| Telefon, LinkedIn | Öneri | Yoksa. |
+| Eğitim | Eksik | Hiç eğitim kaydı yok. Kayıtta tarih yoksa Öneri. |
+| Deneyim | Öneri | Hiç kayıt yoksa: staj, gönüllülük, kulüp işi eklenebilir ya da "Beceri odaklı" şablon önerilir (zaten o şablondaysa önerilmez). |
+| Doldurulmamış yer tutucu | Eksik | "[…]" kalan maddesi olan her proje (etki cümleleri); PDF'e basılmadıkları söylenir. Hakkımda yer tutucusu Hakkımda kuralında. |
+| Hakkımda | Eksik / Öneri | O dilde kullanıcı metni yoksa Eksik (hazır metin kullanılıyor, "kendini tanıt" yer tutucusu PDF'e basılmaz); hazır metin de gizlenmişse "bölüm boş" Eksik; 80 karakterden kısaysa Öneri. |
+| Projeler | Öneri / Eksik | Hiç proje yoksa Eksik; 2'den azsa Öneri; açıklaması olmayan proje için Öneri. |
+| Deneyim maddeleri | Öneri | Hiç madde yoksa; 200 karakteri aşan madde varsa (madde başına tek cümle). |
+| İlgi alanları | Öneri | Format bu bölümü gösteriyor ve o dilde boşsa. |
+| Sayfa sayısı | Eksik | PDF gerçekten üretilip sayfaları sayılır (tahmin değil). Sınır: Jake's, Harvard ve Beceri odaklı 1 sayfa (öğrenci ve 5 yıldan az deneyim için yaygın öneri); Europass ve Türkiye klasik 2 sayfa. Aşılırsa Eksik. |
+
+Mesajlarda değişkenden sonra Türkçe ek kullanılmaz ("proje-a: açıklama yok"). Her maddenin
+yanında ilgili ekrana götüren düğme vardır (Bilgilerim ya da Maddeleri düzenle). Kontrol bir
+puan vermez; yalnız liste ve sayı ("2 eksik, 3 öneri") gösterir.
 
 ## PDF
 "PDF olarak indir" seçili format ve dilde PDF üretir (`mobile/lib/cv/cv_pdf.dart`, `pdf` paketi);

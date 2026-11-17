@@ -343,6 +343,7 @@ void main() {
       final r = await buildCvPdf(draft: c.draft!, format: f, profile: _sample());
       expect(String.fromCharCodes(r.bytes.take(5)), '%PDF-');
       expect(r.skippedPlaceholders, 1); // sahte taslakta tek "Etki: [...]" var (Hakkımda yazılı)
+      expect(r.pages, inInclusiveRange(1, f.maxPages), reason: f.id); // biçim kontrolü bu sayıyı kullanır
     }
     // Hakkımda boşsa varsayılan metin basılır, ilgi alanı yer tutucusu basılmaz.
     final r = await buildCvPdf(draft: c.draft!, format: jakes, profile: CvProfile());

@@ -25,6 +25,7 @@ class CvFormat {
     required this.serif,
     required this.headingCaps,
     required this.techInProjectTitle,
+    required this.maxPages,
     this.headingBand = false,
   });
 
@@ -37,6 +38,7 @@ class CvFormat {
   final bool headingCaps; // bölüm başlıkları büyük harf
   final bool techInProjectTitle; // Jake's: "Ad | teknolojiler" tek satırda
   final bool headingBand; // Türkiye klasik: başlık gri şerit içinde (alt çizgi yerine)
+  final int maxPages; // biçim kontrolündeki sayfa sınırı (docs/cv.md, "Biçim kontrolü")
 }
 
 const jakes = CvFormat(
@@ -56,6 +58,7 @@ const jakes = CvFormat(
   serif: false,
   headingCaps: true,
   techInProjectTitle: true,
+  maxPages: 1,
 );
 
 const harvard = CvFormat(
@@ -75,6 +78,7 @@ const harvard = CvFormat(
   serif: true,
   headingCaps: true,
   techInProjectTitle: false,
+  maxPages: 1,
 );
 
 const europass = CvFormat(
@@ -95,6 +99,7 @@ const europass = CvFormat(
   serif: false,
   headingCaps: false,
   techInProjectTitle: false,
+  maxPages: 2,
 );
 
 const turkish = CvFormat(
@@ -114,6 +119,7 @@ const turkish = CvFormat(
   serif: false,
   headingCaps: true,
   techInProjectTitle: false,
+  maxPages: 2,
   headingBand: true,
 );
 
@@ -134,6 +140,7 @@ const skillsFirst = CvFormat(
   serif: false,
   headingCaps: true,
   techInProjectTitle: false,
+  maxPages: 1,
 );
 
 const cvFormats = [jakes, harvard, europass, turkish, skillsFirst];

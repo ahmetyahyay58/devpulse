@@ -25,6 +25,9 @@ CvProfile _sample() => CvProfile(
         Experience(role: 'Stajyer Geliştirici', org: 'Örnek A.Ş.', dates: 'Tem 2025 – Ağu 2025', bullets: ['API yazdım.']),
       ],
       languages: [SpokenLanguage(name: 'Türkçe', level: 'Anadil'), SpokenLanguage(name: 'İngilizce', level: 'B2')],
+      certificates: [Certificate(name: 'Python ile Veri Bilimi', issuer: 'BTK Akademi', date: 'Mar 2025')],
+      about: {'tr': 'Flutter ile mobil uygulama geliştiren bir öğrenciyim.'},
+      interests: {'tr': 'satranç, açık kaynak'},
     );
 
 Future<FakeBackend> _pump(WidgetTester tester,
@@ -50,14 +53,15 @@ Future<FakeBackend> _pump(WidgetTester tester,
 }
 
 void main() {
-  testWidgets("Jake's: büyük harf başlıklar, 'Ad | teknolojiler' satırı, sağda tarih, özet yok", (tester) async {
+  testWidgets("Jake's: büyük harf başlıklar, 'Ad | teknolojiler' satırı, sağda tarih, veri özeti", (tester) async {
     await _pump(tester);
     expect(find.text('PROJELER'), findsOneWidget);
     expect(find.text('TEKNİK BECERİLER'), findsOneWidget);
     expect(find.text('proje-a | Dart, Docker', findRichText: true), findsOneWidget);
     expect(find.text('Mar 2025 – Şub 2026'), findsOneWidget);
     expect(find.textContaining('Dart ile geliştirildi'), findsNothing); // teknoloji başlıkta, tekrar yok
-    expect(find.textContaining('Ağırlıklı olarak'), findsNothing); // Jake's'te özet yok
+    expect(find.text('HAKKIMDA'), findsOneWidget); // Hakkımda yazılmadıysa veri özeti görünür
+    expect(find.text('Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
     expect(find.text('EĞİTİM'), findsNothing); // kullanıcı girmediyse boş bölüm görünmez
   });
 
@@ -114,7 +118,7 @@ void main() {
 
   testWidgets('boş profilde eğitim/deneyim bölümü yok; düğme neyin eksik olduğunu söyler', (tester) async {
     await _pump(tester);
-    expect(find.text('Bilgilerim: ad, iletişim, eğitim, deneyim ekle'), findsOneWidget);
+    expect(find.text('Bilgilerim: ad, iletişim, hakkımda, eğitim, deneyim ekle'), findsOneWidget);
     expect(find.text('EĞİTİM'), findsNothing);
     expect(find.text('ben'), findsOneWidget); // ad yoksa GitHub kullanıcı adı
   });
@@ -155,7 +159,7 @@ void main() {
   });
 
   Future<void> openProfile(WidgetTester tester) async {
-    await tester.tap(find.text('Bilgilerim: ad, iletişim, eğitim, deneyim ekle'));
+    await tester.tap(find.text('Bilgilerim: ad, iletişim, hakkımda, eğitim, deneyim ekle'));
     await tester.pumpAndSettle();
   }
 
@@ -231,12 +235,88 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'Kaydet'), findsWidgets); // hâlâ kaydedilmemiş
   });
 
-  test('profil JSON gidiş-dönüşü kimlikleri korur', () {
+  test('profil JSON gidiş-dönüşü kimlikleri ve yeni bölümleri korur', () {
     final p = _sample();
     final back = CvProfile.fromJson(p.toJson());
     expect(back.education.single.id, p.education.single.id);
     expect(back.languages.last.level, 'B2');
+    expect(back.certificates.single.issuer, 'BTK Akademi');
+    expect(back.aboutFor('tr'), startsWith('Flutter ile'));
+    expect(back.aboutFor('en'), '');
+    expect(back.interestsFor('tr'), 'satranç, açık kaynak');
     expect(CvProfile().isEmpty, isTrue);
+    expect(CvProfile(about: {'tr': 'x'}).isEmpty, isFalse);
+    // Eski kayıt (yeni alanlar yok) sorunsuz okunur.
+    expect(CvProfile.fromJson({'fullName': 'A'}).certificates, isEmpty);
+  });
+
+  test('beş format; ilgi alanları yalnız Türkiye klasik ve Europass\'ta', () {
+    expect(cvFormats.map((f) => f.id), ['jakes', 'harvard', 'europass', 'turkiye', 'beceri']);
+    for (final f in cvFormats) {
+      expect(f.sections, contains(CvSection.about), reason: f.id);
+      expect(f.sections, contains(CvSection.certificates), reason: f.id);
+      expect(f.sections.contains(CvSection.interests), f.id == 'turkiye' || f.id == 'europass', reason: f.id);
+    }
+    final s = skillsFirst.sections;
+    expect(s.indexOf(CvSection.skills), lessThan(s.indexOf(CvSection.experience))); // beceriler önde
+  });
+
+  testWidgets('Türkiye klasik: şeritli başlıklar, sertifika, yabancı dil, ilgi alanları', (tester) async {
+    await _pump(tester, profile: _sample());
+    await tester.tap(find.text('Türkiye klasik'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ahmet Yılmaz'), findsOneWidget);
+    expect(find.text('0555 000 00 00  ·  ahmet@example.com  ·  Şanlıurfa  ·  github.com/ben'), findsOneWidget);
+    expect(find.text('İŞ DENEYİMİ'), findsOneWidget);
+    expect(find.text('SERTİFİKALAR VE KURSLAR'), findsOneWidget);
+    expect(find.text('Python ile Veri Bilimi'), findsOneWidget);
+    expect(find.text('BTK Akademi'), findsOneWidget);
+    expect(find.text('YABANCI DİLLER'), findsOneWidget);
+    expect(find.text('BİLGİSAYAR BİLGİSİ'), findsOneWidget);
+    expect(find.text('İLGİ ALANLARI'), findsOneWidget);
+    expect(find.text('satranç, açık kaynak'), findsOneWidget);
+    // Kullanıcının Hakkımda metni veri özetinin yerine geçer.
+    expect(find.textContaining('Flutter ile mobil'), findsOneWidget);
+    expect(find.textContaining('Ağırlıklı olarak'), findsNothing);
+  });
+
+  testWidgets('Beceri odaklı: beceriler projelerden önce; ilgi alanı yok; İngilizce Hakkımda ayrı', (tester) async {
+    await _pump(tester, profile: _sample());
+    await tester.tap(find.text('Beceri odaklı'));
+    await tester.pumpAndSettle();
+    final skills = tester.getTopLeft(find.text('TEKNİK BECERİLER')).dy;
+    final projects = tester.getTopLeft(find.text('ÖNE ÇIKAN PROJELER')).dy;
+    expect(skills, lessThan(projects));
+    expect(find.text('satranç, açık kaynak'), findsNothing);
+
+    await tester.tap(find.text('English'));
+    await tester.pumpAndSettle();
+    expect(find.text('ABOUT ME'), findsOneWidget);
+    expect(find.textContaining('Flutter ile mobil'), findsNothing); // Türkçe metin İngilizce CV'ye geçmez
+  });
+
+  testWidgets('Bilgilerim: "Taslaktan başla" veri özetini Hakkımda kutusuna koyar; sertifika eklenir', (tester) async {
+    final store = MemoryCvProfileStore();
+    await _pump(tester, store: store);
+    await openProfile(tester);
+    await tester.tap(find.text('Taslaktan başla (GitHub özet cümlesi)'));
+    await tester.pump();
+    expect(find.widgetWithText(TextField, 'Ağırlıklı olarak Dart ile çalışıyorum.'), findsOneWidget);
+
+    final add = find.widgetWithText(TextButton, 'Ekle').at(2); // Eğitim, Deneyim, Sertifikalar
+    await tester.ensureVisible(add);
+    await tester.tap(add);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, 'Ad'), 'Git ve GitHub');
+    await tester.enterText(find.widgetWithText(TextField, 'Veren kurum'), 'BTK Akademi');
+    await tester.tap(find.widgetWithText(FilledButton, 'Kaydet').last);
+    await tester.pumpAndSettle();
+
+    await tester.tap(saveButton());
+    await tester.pump();
+    expect(store.saved!.aboutFor('tr'), 'Ağırlıklı olarak Dart ile çalışıyorum.');
+    expect(store.saved!.certificates.single.name, 'Git ve GitHub');
+    await tester.pumpAndSettle(const Duration(seconds: 5));
   });
 
   test('gömülü yazı tipleri Türkçe harfleri içerir', () async {

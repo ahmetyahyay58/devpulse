@@ -85,7 +85,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### CV
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| 3 format: Jake's Resume, Harvard tarzı, Europass düzeni (tek sütun) | Yeni | Mevcut + kullanıcı girdisi | Karar (16 Kas): prototipteki 5 serbest şablon yerine piyasada tanınan üç format. Uyarlamalar `docs/cv.md`. |
+| 5 format: Jake's Resume, Harvard tarzı, Europass düzeni (tek sütun), Türkiye klasik, Beceri odaklı | Yapıldı (17 Kas) | Mevcut + kullanıcı girdisi | Karar (16 Kas): piyasada tanınan üç format; 17 Kas: Türkiye'de yaygın düzen ve işlevsel düzen eklendi, tüm şablonlara Hakkımda (TR/EN), sertifikalar; ilgi alanları ikisinde. Uyarlamalar `docs/cv.md`. |
 | Yerinde düzenlenebilen metinler, "Taslağa dön" | Yapıldı (17 Kas) | — | "Maddeleri düzenle": sayılar kilitli, metin 200 karakter, proje başına 2 ek madde, en çok 4 proje seçimi, beceri çıkar/ekle, "senin düzenlemen" işareti; yalnız cihazda. Kurallar `docs/cv.md`. |
 | Maddelerin kaynağını gösterme | Yeni | Mevcut | Her madde hangi veriden üretildiğini söyler. |
 | Etki cümlesinde sarı yer tutucu | Yeni | — | Rakamı yalnız kullanıcı yazar; uygulama sayı uydurmaz. |

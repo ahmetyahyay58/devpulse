@@ -69,12 +69,16 @@ class CvView extends StatelessWidget {
                   onSelectionChanged: (s) => controller.setLang(s.first),
                 ),
                 const SizedBox(height: 8),
-                SegmentedButton<String>(
-                  showSelectedIcon: false,
-                  segments: [for (final f in cvFormats) ButtonSegment(value: f.id, label: Text(f.name))],
-                  selected: {controller.format.id},
-                  onSelectionChanged: (s) => controller.setFormat(cvFormats.firstWhere((f) => f.id == s.first)),
-                ),
+                // Beş format tek şeride sığmaz; seçim etiketleri gerekirse alt satıra geçer.
+                Wrap(spacing: 8, runSpacing: 4, alignment: WrapAlignment.center, children: [
+                  for (final f in cvFormats)
+                    ChoiceChip(
+                      label: Text(f.name),
+                      selected: controller.format.id == f.id,
+                      showCheckmark: false,
+                      onSelected: (_) => controller.setFormat(f),
+                    ),
+                ]),
                 const SizedBox(height: 6),
                 Text(controller.format.note[controller.lang] ?? '', style: muted),
                 const SizedBox(height: 8),
@@ -85,7 +89,7 @@ class CvView extends StatelessWidget {
                   icon: const Icon(Icons.badge_outlined),
                   // Boşken eğitim ve deneyim bölümleri sayfada görünmez: neyin eksik olduğunu söyle.
                   label: Text(controller.profile.isEmpty
-                      ? 'Bilgilerim: ad, iletişim, eğitim, deneyim ekle'
+                      ? 'Bilgilerim: ad, iletişim, hakkımda, eğitim, deneyim ekle'
                       : 'Bilgilerimi düzenle'),
                 ),
                 if (d != null && page is Material) ...[

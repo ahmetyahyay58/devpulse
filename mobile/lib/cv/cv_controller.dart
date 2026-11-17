@@ -28,6 +28,15 @@ class CvItem {
   String get kind => id.split(':').last;
 }
 
+/// "Hakkımda" bölümünün maddesi: kullanıcı o dilde yazdıysa onun metni ("Senin yazdığın"),
+/// yazmadıysa GitHub verisinden gelen özet (gizlenmişse yok). docs/cv.md, "Eklenen bölümler".
+CvItem? aboutItem(CvDraft d, CvProfile p) {
+  final own = p.aboutFor(d.lang);
+  if (own.isEmpty) return d.summary;
+  return CvItem.of(id: 'about:own', text: own, source: d.lang == 'en' ? 'Written by you' : 'Senin yazdığın',
+      edited: true);
+}
+
 class CvProject {
   CvProject(Map<String, dynamic> j)
       : id = j['id'] as String,

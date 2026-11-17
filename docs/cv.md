@@ -16,18 +16,35 @@ Bu belge CV taslağının nasıl üretildiğini tanımlar. Kod (`backend/app/cv/
   bulundu; prototipteki 5 serbest şablon yerine piyasada tanınan üç formatın düzeni izlenir.
 
 ## Formatlar
-Hiçbiri "ATS'den geçer" diye sunulmaz. Hepsi tek sütun; tarihler satır sonunda sağa yaslanır
+Hiçbiri "ATS'den geçer" diye sunulmaz. Beşi de tek sütun; tarihler satır sonunda sağa yaslanır
 (sütun değildir). Düzen tek yerde, veri olarak tanımlıdır (`mobile/lib/cv/cv_formats.dart`);
 ekrandaki önizleme ve PDF aynı tanımı okur.
 
 | Format | Bölüm sırası | Notlar ve uyarlamalar |
 |---|---|---|
-| **Jake's Resume** | Eğitim → Deneyim → Projeler → Teknik beceriler | Yazılımcılar arasında yaygın tek sayfalık LaTeX şablonu (Overleaf). Proje satırı "Ad \| teknolojiler", tarih sağda. Özet yok. |
-| **Harvard tarzı** | Eğitim → Deneyim → Projeler → Beceriler | Tek bir resmî Harvard şablonu yok; Harvard kariyer rehberlerindeki ters kronolojik düzen izlenir: eğitim önce, özet yok, madde başına tek cümle, serif yazı tipi. Rehberde "Projeler" yok; GitHub projeleri Deneyim'den sonra konur (uyarlama). |
-| **Europass düzeni (tek sütun uyarlama)** | Kişisel bilgiler → Hakkımda → İş deneyimi → Eğitim → Dil becerileri → Dijital beceriler → Projeler | Resmî Europass, AB düzenleyicisinin ürettiği iki sütunlu bir formdur; burada aynı bölümler tek sütuna dizilir ve uygulamada "uyarlama" diye yazar. Dil düzeyi dil başına tek CEFR düzeyi (A1-C2) ya da "anadil" (resmî formdaki beş alt beceri sadeleştirildi). Özet ("Hakkımda") yalnız burada kullanılır. |
+| **Jake's Resume** | Hakkımda → Eğitim → Deneyim → Projeler → Teknik beceriler → Sertifikalar | Yazılımcılar arasında yaygın tek sayfalık LaTeX şablonu (Overleaf). Proje satırı "Ad \| teknolojiler", tarih sağda. Özgün şablonda özet ve sertifika yok; ikisi de eklemedir (uyarlama), boşsa görünmez. |
+| **Harvard tarzı** | Hakkımda → Eğitim → Deneyim → Projeler → Beceriler → Sertifikalar | Tek bir resmî Harvard şablonu yok; Harvard kariyer rehberlerindeki ters kronolojik düzen izlenir: eğitim önce, madde başına tek cümle, serif yazı tipi. Rehberde özet ve "Projeler" yok; ikisi eklemedir (uyarlama). |
+| **Europass düzeni (tek sütun uyarlama)** | Kişisel bilgiler → Hakkımda → İş deneyimi → Eğitim → Dil becerileri → Dijital beceriler → Projeler → Sertifikalar ve kurslar → Hobiler ve ilgi alanları → Ek bilgiler | Resmî Europass, AB düzenleyicisinin ürettiği iki sütunlu bir formdur; burada aynı bölümler tek sütuna dizilir ve uygulamada "uyarlama" diye yazar. Dil düzeyi dil başına tek CEFR düzeyi (A1-C2) ya da "anadil" (resmî formdaki beş alt beceri sadeleştirildi). |
+| **Türkiye klasik** | Hakkımda → Eğitim → İş deneyimi → Projeler → Sertifikalar ve kurslar → Yabancı diller → Bilgisayar bilgisi → İlgi alanları | Türkiye'deki özgeçmiş rehberlerinde yaygın bölüm düzeni (tek resmî şablon yok). Ad sola yaslı, bölüm başlıkları gri şerit içinde. Kişisel bilgiler (doğum tarihi, askerlik, ehliyet), fotoğraf ve referans bölümü yok (geliştirici kararı, 17 Kas). |
+| **Beceri odaklı** | Hakkımda → Teknik beceriler → Öne çıkan projeler → Sertifikalar → Deneyim → Eğitim → Diller | İşlevsel (beceri temelli) özgeçmiş: beceriler ve projeler öne alınır; deneyimi az olan öğrenciye uyar. Bazı işe alımcıların kronolojik düzeni tercih ettiği notta söylenir. |
 
 Kaynaklar: Overleaf "Jake's Resume" şablonu; Harvard FAS ve HSPH kariyer rehberleri; Europass
-bölüm yapısını anlatan rehberler (europass.europa.eu resmî düzenleyicisi esastır).
+bölüm yapısını anlatan rehberler (europass.europa.eu resmî düzenleyicisi esastır); Türkiye'deki
+özgeçmiş hazırlama rehberleri (kariyer siteleri ve üniversite açık ders notları; bölüm adları ve
+sıraları kaynaktan kaynağa değişir, bu yüzden "standart" denmez).
+
+**Eklenen bölümler (geliştirici kararı, 17 Kas 2026).** Hepsini kullanıcı "Bilgilerim"de yazar;
+GitHub'da yoktur, yalnız cihazda kalır, LLM'e gitmez.
+
+| Bölüm | Kural |
+|---|---|
+| Hakkımda | Türkçe ve İngilizce ayrı yazılır, en çok 600 karakter (2-4 cümle). Yazılmışsa o dilin CV'sinde veri özetinin **yerine geçer** ve kaynak satırında "Senin yazdığın" der; boşsa GitHub verisinden gelen özet cümlesi görünür (eskisi gibi kilitli, gizlenebilir). "Taslaktan başla" o dildeki veri özetini metin kutusuna koyar; sonrası kullanıcının metnidir. Beş şablonun hepsinde vardır. |
+| Sertifikalar ve kurslar | Ad, veren kurum, tarih (serbest metin). Beş şablonda var; boşsa görünmez. |
+| İlgi alanları | Türkçe ve İngilizce ayrı, tek satır, en çok 150 karakter. Yalnız Türkiye klasik ve Europass'ta görünür (Jake's, Harvard ve Beceri odaklı düzenlerde bu bölüm geleneksel değil). |
+
+Bilinçli olarak eklenmeyenler: fotoğraf, doğum tarihi, askerlik, ehliyet, medeni durum ve
+referanslar (başkasının adı ve telefonu kişisel veridir). Bölümler uzadıkça Jake's tek sayfayı
+aşabilir; bunu "Biçim kontrolü" uyaracak, şablon kendisi kesmez.
 
 **Kullanıcının girdiği bölümler** ("Bilgilerim": ad, iletişim, eğitim, deneyim, dil) GitHub'da
 yoktur; telefonda saklanır (`shared_preferences`, anahtar `cv_profile`; web'de tarayıcının yerel

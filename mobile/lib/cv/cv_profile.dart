@@ -4,7 +4,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// "Bilgilerim": CV'nin GitHub'da olmayan bölümleri (ad, iletişim, eğitim, deneyim, diller).
+/// "Bilgilerim": CV'nin GitHub'da olmayan bölümleri (ad, iletişim, hakkımda, eğitim, deneyim,
+/// sertifikalar, diller, ilgi alanları).
 /// Yalnızca bu cihazda saklanır, sunucuya hiç gitmez; çıkışta ve "Verilerimi sil"de silinir
 /// (docs/cv.md). Web'de tarayıcının yerel deposudur (localStorage).
 
@@ -38,6 +39,20 @@ class Experience {
       location: j['location'] ?? '', bullets: [for (final b in j['bullets'] as List? ?? const []) b as String]);
 }
 
+class Certificate {
+  Certificate({String? id, this.name = '', this.issuer = '', this.date = ''}) : id = id ?? newId();
+  final String id;
+  String name, issuer, date; // tarih serbest metin, ör. "Mar 2025"
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'issuer': issuer, 'date': date};
+  factory Certificate.fromJson(Map<String, dynamic> j) => Certificate(
+      id: j['id'] as String?, name: j['name'] ?? '', issuer: j['issuer'] ?? '', date: j['date'] ?? '');
+}
+
+/// Hakkımda ve ilgi alanları sınırları (docs/cv.md, "Eklenen bölümler").
+const maxAboutChars = 600;
+const maxInterestsChars = 150;
+
 /// Europass sadeleştirmesi: dil başına tek düzey (anadil ya da CEFR A1-C2).
 const languageLevels = ['Anadil', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -64,18 +79,33 @@ class CvProfile {
     List<Education>? education,
     List<Experience>? experience,
     List<SpokenLanguage>? languages,
+    List<Certificate>? certificates,
+    Map<String, String>? about,
+    Map<String, String>? interests,
   })  : education = education ?? [],
         experience = experience ?? [],
-        languages = languages ?? [];
+        languages = languages ?? [],
+        certificates = certificates ?? [],
+        about = about ?? {},
+        interests = interests ?? {};
 
   String fullName, email, phone, location, linkedin;
   List<Education> education;
   List<Experience> experience;
   List<SpokenLanguage> languages;
+  List<Certificate> certificates;
+  // Dile göre metinler ('tr' / 'en'): Türkçe CV'ye yazılan İngilizce CV'ye geçmez.
+  Map<String, String> about;
+  Map<String, String> interests;
+
+  /// O dildeki Hakkımda / ilgi alanları metni; yazılmamışsa boş.
+  String aboutFor(String lang) => (about[lang] ?? '').trim();
+  String interestsFor(String lang) => (interests[lang] ?? '').trim();
 
   bool get isEmpty =>
-      [fullName, email, phone, location, linkedin].every((s) => s.trim().isEmpty) &&
-      education.isEmpty && experience.isEmpty && languages.isEmpty;
+      [fullName, email, phone, location, linkedin, ...about.values, ...interests.values]
+          .every((s) => s.trim().isEmpty) &&
+      education.isEmpty && experience.isEmpty && languages.isEmpty && certificates.isEmpty;
 
   /// Başlıktaki iletişim satırı: boş olanlar atlanır.
   List<String> contacts() =>
@@ -86,17 +116,25 @@ class CvProfile {
         'education': [for (final e in education) e.toJson()],
         'experience': [for (final e in experience) e.toJson()],
         'languages': [for (final l in languages) l.toJson()],
+        'certificates': [for (final c in certificates) c.toJson()],
+        'about': about,
+        'interests': interests,
       };
 
   factory CvProfile.fromJson(Map<String, dynamic> j) {
     List<Map<String, dynamic>> list(String k) =>
         [for (final e in j[k] as List? ?? const []) (e as Map).cast<String, dynamic>()];
+    Map<String, String> texts(String k) =>
+        {for (final e in (j[k] as Map? ?? const {}).entries) e.key as String: e.value as String};
     return CvProfile(
       fullName: j['fullName'] ?? '', email: j['email'] ?? '', phone: j['phone'] ?? '',
       location: j['location'] ?? '', linkedin: j['linkedin'] ?? '',
       education: list('education').map(Education.fromJson).toList(),
       experience: list('experience').map(Experience.fromJson).toList(),
       languages: list('languages').map(SpokenLanguage.fromJson).toList(),
+      certificates: list('certificates').map(Certificate.fromJson).toList(),
+      about: texts('about'),
+      interests: texts('interests'),
     );
   }
 }

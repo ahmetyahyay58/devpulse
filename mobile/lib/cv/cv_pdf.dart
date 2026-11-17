@@ -71,6 +71,7 @@ class _Builder {
   static const ink = PdfColor.fromInt(0xFF111111);
   static const muted = PdfColor.fromInt(0xFF555555);
   static const europassBlue = PdfColor.fromInt(0xFF1F3B73);
+  static const band = PdfColor.fromInt(0xFFE6E6E6); // Türkiye klasik başlık şeridi
   String get lang => draft.lang;
   String get github => draft.profileUrl.replaceFirst('https://', '');
   String get name => profile.fullName.trim().isEmpty ? draft.login : profile.fullName.trim();
@@ -81,6 +82,7 @@ class _Builder {
 
   List<pw.Widget> build() => [
         if (format.header == HeaderStyle.centered) ..._header(),
+        if (format.header == HeaderStyle.left) ..._leftHeader(),
         for (final s in format.sections) ..._section(s),
       ];
 
@@ -93,12 +95,26 @@ class _Builder {
         ),
       ];
 
+  List<pw.Widget> _leftHeader() => [
+        pw.Text(name, style: bold.copyWith(fontSize: 20)),
+        pw.SizedBox(height: 3),
+        pw.Text([...profile.contacts(), github].join('  ·  '), style: base.copyWith(fontSize: 9.5, color: muted)),
+      ];
+
   List<pw.Widget> _section(CvSection s) {
     final body = switch (s) {
       CvSection.personal => _personal(),
-      CvSection.about => [if (draft.summary != null) ..._item(draft.summary!)],
+      CvSection.about => [if (aboutItem(draft, profile) case final a?) ..._item(a)],
       CvSection.education => [for (final e in profile.education) ..._education(e)],
       CvSection.experience => [for (final e in profile.experience) ..._experience(e)],
+      CvSection.certificates => [
+          for (final c in profile.certificates)
+            if (c.name.trim().isNotEmpty) ..._certificate(c),
+        ],
+      CvSection.interests => [
+          if (profile.interestsFor(lang).isNotEmpty)
+            pw.Padding(padding: const pw.EdgeInsets.only(top: 2), child: pw.Text(profile.interestsFor(lang))),
+        ],
       CvSection.projects => [for (final p in draft.projects) ..._project(p)],
       CvSection.spokenLanguages => [
           for (final l in profile.languages)
@@ -111,7 +127,14 @@ class _Builder {
     return [_heading(sectionTitle(format, s, lang)), ...body];
   }
 
-  pw.Widget _heading(String title) => pw.Padding(
+  pw.Widget _heading(String title) => format.headingBand
+      ? pw.Container(
+          margin: const pw.EdgeInsets.only(top: 10, bottom: 3),
+          padding: const pw.EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+          color: band,
+          child: pw.Text(upper(title, lang), style: bold.copyWith(fontSize: 10.5, letterSpacing: 0.8)),
+        )
+      : pw.Padding(
         padding: const pw.EdgeInsets.only(top: 10, bottom: 3),
         child: pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.stretch, children: [
           pw.Text(format.headingCaps ? upper(title, lang) : title,
@@ -232,6 +255,11 @@ class _Builder {
         if (!(format.techInProjectTitle && i.kind == 'stack')) ..._item(i, bullet: true),
     ];
   }
+
+  List<pw.Widget> _certificate(Certificate c) => [
+        _row(c.name.trim(), c.date.trim(), bold),
+        if (c.issuer.trim().isNotEmpty) pw.Text(c.issuer.trim(), style: italic),
+      ];
 
   List<pw.Widget> _skills() {
     final en = lang == 'en';

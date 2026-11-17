@@ -12,7 +12,7 @@ class CvPage extends StatelessWidget {
 
   final CvDraft draft;
   final CvFormat format;
-  final CvProfile profile; // "Bilgilerim": ad, iletişim, eğitim, deneyim, diller (telefonda)
+  final CvProfile profile; // "Bilgilerim": ad, iletişim, hakkımda, eğitim, deneyim, sertifika... (telefonda)
   final bool showSources;
 
   static const ink = Color(0xFF111111);
@@ -30,6 +30,7 @@ class CvPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(22, 24, 22, 28),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           if (format.header == HeaderStyle.centered) _centeredHeader(base),
+          if (format.header == HeaderStyle.left) _leftHeader(base),
           for (final s in format.sections) ..._section(s, base, lang),
         ]),
       ),
@@ -53,12 +54,19 @@ class CvPage extends StatelessWidget {
             textAlign: TextAlign.center, style: base.copyWith(fontSize: 10.5)),
       ]);
 
+  /// Türkiye klasik: ad sola yaslı, altında iletişim satırı.
+  Widget _leftHeader(TextStyle base) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(_name, style: base.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 2),
+        Text([...profile.contacts(), _github].join('  ·  '), style: base.copyWith(fontSize: 10.5, color: muted)),
+      ]);
+
   // --- Bölümler -----------------------------------------------------------------------------
 
   List<Widget> _section(CvSection s, TextStyle base, String lang) {
     final body = switch (s) {
       CvSection.personal => _personal(base, lang),
-      CvSection.about => [if (draft.summary != null) _item(draft.summary!, base)],
+      CvSection.about => [if (aboutItem(draft, profile) case final a?) _item(a, base)],
       CvSection.projects => [for (final p in draft.projects) ..._project(p, base, lang)],
       CvSection.skills => _skills(base, lang),
       CvSection.digitalSkills => _skills(base, lang),
@@ -66,6 +74,14 @@ class CvPage extends StatelessWidget {
       // Kullanıcının girdiği bölümler: veri yoksa sayfada hiç görünmez (docs/cv.md).
       CvSection.education => [for (final e in profile.education) ..._education(e, base)],
       CvSection.experience => [for (final e in profile.experience) ..._experience(e, base)],
+      CvSection.certificates => [
+          for (final c in profile.certificates)
+            if (c.name.trim().isNotEmpty) ..._certificate(c, base),
+        ],
+      CvSection.interests => [
+          if (profile.interestsFor(lang).isNotEmpty) Padding(
+              padding: const EdgeInsets.only(top: 2), child: Text(profile.interestsFor(lang))),
+        ],
       CvSection.spokenLanguages => [
           for (final l in profile.languages)
             if (l.name.trim().isNotEmpty) _labelled(l.name.trim(), l.levelLabel(lang), base),
@@ -77,6 +93,15 @@ class CvPage extends StatelessWidget {
 
   Widget _heading(String title, TextStyle base, String lang) {
     final text = format.headingCaps ? upper(title, lang) : title;
+    if (format.headingBand) {
+      // Türkiye klasik: alt çizgi yerine açık gri şerit.
+      return Container(
+        margin: const EdgeInsets.only(top: 12, bottom: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        color: const Color(0xFFE6E6E6),
+        child: Text(text, style: base.copyWith(fontSize: 11.5, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 4),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -188,6 +213,12 @@ class CvPage extends StatelessWidget {
       ...bullets,
     ];
   }
+
+  /// Sertifika: ad ve tarih tek satırda, altında veren kurum.
+  List<Widget> _certificate(Certificate c, TextStyle base) => [
+        _row(c.name.trim(), c.date.trim(), base.copyWith(fontWeight: FontWeight.w700), base),
+        if (c.issuer.trim().isNotEmpty) Text(c.issuer.trim(), style: base.copyWith(fontStyle: FontStyle.italic)),
+      ];
 
   List<Widget> _skills(TextStyle base, String lang) {
     final en = lang == 'en';

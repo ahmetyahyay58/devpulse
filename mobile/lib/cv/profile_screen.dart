@@ -18,6 +18,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final CvProfile p = CvProfile.fromJson(widget.controller.profile.toJson()); // düzenlenen kopya
   bool _dirty = false; // kaydedilmemiş değişiklik var mı
   bool _saving = false;
+  // Hakkımda alanları denetleyiciyle: "Taslaktan başla" metni kutuya koyabilsin.
+  late final Map<String, TextEditingController> _about = {
+    for (final l in ['tr', 'en']) l: TextEditingController(text: p.about[l] ?? ''),
+  };
+
+  @override
+  void dispose() {
+    for (final c in _about.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
 
   /// Bir alan değişti: henüz cihaza yazılmaz, "Kaydet" bekler.
   void _save() => setState(() => _dirty = true);
@@ -58,12 +70,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) Navigator.of(context).pop();
   }
 
-  Widget _field(String label, String value, ValueChanged<String> onChanged, {TextInputType? type, String? hint}) =>
+  Widget _field(String label, String value, ValueChanged<String> onChanged,
+          {TextInputType? type, String? hint, int? maxLength}) =>
       Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: TextFormField(
           initialValue: value,
           keyboardType: type,
+          maxLength: maxLength,
           decoration: InputDecoration(labelText: label, hintText: hint, border: const OutlineInputBorder()),
           onChanged: (v) {
             onChanged(v);
@@ -178,6 +192,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _save();
   }
 
+  Future<void> _editCertificate([Certificate? c]) async {
+    final v = await _edit(c == null ? 'Sertifika ekle' : 'Sertifikayı düzenle', [
+      ('Ad', 'ör. Python ile Veri Bilimi', c?.name ?? '', false),
+      ('Veren kurum', 'ör. BTK Akademi', c?.issuer ?? '', false),
+      ('Tarih', 'ör. Mar 2025', c?.date ?? '', false),
+    ]);
+    if (v == null) return;
+    final item = c ?? Certificate();
+    item
+      ..name = v[0]
+      ..issuer = v[1]
+      ..date = v[2];
+    if (c == null) p.certificates.add(item);
+    _save();
+  }
+
+  /// Hakkımda kutusu (dile göre). CV'nin o dildeki veri özeti varsa "Taslaktan başla" onu koyar.
+  Widget _aboutField(String lang, String label) {
+    final summary = widget.controller.draft?.summary;
+    final canStart = summary != null && widget.controller.lang == lang;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        TextField(
+          controller: _about[lang],
+          minLines: 3,
+          maxLines: 6,
+          maxLength: maxAboutChars,
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: lang == 'en'
+                ? 'e.g. Computer engineering student building mobile apps with Flutter...'
+                : 'ör. Flutter ile mobil uygulama geliştiren bilgisayar mühendisliği öğrencisiyim...',
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (v) {
+            p.about[lang] = v;
+            _save();
+          },
+        ),
+        if (canStart)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () {
+                _about[lang]!.text = summary.text;
+                p.about[lang] = summary.text;
+                _save();
+              },
+              icon: const Icon(Icons.auto_fix_normal, size: 18),
+              label: const Text('Taslaktan başla (GitHub özet cümlesi)'),
+            ),
+          ),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -226,6 +298,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _field('Telefon', p.phone, (v) => p.phone = v, type: TextInputType.phone),
                     _field('Şehir', p.location, (v) => p.location = v, hint: 'ör. Şanlıurfa'),
                     _field('LinkedIn', p.linkedin, (v) => p.linkedin = v, hint: 'ör. linkedin.com/in/adin'),
+                    const SizedBox(height: 8),
+                    Text('Hakkımda', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      '2-4 cümle: kim olduğun, neyle uğraştığın, ne aradığın. Yazarsan o dilin CV\'sinde '
+                      'GitHub özet cümlesinin yerine geçer; boş bırakırsan özet cümlesi görünür.',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    _aboutField('tr', 'Hakkımda (Türkçe CV)'),
+                    _aboutField('en', 'About me (English CV)'),
                     _heading('Eğitim', 'Ekle', _editEducation),
                     for (final e in p.education)
                       _entry(
@@ -245,6 +328,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         () => _editExperience(e),
                         () {
                           p.experience.remove(e);
+                          _save();
+                        },
+                      ),
+                    _heading('Sertifikalar ve kurslar', 'Ekle', _editCertificate),
+                    for (final c in p.certificates)
+                      _entry(
+                        c.name,
+                        [c.issuer, c.date].where((s) => s.isNotEmpty).join(' · '),
+                        () => _editCertificate(c),
+                        () {
+                          p.certificates.remove(c);
                           _save();
                         },
                       ),
@@ -293,7 +387,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         'Düzey: Avrupa Ortak Başvuru Metni (CEFR), A1 başlangıç – C2 ileri.',
                         style: theme.textTheme.bodySmall,
                       ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
+                    Text('İlgi alanları', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text('Yalnız Türkiye klasik ve Europass şablonlarında görünür.', style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 8),
+                    _field('İlgi alanları (Türkçe CV)', p.interestsFor('tr'), (v) => p.interests['tr'] = v,
+                        hint: 'ör. açık kaynak, satranç, robotik', maxLength: maxInterestsChars),
+                    _field('Interests (English CV)', p.interestsFor('en'), (v) => p.interests['en'] = v,
+                        hint: 'e.g. open source, chess, robotics', maxLength: maxInterestsChars),
+                    const SizedBox(height: 16),
                     saveButton, // uzun formun sonunda da: yukarı kaydırmak gerekmesin
                   ],
                 ),

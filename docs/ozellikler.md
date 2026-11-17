@@ -73,7 +73,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Detay: sağlık halkası, eksik listesi, topic çipleri | Kısmen | Mevcut | Şu an 4 kontrol; 5. kontrol önce `metrikler.md`'de tanımlanacak. |
 | Son 12 hafta commit çubukları | Yeni | Mevcut | |
 | Öneri cümlesi ("…kapatırsan skor 20 puan artar") | Yeni | Mevcut | Kontrol ağırlıklarından deterministik. |
-| "Liste / Kümeler" geçişi, repo kümeleri | Yeni | Mevcut | Gözetimsiz (dil, topic, etkinlik özellikleri); raporda ML ayrım tablosuna eklenir. |
+| "Liste / Kümeler" geçişi, repo kümeleri | Yapıldı (17 Kas) | Mevcut | Gözetimsiz k-means (etkinlik + sağlık puanı; dil özellik değil, açıklamada); az repoda k = 2 sabit. Tanım `docs/metrikler.md` "Repo kümeleri"; raporda ML ayrım tablosuna gözetimsiz olarak eklenir. |
 
 ### Başarımlar
 | Madde | Durum | Veri | Not |

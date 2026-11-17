@@ -303,6 +303,19 @@ class FakeBackend {
       return _json(anomalies);
     }
     if (path == '/metrics/year-summary') return _json(yearSummary);
+    if (path == '/projects/clusters') {
+      return _json({
+        'sufficiency': 'dusuk', 'repo_count': 6, 'k': 2, 'silhouette': null,
+        'summary': '6 kendi repo, benzerliklerine göre 2 gruba ayrıldı.',
+        'how': 'Gözetimsiz k-means; doğruluk ölçülmez.',
+        'clusters': [
+          {'name': 'Aktif, belgeli', 'repos': ['hava-durumu', 'blog'], 'top_language': 'Dart',
+           'median_commits': 40.0, 'median_days_since_push': 3.0, 'median_score': 85.0},
+          {'name': 'Durağan, belgesi eksik', 'repos': ['eski-odev'], 'top_language': null,
+           'median_commits': 5.0, 'median_days_since_push': 400.0, 'median_score': null},
+        ],
+      });
+    }
     if (path == '/metrics/achievements') {
       Map<String, dynamic> badge(String key, String name, int current, int target) => {
             'key': key, 'name': name, 'description': '$name açıklaması.',

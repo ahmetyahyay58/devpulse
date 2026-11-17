@@ -17,7 +17,8 @@ Kod (`backend/app/metrics/`) bu belgeye uyar; tanım değişirse önce burası g
 - **Kural tabanlıdır:** Bu sayfadaki metrikler makine öğrenmesi kullanmaz (değişim noktaları
   istatistiksel bir bölütlemedir, öğrenme değildir). Tek istisna
   "Olağan dışı günler" bölümündeki Isolation Forest kıyasıdır: gözetimsiz bir yöntemdir
-  (etiketli veri yok), arayüzdeki ana sonuç ise istatistiksel MAD kuralıdır.
+  (etiketli veri yok), arayüzdeki ana sonuç ise istatistiksel MAD kuralıdır. İkinci istisna
+  "Repo kümeleri"dir (k-means, gözetimsiz; doğruluk iddiası yok).
 
 ## Veri yeterliliği (üç durum)
 
@@ -36,6 +37,7 @@ güç analizine dayanmaz) ve `backend/app/metrics/sufficiency.py` içinde tek ye
 | Yıl kıyası | İki dönemin birinde hiç commit yok | Dönemlerden birinde < 10 commit | diğer |
 | İşbirliği | Sonuçlanmış (merge edilmiş ya da kapatılmış) PR < 3 | Sonuçlanmış PR < 10 | diğer |
 | Yıllık özet | Dönemde < 10 commit | < 50 commit | diğer |
+| Repo kümeleri | < 5 kendi repo | 5-9 repo | diğer |
 
 "Yeterli veri yok" durumunda değer yine hesaplanır ama arayüz sayıyı öne çıkarmaz.
 
@@ -256,6 +258,29 @@ içindeki rolü.
 | Yeterli veri yok | Düşük güven | Normal |
 |---|---|---|
 | Sonuçlanmış PR < 3 | Sonuçlanmış PR < 10 | diğer |
+
+### Repo kümeleri (gözetimsiz, k-means; Faz 9)
+Projeler sekmesindeki "Liste / Kümeler" geçişi. Benzer repoları gruplar; **gözetimsizdir**
+(etiket yok), bu yüzden doğruluk ölçülmez ve "doğru küme" iddiası yoktur. Kod
+`backend/app/metrics/clusters.py`, uç nokta `GET /projects/clusters`.
+
+- **Hangi repolar:** Kullanıcının kendi, fork olmayan repoları (arşivliler dahil). Başkasına ait
+  repolar alınmaz: onlar için yalnız kullanıcının commit'leri bilinir, sağlık puanı yoktur.
+- **Özellikler (4):** log(1 + commit sayısı), log(1 + son push'tan bu yana gün), son 12 haftada
+  commit atılan hafta sayısı / 12, sağlık puanı / 100 (puanlanmayan repo için 0). Önce
+  `StandardScaler` ile ölçeklenir. **Dil özellik değildir:** az repoda tek-sıcak (one-hot) dil
+  sütunları kümeleri tek başına belirliyordu; dil, kümenin açıklamasında (en sık dil) gösterilir.
+- **Küme sayısı (k):** Az repoda siluet puanı anlamsız olduğu için sabit kural: 5-9 repo → k = 2;
+  10 ve üstü → k ∈ {2, 3, 4} içinden siluet puanı en yüksek olan (k ≤ repo sayısı / 3).
+  `KMeans(n_init=10, random_state=0)`: aynı veri her zaman aynı kümeleri verir.
+- **Adlandırma (şablon, LLM yok):** Küme merkezinin özgün birimlerdeki medyanlarından:
+  son push medyanı ≤ 90 gün → "Aktif", değilse "Durağan"; sağlık puanı medyanı ≥ 70 → "belgeli",
+  değilse "belgesi eksik". İki küme aynı adı alırsa commit medyanına göre "çok commit'li" /
+  "az commit'li" eklenir. Her kümede repo listesi, medyanlar ve en sık dil gösterilir.
+
+| Yeterli veri yok | Düşük güven | Normal |
+|---|---|---|
+| < 5 repo (kümeleme yapılmaz) | 5-9 repo (k = 2 sabit) | 10 ve üstü |
 
 ### Proje sağlığı (eksiklik takibi)
 **Ne ölçer:** Reponun vitrin ve belgelendirme eksiksizliğini: repoyu açan biri ne olduğunu,

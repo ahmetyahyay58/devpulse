@@ -14,6 +14,7 @@ from app.auth import current_user
 from app.db import SessionLocal
 from app.metrics.projects import WEEKS, ProjectsOut, RepoFacts, build_projects
 from app.models import Commit, Repo, User
+from app.metrics.clusters import ClustersOut, build_clusters
 
 router = APIRouter(prefix="/projects", tags=["projeler"])
 
@@ -32,6 +33,12 @@ def weekly_counts(times: list[datetime], tz: ZoneInfo, today: date) -> list[int]
 @router.get("", response_model=ProjectsOut)
 def projects(user: User = Depends(current_user)) -> ProjectsOut:
     return load_projects(user)
+
+
+@router.get("/clusters", response_model=ClustersOut)
+def clusters(user: User = Depends(current_user)) -> ClustersOut:
+    """Repo kümeleri (gözetimsiz k-means; docs/metrikler.md "Repo kümeleri")."""
+    return build_clusters(load_projects(user).projects)
 
 
 def load_projects(user: User) -> ProjectsOut:

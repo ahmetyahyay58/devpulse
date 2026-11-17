@@ -104,4 +104,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(backend.projectsCalls, 2);
   });
+
+  testWidgets('Liste / Kümeler: kümeler adıyla, repolarıyla ve yöntem notuyla', (tester) async {
+    final backend = FakeBackend();
+    await _openProjects(tester, backend);
+    await tester.tap(find.text('Kümeler'));
+    await tester.pumpAndSettle();
+    expect(backend.requests.last.url.path, '/projects/clusters');
+    expect(find.text('Aktif, belgeli'), findsOneWidget);
+    expect(find.text('Durağan, belgesi eksik'), findsOneWidget);
+    expect(find.widgetWithText(Chip, 'eski-odev'), findsOneWidget);
+    expect(find.textContaining('son push 400 gün önce · puan -'), findsOneWidget);
+    expect(find.textContaining('az repo olduğu için'), findsOneWidget);
+    expect(find.text('Proje sağlığı'), findsNothing); // liste görünümü gizli
+
+    await tester.tap(find.text('Liste'));
+    await tester.pumpAndSettle();
+    expect(find.text('Proje sağlığı'), findsOneWidget);
+  });
 }

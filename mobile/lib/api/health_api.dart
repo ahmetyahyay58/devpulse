@@ -34,11 +34,10 @@ class HealthApi {
   final String baseUrl;
   final http.Client _client;
 
-  Future<HealthResult> check() async {
+  /// [timeout]: açılıştaki uyandırmada uzun tutulur (ücretsiz bulut sunucusu ~1 dk'da uyanır).
+  Future<HealthResult> check({Duration timeout = const Duration(seconds: 5)}) async {
     final watch = Stopwatch()..start();
-    final resp = await _client
-        .get(Uri.parse('$baseUrl/health'))
-        .timeout(const Duration(seconds: 5));
+    final resp = await _client.get(Uri.parse('$baseUrl/health')).timeout(timeout);
     watch.stop();
 
     if (resp.statusCode != 200) {

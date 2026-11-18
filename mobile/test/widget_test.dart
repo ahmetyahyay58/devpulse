@@ -139,4 +139,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Yenile'), findsOneWidget);
   });
+
+  // --- Sunucu uyandırma (docs/dagitim.md) ------------------------------------------------
+
+  testWidgets('sunucu geç cevap verirse "Sunucu uyanıyor", ulaşılamazsa tekrar dene', (tester) async {
+    final slow = Completer<http.Response>();
+    var calls = 0;
+    final client = MockClient((req) {
+      if (req.url.path == '/health') {
+        calls++;
+        return calls == 1 ? slow.future : Future.value(http.Response('{"status":"ok","database":"ok"}', 200));
+      }
+      return Future.value(http.Response('{}', 404));
+    });
+    final api = ApiClient(baseUrl: 'http://test', client: client);
+    await tester.pumpWidget(DevPulseApp(
+      auth: AuthService(api: api, store: MemorySessionStore(), browserAuth: (url, scheme) async => ''),
+      healthApi: HealthApi(baseUrl: 'http://test', client: client),
+    ));
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.text('Sunucu uyanıyor…'), findsOneWidget);
+
+    slow.completeError(Exception('ağ yok'));
+    await tester.pump();
+    expect(find.textContaining('Sunucuya ulaşılamadı'), findsOneWidget);
+
+    await tester.tap(find.text('Tekrar dene'));
+    await tester.pumpAndSettle();
+    expect(find.text('GitHub ile giriş yap'), findsOneWidget);
+  });
 }

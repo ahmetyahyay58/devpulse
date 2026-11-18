@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'api/api_client.dart';
@@ -29,13 +31,47 @@ class DevPulseApp extends StatefulWidget {
 class _DevPulseAppState extends State<DevPulseApp> {
   Session? _session;
   bool _restoring = true; // açılışta kayıtlı oturum aranıyor
+  // Sunucu uyandırma (docs/dagitim.md): ücretsiz bulut sunucusu boşta uyur, ilk istek ~1 dk sürer.
+  // Bu sürede uygulama hata yerine "Sunucu uyanıyor" gösterir.
+  bool _serverReady = false;
+  bool _slowWake = false; // 2 sn'den uzun sürdü: bekleme ekranını göster
+  String? _wakeError;
+  Timer? _slowTimer;
+
+  @override
+  void dispose() {
+    _slowTimer?.cancel();
+    super.dispose();
+  }
   // Giriş ekranından yeni mi gelindi? Öyleyse ana ekran senkronu başlatıp senkron ekranını
   // açar. Kayıtlı oturumla açılışta (uygulama yeniden açıldı) false kalır.
   bool _freshLogin = false;
 
+  Future<void> _wakeServer() async {
+    setState(() {
+      _wakeError = null;
+      _slowWake = false;
+    });
+    _slowTimer?.cancel();
+    _slowTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _slowWake = true);
+    });
+    try {
+      await widget.healthApi.check(timeout: const Duration(seconds: 90));
+      _slowTimer?.cancel();
+      if (mounted) setState(() => _serverReady = true);
+    } catch (_) {
+      _slowTimer?.cancel();
+      if (mounted) {
+        setState(() => _wakeError = 'Sunucuya ulaşılamadı. İnternet bağlantını kontrol edip tekrar dene.');
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _wakeServer();
     widget.auth.restore().then((session) {
       if (mounted) {
         setState(() {
@@ -74,7 +110,14 @@ class _DevPulseAppState extends State<DevPulseApp> {
   }
 
   Widget _home() {
-    if (_restoring) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (!_serverReady && (_slowWake || _wakeError != null)) {
+      return WakeScreen(
+        error: _wakeError,
+        onRetry: _wakeServer,
+        onContinue: () => setState(() => _serverReady = true), // çevrimdışı da açılabilsin
+      );
+    }
+    if (_restoring || !_serverReady) return const Scaffold(body: Center(child: CircularProgressIndicator()));
     final session = _session;
     if (session == null) {
       return LoginScreen(
@@ -111,6 +154,46 @@ class _DevPulseAppState extends State<DevPulseApp> {
         ),
       ),
       home: _home(),
+    );
+  }
+}
+
+/// Açılışta sunucu geç cevap verirse: ücretsiz bulut sunucusu uyuyor olabilir (docs/dagitim.md).
+class WakeScreen extends StatelessWidget {
+  const WakeScreen({super.key, required this.error, required this.onRetry, required this.onContinue});
+  final String? error;
+  final VoidCallback onRetry;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            if (error == null) ...[
+              const CircularProgressIndicator(),
+              const SizedBox(height: 24),
+              Text('Sunucu uyanıyor…', style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                'Ücretsiz sunucu bir süre kullanılmayınca uyur; ilk açılış bir dakikayı bulabilir.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ] else ...[
+              Icon(Icons.cloud_off, size: 40, color: theme.colorScheme.error),
+              const SizedBox(height: 16),
+              Text(error!, textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
+              const SizedBox(height: 16),
+              FilledButton(onPressed: onRetry, child: const Text('Tekrar dene')),
+              TextButton(onPressed: onContinue, child: const Text('Yine de devam et')),
+            ],
+          ]),
+        ),
+      ),
     );
   }
 }

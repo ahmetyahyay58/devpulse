@@ -4,7 +4,7 @@
     <!-- Haftalık bildirim (isteğe bağlı): telefon yeniden başlayınca planı geri kurmak için. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
-        android:label="devpulse"
+        android:label="DevPulse"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- flutter_local_notifications: planlanmış bildirimi gösteren ve açılışta yeniden kuran alıcılar. -->

@@ -20,7 +20,6 @@ Not: Buradaki kararlar şimdilik geçerli, ileride değişebilir. Haftalık yol 
 - Mobil: Flutter (Dart), yalnızca Android. iOS kapsam dışı. Geliştirme ortamı Windows. Yedek plan: aynı kodun Flutter web derlemesi.
 - Android'de deneme: emülatör bu makinede (7,7 GB) bellek yetmediği için çöküyor; gerçek telefon (kablosuz adb) kullanılır. APK `--dart-define=API_BASE_URL=http://127.0.0.1:8000` ve `--target-platform android-arm64` ile derlenir, sonra `adb reverse tcp:8000 tcp:8000` (bkz. `mobile/lib/config.dart`). Web ve Android ayrı GitHub OAuth App kullanır (`GITHUB_ANDROID_CLIENT_ID/SECRET`). Telefonda demo ve GitHub girişi doğrulandı (13 Kas).
 - Backend: Python, FastAPI, PostgreSQL. Docker Compose ile çalışır.
-- Yayın (17 Kas kararı): backend Render'da (ücretsiz, Frankfurt, `render.yaml`, `backend/Dockerfile`), veritabanı Neon'da (ücretsiz, Frankfurt). `backend/` değişen her push kendiliğinden yayına çıkar; açılışta Alembic migration çalışır. Geliştirme ve testler yerelde kalır. APK bulut adresiyle derlenir; ücretsiz sunucu uyuyabildiği için uygulama açılışta "Sunucu uyanıyor" bekler. Ayrıntı `docs/dagitim.md`.
 - Flutter web tuzağı (17 Kas): yeni bir eklenti (ör. `shared_preferences`) eklenince `flutter build web --release` eski eklenti kayıt dosyasını kullanabiliyor; tarayıcıda `MissingPluginException` çıkar, debug'da çıkmaz. Çözüm: `flutter clean`, sonra derle. Tarayıcı da eski derlemeyi önbellekten verebilir: servis çalışanını ve önbelleği temizleyip yeniden yükle.
 - Şema yalnızca Alembic migration'larıyla değişir (`backend/migrations/`); `create_all` kullanılmaz. Model değişince: `py -m alembic revision --autogenerate -m "..."`, dosyayı gözden geçir, `py -m alembic upgrade head`. `py -m alembic check` model ile veritabanı arasındaki farkı yakalar.
 - Backend'i geliştirmede `py -m uvicorn app.main:app --reload --reload-dir app` ile çalıştır (`.venv`'i izlemesin). Windows'ta `--reload` bazen "Reloading..." deyip takılıyor (eski süreç kapanmıyor); değişiklik canlıda görünmüyorsa log'a bak ve sunucuyu yeniden başlat. `.env` değişikliği her zaman yeniden başlatma ister.
@@ -89,7 +88,6 @@ MVP sonrası kapsam (geliştirici kararı, 13 Kas): prototip ekran listesi `docs
 ## Açık kararlar (kodlamadan önce netleşmeli)
 - Teslim tarihi: ocak ortası mı, mayıs mı? (danışmana sorulacak)
 - MVP listesinin onayı.
-- Oturum belirteci için öneri uygulandı (bkz. Teknik kararlar), onay bekliyor. (Backend'in yeri kararlaştırıldı: Render + Neon, 17 Kas.)
-- Verilerin yurt dışında (Frankfurt) saklanması KVKK açısından danışmana sorulacak.
+- Backend nerede çalışacak (yerel makine + aynı Wi-Fi ya da bulut). Oturum belirteci için öneri uygulandı (bkz. Teknik kararlar), onay bekliyor.
 - Değerlendirme verisi: gerçek test kullanıcısı olacak mı, kim, hangi onayla?
 - Ortak yazar commit'leri sayılacak mı?

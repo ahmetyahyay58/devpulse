@@ -39,7 +39,7 @@ Sana kendi alışkanlıklarını ve repolarının eksiklerini göstermek. Verile
 ## Veri nereye gider
 - GitHub: verinin kaynağıdır; uygulama GitHub API'sinden okur.
 - Yapay zekâ hizmeti (Google Gemini API): yalnızca onay verirsen ve yalnızca bir yapay zekâ yorumu istediğinde kullanılır. Gönderilen tek şey hesaplanmış toplu sayılardır (ör. toplam commit, aktif gün, en uzun seri, gece çalışma oranı, proje sağlık ortalaması, en çok kullandığın dilin adı ve payı). Mülakat koçunda yalnızca seçtiğin projenin sayıları, ana dili ve kullandığı araçların genel adları (ör. Docker) gider; projenin adı ve açıklaması gitmez. Kullanıcı adın, repo adların, commit mesajların, kodun ve e-postan gönderilmez; gönderilen sayıları uygulamadaki "Yapay zekâya giden veri" ekranında görebilirsin. Uygulama Gemini'nin ücretsiz katmanını kullanır: Google, bu katmanda gönderilen içeriği ve cevapları kendi ürünlerini geliştirmek için kullanabilir ve insan inceleyiciler okuyabilir. Onayını Profil ekranından istediğin zaman geri alabilirsin; geri aldığında hiçbir şey gönderilmez ve yorumlar hazır şablon cümlelerle gösterilir.
-- Sunucu ve veritabanı: Uygulamanın sunucusu Render'da, veritabanı Neon'da çalışır; ikisinin de sunucuları Almanya'dadır (Frankfurt). Bu hizmetleri yalnızca geliştirici yönetir; verilerin bu sağlayıcıların altyapısında, Türkiye dışında saklandığını bilmelisin.
+- Sunucu, proje süresince geliştiricinin denetimindeki bir makinede çalışır.
 
 ## Verilerini indirme
 Uygulamadaki "Verilerimi indir" seçeneği, sunucuda senin hakkında saklanan verilerin tamamını (yukarıdaki "Saklanan veriler" bölümünde sayılanlar) tek bir JSON dosyası olarak verir. Dosya yalnızca sana, oturumunla gönderilir; sunucuda ayrıca bir kopyası oluşturulmaz.

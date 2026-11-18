@@ -1,5 +1,4 @@
 """Uygulama ayarları. Değerler ortam değişkenlerinden ya da backend/.env dosyasından okunur."""
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,15 +7,6 @@ class Settings(BaseSettings):
 
     # SQLAlchemy bağlantı adresi; "+psycopg" sürücüsü psycopg 3'ü kullanır.
     database_url: str = "postgresql+psycopg://devpulse:devpulse@localhost:5432/devpulse"
-
-    @field_validator("database_url")
-    @classmethod
-    def _psycopg_driver(cls, v: str) -> str:
-        """Neon/Render "postgresql://..." verir; SQLAlchemy bunu psycopg2 sanar. Sürücüyü psycopg 3 yap."""
-        for prefix in ("postgresql://", "postgres://"):
-            if v.startswith(prefix):
-                return "postgresql+psycopg://" + v[len(prefix):]
-        return v
 
     # Yalnızca komut satırı senkronu (py -m app.sync) için kişisel token.
     # API bu değeri kullanmaz; API'de token her istekte telefondan gelir.

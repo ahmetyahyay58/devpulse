@@ -24,9 +24,14 @@ Oracle sanal makine (uyumaz, bakım yükü), Supabase (yalnız veritabanı, back
 | `GEMINI_API_KEY` | Geliştirici | Boşsa AI cevapları şablon olur. |
 
 ## Uygulama
-APK bulut adresiyle derlenir; adres APK'nın içine yazılır, sabit kalmalıdır:
+Sunucu adresi: **https://devpulse-api-mvwt.onrender.com** (18 Kas'ta açıldı; `/health`, demo
+senkronu, metrikler ve commit türü modeli bulutta doğrulandı). Android'de varsayılan adres budur
+(`mobile/lib/config.dart`, `cloudApiUrl`); adres APK'nın içine yazılır, sabit kalmalıdır:
 
-    flutter build apk --dart-define=API_BASE_URL=https://<servis-adı>.onrender.com --target-platform android-arm64
+    flutter build apk --release --target-platform android-arm64
+
+Bilgisayardaki sunucuyla denemek için adres derlemede verilir
+(`--dart-define=API_BASE_URL=http://127.0.0.1:8000` + `adb reverse tcp:8000 tcp:8000`).
 
 Yalnızca uygulama kodu değişince yeni APK kurulur; backend değişiklikleri sunucu güncellenince
 telefona kendiliğinden yansır.

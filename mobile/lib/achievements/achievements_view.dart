@@ -8,7 +8,7 @@ import '../overview/overview_models.dart';
 import '../share/share_card.dart';
 import '../year/year_summary_screen.dart';
 
-/// Başarımlar: 8 rozet (kilitliler soluk, ilerlemeli) ve yıl kıyası.
+/// Başarımlar: 20 rozet (kilitliler soluk, ilerlemeli; gizliler açılana kadar "???") ve yıl kıyası.
 /// Rozetler alışkanlığı ve proje bakımını tanır; ham commit sayısını ödüllendirmez.
 class AchievementsView extends StatelessWidget {
   const AchievementsView({super.key, required this.controller});
@@ -90,7 +90,23 @@ const _icons = {
   'license': Icons.gavel_outlined,
   'polyglot': Icons.translate,
   'contributor': Icons.handshake_outlined,
+  // Alışkanlık rozetleri (docs/metrikler.md)
+  'hours24': Icons.schedule,
+  'night_owl': Icons.nightlight_outlined,
+  'early_bird': Icons.wb_twilight,
+  'new_year': Icons.celebration_outlined,
+  'leet': Icons.terminal,
+  'marathon': Icons.directions_run,
+  'comeback': Icons.replay,
+  'bug_hunter': Icons.bug_report_outlined,
+  'all_types': Icons.palette_outlined,
+  'less_is_more': Icons.content_cut,
+  'automation': Icons.precision_manufacturing_outlined,
+  'first_merge': Icons.merge_type,
 };
+
+/// İlerleme birimi: sayı tek başına anlaşılmayan rozetler için.
+const _units = {'marathon': ' dk', 'night_owl': '%'};
 
 /// İki sütunlu ızgara (Row + Expanded; GridView içerik yüksekliğine uymadığı için).
 class _BadgeGrid extends StatelessWidget {
@@ -127,6 +143,9 @@ class BadgeTile extends StatelessWidget {
     final current = badge['current'] as int;
     final target = badge['target'] as int;
     final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    final secret = badge['hidden'] == true && !unlocked; // gizli: ad ve koşul sunucudan gelmez
+    final unit = _units[badge['key']] ?? '';
+    final progress = unit == '%' ? '%$current / %$target' : '$current$unit / $target$unit';
     return Opacity(
       opacity: unlocked ? 1 : 0.55, // kilitli rozet soluk
       child: Card(
@@ -135,7 +154,7 @@ class BadgeTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Icon(_icons[badge['key']] ?? Icons.emoji_events_outlined,
+              Icon(secret ? Icons.help_outline : (_icons[badge['key']] ?? Icons.emoji_events_outlined),
                   color: unlocked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
               const Spacer(),
               // Durum ikonla ve yazıyla (renk tek başına anlam taşımaz).
@@ -148,12 +167,15 @@ class BadgeTile extends StatelessWidget {
             Text(badge['description'] as String, style: muted),
             const Spacer(),
             const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(value: target == 0 ? 0 : current / target, minHeight: 4),
-            ),
-            const SizedBox(height: 4),
-            Text(unlocked ? 'Açıldı' : '$current / $target', style: muted),
+            if (!secret) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(value: target == 0 ? 0 : current / target, minHeight: 4),
+              ),
+              const SizedBox(height: 4),
+            ],
+            Text(unlocked ? (badge['hidden'] == true ? 'Gizli rozet açıldı' : 'Açıldı') : (secret ? '???' : progress),
+                style: muted),
           ]),
         ),
       ),

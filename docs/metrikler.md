@@ -192,6 +192,31 @@ Seri ve aktif gün tanımları "Süreklilik", repo koşulları "Proje sağlığ�
 "Teknoloji" ile aynıdır; rozet yeni bir hesap yapmaz, var olanları eşikle karşılaştırır.
 Eşikler sezgiseldir.
 
+**Alışkanlık rozetleri (19 Kas, geliştirici isteği: "eğlenceli de olabilir").** Saklanan veriden
+hesaplanır; yeni veri çekilmez. Saatler kullanıcının saat diliminde yerel saattir; saat dilimi
+bilinmiyorsa saate bağlı rozetler (🕐) kilitli kalır ve açıklamada bu yazar. Gece ya da hafta
+sonu çalışmak övülmez: rozet yalnız alışkanlığı betimler.
+
+| Rozet | Koşul | İlerleme |
+|---|---|---|
+| 24 Saat 🕐 | Günün 24 saatinin her birinde en az bir commit | commit atılan farklı saat / 24 |
+| Gece Kuşu 🕐 | En az 20 commit ve commit'lerin en az %30'u gece (00:00-05:59, "Ritim" ile aynı) | gece payı (%) / 30; 20 commit'ten azsa 0 |
+| Erkenci 🕐 | 06:00-07:59 arası en az 10 commit (gecenin hemen ardı) | bu saatlerdeki commit / 10 |
+| Yılbaşı (gizli) 🕐 | 1 Ocak'ta en az bir commit | 0 / 1 |
+| 13:37 (gizli) 🕐 | Yerel saati tam 13:37 olan bir commit | 0 / 1 |
+| Maraton 🕐 | En uzun oturum ≥ 4 saat ("Oturum" kuralı, 2 saat boşluk) | en uzun oturum (dk) / 240 |
+| Geri Dönüş | İki aktif gün arasında 30 günden uzun ara, sonra yeniden commit | 0 / 1 |
+| Böcek Avcısı | "Hata düzeltme" türünde en az 10 commit ("Commit türleri") | fix commit / 10 |
+| Her Telden | 6 uygulama türünün hepsinde en az bir commit | kullanılan tür / 6 |
+| Az Çoktur | Silinen satırın eklenenden en az 100 fazla olduğu bir commit (temizlik) | 0 / 1 |
+| Otomasyoncu | Kendi repolarından birinde GitHub Actions ("Teknoloji" araç tespiti) | 0 / 1 |
+| İlk Merge | Başkasının reposuna açılan PR'lardan en az biri merge edildi ("İşbirliği") | merge edilen / 1 |
+
+**Gizli rozetler:** Yılbaşı ve 13:37 açılana kadar adı ve koşulu gösterilmez ("Gizli rozet",
+"???"); sunucu da göndermez (`hidden: true`). Açılınca normal rozet gibi görünür. Tür rozetleri
+commit türü sınıflandırmasının (kural + model) sonucunu kullanır; sınıflandırma hatası rozeti
+etkileyebilir (ölçülen doğruluk `docs/olcumler.md`).
+
 ### Yıl kıyası
 **Dönem:** Bu yılın 1 Ocak'ından bugüne (yerel saat) ile geçen yılın aynı dönemi (1 Ocak'tan
 geçen yılın bugünkü tarihine; 29 Şubat yoksa 28 Şubat). Tam geçen yıl ile yarım bu yıl

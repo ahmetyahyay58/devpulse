@@ -3,6 +3,7 @@
 Rozetler yeni bir hesap yapmaz: süreklilik, proje sağlığı ve teknoloji sonuçlarını eşikle
 karşılaştırır. Ham commit sayısını ödüllendiren rozet yoktur.
 """
+from dataclasses import dataclass, field
 from datetime import date, datetime
 
 from pydantic import BaseModel
@@ -29,12 +30,21 @@ class BadgeOut(BaseModel):
     current: int
     target: int
     unlocked: bool
+    hidden: bool = False  # gizli rozet: açılana kadar adı ve koşulu gönderilmez
 
 
-def _badge(key: str, name: str, description: str, current: int, target: int) -> BadgeOut:
+HIDDEN_NAME = "Gizli rozet"
+HIDDEN_DESCRIPTION = "???  Açınca ne olduğunu göreceksin."
+
+
+def _badge(key: str, name: str, description: str, current: int, target: int, hidden: bool = False) -> BadgeOut:
     current = max(0, current)
+    unlocked = current >= target
+    if hidden and not unlocked:  # sır sunucuda kalır: ad ve koşul uygulamaya gitmez
+        return BadgeOut(key=key, name=HIDDEN_NAME, description=HIDDEN_DESCRIPTION, current=0, target=1,
+                        unlocked=False, hidden=True)
     return BadgeOut(key=key, name=name, description=description, current=min(current, target),
-                    target=target, unlocked=current >= target)
+                    target=target, unlocked=unlocked, hidden=hidden)
 
 
 def badges(
@@ -61,6 +71,65 @@ def badges(
         _badge("license", "Lisanslı", "Bütün repolarına lisans ekle.", all_ok("license"), max(n, 1)),
         _badge("polyglot", "Çok dilli", "Kodunun en az %5'i olan 3 dilde yaz.", multi, 3),
         _badge("contributor", "Katkıcı", "Başkasına ait bir repoya commit at.", contributed, 1),
+    ]
+
+
+# --- Alışkanlık rozetleri (docs/metrikler.md "Alışkanlık rozetleri") ---------------------
+
+NIGHT_MIN_COMMITS = 20
+NO_TZ = " (saat dilimin bilinmiyor; senkronla gelir)"
+
+
+@dataclass(frozen=True)
+class HabitFacts:
+    local_times: list[datetime]  # commit'lerin yerel zamanı, sıralı
+    tz_known: bool  # False: saate bağlı rozetler kilitli
+    labels: list[str] = field(default_factory=list)  # her commit'in uygulama türü (APP_LABELS)
+    max_net_removed: int = 0  # en büyük (silinen - eklenen) satır, tek commit'te
+    has_actions: bool = False  # kendi repolarından birinde GitHub Actions
+    merged_to_others: int = 0  # başkasının reposunda merge edilen PR
+
+
+def _longest_gap_then_back(days: set[date]) -> int:
+    """Ardışık iki aktif gün arasındaki en uzun ara (gün). Sonraki gün aktif olduğu için 'geri dönüş'."""
+    ordered = sorted(days)
+    return max(((b - a).days for a, b in zip(ordered, ordered[1:])), default=0)
+
+
+def habit_badges(f: HabitFacts) -> list[BadgeOut]:
+    from app.classify.labels import APP_LABELS  # döngüsel içe aktarımı önler
+
+    times = f.local_times if f.tz_known else []
+    hours = {t.hour for t in times}
+    n = len(times)
+    night = sum(1 for t in times if t.hour in activity.NIGHT_HOURS)
+    night_pct = round(night / n * 100) if n >= NIGHT_MIN_COMMITS else 0
+    early = sum(1 for t in times if 6 <= t.hour < 8)
+    longest = activity.longest_session(activity.sessions(sorted(times)))
+    tz = "" if f.tz_known else NO_TZ
+    days = activity.active_days(f.local_times)
+    return [
+        _badge("hours24", "24 Saat", "Günün 24 saatinin her birinde en az bir commit at." + tz, len(hours), 24),
+        _badge("night_owl", "Gece Kuşu",
+               f"En az {NIGHT_MIN_COMMITS} commit'in %30'u gece (00:00-05:59) olsun. Betimler, övmez." + tz,
+               night_pct, 30),
+        _badge("early_bird", "Erkenci", "06:00-07:59 arasında 10 commit at." + tz, early, 10),
+        _badge("new_year", "Yılbaşı", "1 Ocak'ta commit at." + tz,
+               int(any(t.month == 1 and t.day == 1 for t in times)), 1, hidden=True),
+        _badge("leet", "13:37", "Saat tam 13:37'de commit at." + tz,
+               int(any(t.hour == 13 and t.minute == 37 for t in times)), 1, hidden=True),
+        _badge("marathon", "Maraton", "4 saat ya da daha uzun bir oturum (aradaki boşluk 2 saati geçmeden)." + tz,
+               round(longest.minutes) if longest else 0, 240),
+        _badge("comeback", "Geri Dönüş", "30 günden uzun bir aradan sonra yeniden commit at.",
+               int(_longest_gap_then_back(days) > 30), 1),
+        _badge("bug_hunter", "Böcek Avcısı", "\"Hata düzeltme\" türünde 10 commit at.",
+               sum(1 for l in f.labels if l == "fix"), 10),
+        _badge("all_types", "Her Telden", "6 commit türünün hepsinde en az bir commit at.",
+               len(set(f.labels) & set(APP_LABELS)), len(APP_LABELS)),
+        _badge("less_is_more", "Az Çoktur", "Sildiği satır eklediğinden en az 100 fazla olan bir commit at.",
+               int(f.max_net_removed >= 100), 1),
+        _badge("automation", "Otomasyoncu", "Repolarından birine GitHub Actions ekle.", int(f.has_actions), 1),
+        _badge("first_merge", "İlk Merge", "Başkasının reposuna açtığın bir PR merge edilsin.", f.merged_to_others, 1),
     ]
 
 

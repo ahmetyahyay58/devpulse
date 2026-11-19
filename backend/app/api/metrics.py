@@ -25,7 +25,8 @@ from app.auth import current_user
 from app.db import SessionLocal
 from app.api.projects import load_projects
 from app.metrics import activity
-from app.metrics.achievements import AchievementsOut, badges, year_compare
+from app.classify.classifier import classify_many
+from app.metrics.achievements import AchievementsOut, HabitFacts, badges, habit_badges, year_compare
 from app.metrics.activity import CommitPoint
 from app.classify.model_lab import MODEL_LAB, ModelLabOut
 from app.metrics.catalog import CATALOG, CatalogOut
@@ -173,12 +174,24 @@ def achievements(user: User = Depends(current_user)) -> AchievementsOut:
     today = datetime.now(ZoneInfo(tz or "UTC")).date()
     with SessionLocal() as db:
         rows = db.execute(
-            select(Commit.authored_at, Commit.repo_id).join(Repo).where(Repo.user_id == user.id)
+            select(Commit.authored_at, Commit.repo_id, Commit.message, Commit.additions, Commit.deletions)
+            .join(Repo).where(Repo.user_id == user.id).order_by(Commit.authored_at)
         ).all()
+        own_tools = db.scalars(select(Repo.tools).where(Repo.user_id == user.id, Repo.is_owner)).all()
+        merged_to_others = db.scalar(select(func.count(PullRequest.id)).where(
+            PullRequest.user_id == user.id, PullRequest.state == "MERGED", ~PullRequest.is_own_repo))
     zone = ZoneInfo(tz or "UTC")
-    pairs = [(t.astimezone(zone), repo_id) for t, repo_id in rows]  # (yerel zaman, repo)
+    pairs = [(r.authored_at.astimezone(zone), r.repo_id) for r in rows]  # (yerel zaman, repo)
     days = activity.active_days([t for t, _ in pairs])
-    out_badges = badges(days, today, load_projects(user), _load_technology(user))
+    habits = HabitFacts(
+        local_times=[t for t, _ in pairs], tz_known=tz is not None,
+        labels=[c.label for c in classify_many([r.message for r in rows])],
+        max_net_removed=max((r.deletions - r.additions for r in rows
+                             if r.additions is not None and r.deletions is not None), default=0),
+        has_actions=any("GitHub Actions" in (t or []) for t in own_tools),
+        merged_to_others=merged_to_others or 0,
+    )
+    out_badges = badges(days, today, load_projects(user), _load_technology(user)) + habit_badges(habits)
     return AchievementsOut(
         badges=out_badges, unlocked=sum(b.unlocked for b in out_badges),
         year=year_compare(pairs, today),

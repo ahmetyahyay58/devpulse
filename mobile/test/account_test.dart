@@ -203,7 +203,7 @@ void main() {
     expect(find.text('Profil'), findsOneWidget); // başlık
     expect(find.text('B'), findsOneWidget); // "ben" -> baş harf (avatar_url yok)
     expect(find.text("GitHub'a bağlı"), findsOneWidget);
-    expect(find.text('Rozet vitrini · 2 / 8'), findsOneWidget);
+    expect(find.text('Rozet vitrini · 3 / 11'), findsOneWidget);
     expect(find.text('Bir haftalık seri'), findsOneWidget);
     expect(find.text('Lisanslı'), findsNothing); // kilitli rozet vitrinde yok
   });

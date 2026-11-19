@@ -78,7 +78,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### Başarımlar
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| 8 rozet: kilitliler soluk, ilerleme çubuklu | Var | Mevcut | Kurallar `metrikler.md`'de tanımlanır. |
+| 20 rozet: kilitliler soluk, ilerleme çubuklu | Var | Mevcut | 8 temel + 12 alışkanlık rozeti (19 Kas; ikisi gizli, açılana kadar "???"). Kurallar `metrikler.md`'de tanımlanır. |
 | Yıl kıyası: iki yıl yan yana, yüzde değişim | Var | Mevcut | Betimleyici dil. |
 | Hedef koçu: 3 soru çipi | Çıkarıldı (17 Kas) | Mevcut | Yapıldı, sonra geliştirici kararıyla şimdilik kaldırıldı (geri alma commit'leri cb668d3, 5e759bf); ileride geri gelebilir. |
 

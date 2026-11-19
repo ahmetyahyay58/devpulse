@@ -48,6 +48,6 @@ def test_endpoint(api, demo_auth):
     assert api.get("/metrics/year-summary").status_code == 401
     api.post("/sync", json={}, headers=demo_auth)
     body = api.get("/metrics/year-summary", headers=demo_auth).json()
-    assert body["commits"] > 0 and body["badges_total"] == 8
+    assert body["commits"] > 0 and body["badges_total"] == 20
     assert body["period_start"].endswith("-01-01")
     assert api.get("/metrics/year-summary?year=2999", headers=demo_auth).status_code in (400, 422)

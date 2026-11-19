@@ -1,7 +1,7 @@
 """Başarımlar ve yıl kıyası (docs/metrikler.md "Başarımlar", "Yıl kıyası")."""
 from datetime import date, datetime, timedelta
 
-from app.metrics.achievements import badges, year_compare
+from app.metrics.achievements import HIDDEN_NAME, HabitFacts, badges, habit_badges, year_compare
 from app.metrics.projects import RepoFacts, build_projects
 from app.metrics.sufficiency import Sufficiency
 from app.metrics.technology import RepoTech, build_technology
@@ -98,6 +98,79 @@ def test_achievements_endpoint(api, demo_auth):
     assert api.get("/metrics/achievements").status_code == 401
     api.post("/sync", json={}, headers=demo_auth)
     body = api.get("/metrics/achievements", headers=demo_auth).json()
-    assert len(body["badges"]) == 8
+    assert len(body["badges"]) == 20  # 8 temel + 12 alışkanlık
+    hidden = [b for b in body["badges"] if b["hidden"] and not b["unlocked"]]
+    assert all(b["name"] == "Gizli rozet" and "13:37" not in b["description"] for b in hidden)
     assert body["unlocked"] == sum(b["unlocked"] for b in body["badges"])
     assert [s["label"] for s in body["year"]["stats"]][0] == "Commit"
+
+
+# --- Alışkanlık rozetleri ---
+
+def lt(day: date, hour: int, minute: int = 0) -> datetime:
+    return datetime(day.year, day.month, day.day, hour, minute)
+
+
+def habits(times, **kw):
+    return by_key(habit_badges(HabitFacts(local_times=sorted(times), tz_known=kw.pop("tz_known", True), **kw)))
+
+
+def test_hours24_counts_distinct_hours():
+    b = habits([lt(TODAY, h) for h in range(24)])
+    assert b["hours24"].unlocked
+    b = habits([lt(TODAY, 9), lt(TODAY, 9, 30), lt(TODAY, 10)])
+    assert (b["hours24"].current, b["hours24"].target) == (2, 24)
+
+
+def test_night_owl_needs_min_commits_and_share():
+    few_night = [lt(TODAY - timedelta(days=i), 2) for i in range(10)]
+    assert habits(few_night)["night_owl"].current == 0  # 20 commit'ten az: ilerleme yok
+    night = [lt(TODAY - timedelta(days=i), 3) for i in range(7)]
+    day = [lt(TODAY - timedelta(days=i), 14) for i in range(13)]
+    b = habits(night + day)["night_owl"]  # 7/20 = %35
+    assert b.unlocked and b.current == 30
+
+
+def test_early_bird_window():
+    b = habits([lt(TODAY - timedelta(days=i), 6, 30) for i in range(10)] + [lt(TODAY, 5), lt(TODAY, 8)])
+    assert b["early_bird"].unlocked  # 05:00 ve 08:00 sayılmaz, 10 tane 06:30 yeter
+    assert habits([lt(TODAY, 5), lt(TODAY, 8)])["early_bird"].current == 0
+
+
+def test_hidden_badges_keep_secret_until_unlocked():
+    b = habits([lt(TODAY, 13, 36)])
+    assert b["leet"].hidden and not b["leet"].unlocked
+    assert b["leet"].name == HIDDEN_NAME and "13:37" not in b["leet"].description
+    b = habits([lt(TODAY, 13, 37), lt(date(2026, 1, 1), 11)])
+    assert b["leet"].unlocked and b["leet"].name == "13:37"
+    assert b["new_year"].unlocked and b["new_year"].name == "Yılbaşı"
+
+
+def test_marathon_uses_session_rule():
+    # 09:00'dan 13:00'a her 90 dakikada commit: boşluk 2 saati geçmez, oturum 4 saat
+    run = [lt(TODAY, 9), lt(TODAY, 10, 30), lt(TODAY, 12), lt(TODAY, 13)]
+    assert habits(run)["marathon"].unlocked
+    broken = [lt(TODAY, 9), lt(TODAY, 11, 30), lt(TODAY, 13)]  # 2,5 saat boşluk: oturum bölünür
+    assert not habits(broken)["marathon"].unlocked
+
+
+def test_time_badges_locked_without_timezone():
+    b = habits([lt(TODAY, h) for h in range(24)] + [lt(TODAY, 13, 37)], tz_known=False)
+    assert not b["hours24"].unlocked and not b["leet"].unlocked and not b["marathon"].unlocked
+    assert "saat dilimin bilinmiyor" in b["hours24"].description
+
+
+def test_comeback_needs_gap_over_30_days():
+    assert habits([lt(TODAY - timedelta(days=40), 10), lt(TODAY, 10)])["comeback"].unlocked
+    assert not habits([lt(TODAY - timedelta(days=30), 10), lt(TODAY, 10)])["comeback"].unlocked
+
+
+def test_type_and_repo_badges():
+    b = habits([lt(TODAY, 10)], labels=["fix"] * 10 + ["feat", "docs", "bakim", "test"],
+               max_net_removed=120, has_actions=True, merged_to_others=2)
+    assert b["bug_hunter"].unlocked
+    assert (b["all_types"].current, b["all_types"].target) == (5, 6)  # "diger" yok
+    assert b["less_is_more"].unlocked and b["automation"].unlocked
+    assert b["first_merge"].unlocked and b["first_merge"].current == 1
+    b = habits([lt(TODAY, 10)], max_net_removed=99)
+    assert not b["less_is_more"].unlocked and not b["first_merge"].unlocked

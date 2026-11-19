@@ -106,7 +106,7 @@ CATALOG = [
     ),
     CatalogEntry(
         name="Başarımlar", section="Başarımlar",
-        definition="Seri, düzen, proje bakımı ve katkı için 8 rozet; her biri ilerlemesiyle.",
+        definition="Seri, düzen, proje bakımı, katkı ve çalışma alışkanlıkları için 20 rozet (ikisi gizli); her biri ilerlemesiyle.",
         unit="rozet",
         interpretation="Alışkanlığı ve bakımı tanır; ham commit sayısını ödüllendirmez.",
         reliable_when="Her zaman; rozetler var olan metriklerin eşikleridir.",

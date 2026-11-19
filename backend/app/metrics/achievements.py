@@ -34,7 +34,7 @@ class BadgeOut(BaseModel):
 
 
 HIDDEN_NAME = "Gizli rozet"
-HIDDEN_DESCRIPTION = "???  Açınca ne olduğunu göreceksin."
+HIDDEN_DESCRIPTION = "Açınca ne olduğunu göreceksin."
 
 
 def _badge(key: str, name: str, description: str, current: int, target: int, hidden: bool = False) -> BadgeOut:

@@ -345,7 +345,7 @@ class FakeBackend {
           badge('polyglot', 'Çok dilli', 2, 3),
           badge('contributor', 'Katkıcı', 0, 1),
           badge('marathon', 'Maraton', 180, 240),
-          {'key': 'leet', 'name': 'Gizli rozet', 'description': '???  Açınca ne olduğunu göreceksin.',
+          {'key': 'leet', 'name': 'Gizli rozet', 'description': 'Açınca ne olduğunu göreceksin.',
             'current': 0, 'target': 1, 'unlocked': false, 'hidden': true},
           {'key': 'new_year', 'name': 'Yılbaşı', 'description': "1 Ocak'ta commit at.",
             'current': 1, 'target': 1, 'unlocked': true, 'hidden': true},

@@ -26,6 +26,7 @@ class AccountScreen extends StatelessWidget {
     WeeklyReminder? reminder,
     this.bySource,
     this.ai,
+    this.onResync,
   }) : reminder = reminder ?? LocalWeeklyReminder.instance;
 
   final Session session;
@@ -37,6 +38,7 @@ class AccountScreen extends StatelessWidget {
   final Map<String, int>? bySource; // kullanıcının commit'lerinde kural / model / belirsiz
   final AiController? ai; // yapay zekâ onayı (ana ekrandan; verilmezse kart yok)
   final WeeklyReminder reminder; // haftalık bildirim (yalnız Android); testlerde sahtesi
+  final VoidCallback? onResync; // senkronu yeniden başlatıp aşamalı ekranı açar (ana ekrandan)
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,16 @@ class AccountScreen extends StatelessWidget {
                 reminder: reminder,
               ),
               const SizedBox(height: 8),
+              if (onResync != null)
+                ListTile(
+                  leading: const Icon(Icons.replay),
+                  title: const Text('Senkronu yeniden oynat'),
+                  subtitle: const Text("GitHub'dan verini yeniden çeker, aşamaları baştan gösterir"),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onResync!();
+                  },
+                ),
               ListTile(
                 leading: const Icon(Icons.privacy_tip_outlined),
                 title: const Text('Aydınlatma metni'),

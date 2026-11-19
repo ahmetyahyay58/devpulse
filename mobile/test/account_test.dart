@@ -17,7 +17,7 @@ const _live = Session(sessionToken: 'jwt', githubToken: 'gho_live', userId: 3, l
 const _demo = Session(sessionToken: 'jwt', githubToken: null, userId: 1, login: 'demo-gelistirici');
 
 Future<MemorySessionStore> _start(WidgetTester tester, FakeBackend backend, Session? session) async {
-  tester.view.physicalSize = const Size(1080, 6500); // uzun Profil sayfası tamamen görünsün
+  tester.view.physicalSize = const Size(1080, 8000); // uzun Profil sayfası tamamen görünsün
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
   final store = MemorySessionStore();
@@ -90,7 +90,7 @@ void main() {
   group('Verilerimi indir', () {
     Future<List<(Uint8List, String)>> openAccount(WidgetTester tester, FakeBackend backend) async {
       final saved = <(Uint8List, String)>[];
-      tester.view.physicalSize = const Size(1080, 6500); // uzun Profil sayfası tamamen görünsün
+      tester.view.physicalSize = const Size(1080, 8000); // uzun Profil sayfası tamamen görünsün
       tester.view.devicePixelRatio = 2.5;
       addTearDown(tester.view.reset);
       final api = ApiClient(baseUrl: 'http://test', client: backend.client)..sessionToken = 'jwt';
@@ -153,6 +153,23 @@ void main() {
     expect(find.text('11.02.2027'), findsOneWidget);
     expect(find.textContaining('90 gün boyunca giriş yapmaz'), findsOneWidget);
     expect(find.textContaining('90 gün etkinlik olmazsa silinir'), findsOneWidget); // çıkış satırı
+  });
+
+  testWidgets('senkronu yeniden oynat: Profil kapanır, senkron başlar ve aşamalı ekran açılır', (tester) async {
+    final backend = FakeBackend();
+    await _start(tester, backend, _live);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    final before = backend.requests.where((r) => r.method == 'POST' && r.url.path == '/sync').length;
+    await tester.tap(find.text('Senkronu yeniden oynat'));
+    await tester.pumpAndSettle();
+    expect(find.text('Veri kapsamı'), findsNothing); // Profil kapandı
+    expect(backend.requests.where((r) => r.method == 'POST' && r.url.path == '/sync').length, before + 1);
+    // Aşamalı ekran aşamaları sırayla gösterip kendisi kapanır; zamanlayıcı açık kalmasın.
+    for (var i = 0; i < 60; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    await tester.pumpAndSettle();
   });
 
   testWidgets('Veri kapsamı: commit aralığı, repo türleri ve sabit notlar', (tester) async {

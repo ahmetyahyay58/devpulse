@@ -164,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     achievements: _overview.achievements,
                     bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
                     ai: _ai,
+                    onResync: _startSync,
                   ),
                 ),
               ),

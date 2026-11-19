@@ -99,7 +99,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Avatar ve "GitHub'a bağlı" etiketi | Var | Yeni veri | `avatarUrl`; aydınlatma metninde belirtilir. |
 | Paylaşılabilir profil kartı, rozet vitrini, "Paylaş" | Yapıldı (17 Kas) | Mevcut | Profil'den ve yıllık özetin son slaytından. Kart telefonda PNG olarak üretilir (önizleme gösterilir); içinde yalnız kullanıcı adı, bu yılın toplu sayıları ve açılan rozet adları var. Android'de paylaşım menüsü, web'de indirme; kullanıcı paylaşmadıkça telefondan çıkmaz, sunucuya yeni veri gitmez. |
 | Yıllık özet kartı, haftalık bildirim kartı | Yapıldı (17 Kas) | Mevcut | Yıllık özet Başarımlar'da; "Bu hafta" kartı Genel Bakış'ta (`GET /metrics/weekly`); haftalık bildirim yalnız Android, Profil'den açılır, varsayılan kapalı, yerel ve yaklaşık zamanlı (sunucu push yok, metinde sayı yok). |
-| Ayarlar: AI ipuçları aç/kapa, veri kapsamı, indir/sil, senkronu yeniden oynat | Kısmen | Mevcut | AI anahtarları ve indir/sil var; veri kapsamı ve senkronu yeniden oynat sırada. |
+| Ayarlar: AI ipuçları aç/kapa, veri kapsamı, indir/sil, senkronu yeniden oynat | Var (19 Kas) | Mevcut | Veri kapsamı kartı `GET /me` `scope` alanından (tanım `metrikler.md`); "Senkronu yeniden oynat" Profil'i kapatıp senkronu başlatır ve aşamalı ekranı açar. |
 | Verilerim kartı: saklanan/saklanmayan, 90 gün kuralı | Var | Mevcut | Silinme tarihi `GET /me`'den. |
 | Model Laboratuvarı kartı | Var | Mevcut | Gerçek ölçümler (bkz. çelişki çözümleri). |
 
@@ -123,7 +123,7 @@ Bağlı özellikler: AI yorumu ve soru çipleri, "Neden?" düğmeleri, ipucu sat
 - Sağlayıcı: Google Gemini API, ücretsiz katman (16 Kas). Ayrıntı: `docs/ai_katmani.md`.
 - Faz 6 yapıldı (16 Kas): altyapı, onay, giden veri ekranı; Genel Bakış'ta AI yorumu kartı ve ipucu satırı; Süreklilik, Ritim, Oturum, Commit türleri ve Proje sağlığı kartlarında "Neden?"; her sekmede Sor balonu (5 soru); Profil'de onay ve ipucu anahtarları. Daktilo efekti eklenmedi.
 
-## Önerilen sıra (13 Kas planı; 1-9 yapıldı, kalanlar: İşbirliği grafikleri, Profil veri kapsamı ve senkronu yeniden oynat)
+## Önerilen sıra (13 Kas planı; 1-9 yapıldı, kalanlar: İşbirliği grafikleri)
 Teslime (ocak ortası) yaklaşık 9 hafta var; son 2 hafta rapor ve sunuma ayrılır. Liste uzun olduğu için
 zaman yetmezse sondaki fazlardan kısılır.
 1. Senkron ekranı + Genel Bakış yenilemesi

@@ -156,8 +156,14 @@ def collaboration(user: User = Depends(current_user)) -> CollaborationOut:
                    PullRequest.state, PullRequest.is_own_repo).where(PullRequest.user_id == user.id)
         ).all()
         reviews = dict(db.execute(select(ReviewYear.year, ReviewYear.count).where(ReviewYear.user_id == user.id)).all())
+        # Katkı dengesi: commit'ler kendi repolarında mı, başkalarınınkinde mi (yalnız sayı).
+        by_owner = dict(db.execute(
+            select(Repo.is_owner, func.count(Commit.id)).join(Commit, Commit.repo_id == Repo.id)
+            .where(Repo.user_id == user.id).group_by(Repo.is_owner)
+        ).all())
     # GitHub yıl aralıkları UTC: "bu yıl" da UTC yıl.
-    return build_collaboration([PrFact(*row) for row in prs], reviews, datetime.now(ZoneInfo("UTC")).date())
+    return build_collaboration([PrFact(*row) for row in prs], reviews, datetime.now(ZoneInfo("UTC")).date(),
+                               commits_own=by_owner.get(True, 0), commits_others=by_owner.get(False, 0))
 
 
 @router.get("/achievements", response_model=AchievementsOut)

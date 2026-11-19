@@ -405,6 +405,8 @@ class FakeBackend {
           {'year': 2025, 'prs': 4, 'reviews': 7},
           {'year': 2026, 'prs': 8, 'reviews': 11},
         ],
+        'balance_commits': {'own': 30, 'others': 3, 'others_share': 0.091},
+        'balance_prs': {'own': 5, 'others': 7, 'others_share': 0.583},
         'monthly_group': 'others',
         'monthly': [
           for (var i = 0; i < 12; i++)

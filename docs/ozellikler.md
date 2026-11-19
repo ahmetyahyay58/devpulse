@@ -63,7 +63,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
 | Merge edilen PR, merge oranı, merge süresi, review sayısı | Yapıldı (16 Kas) | Yeni veri | `viewer.pullRequests` + yıl yıl `totalPullRequestReviewContributions` (takma adlarla tek istek, ~0,6 sn). Ortalama yerine medyan; kendi repon / başkasının reposu ayrı (kendi reponda oran şişkin). Tanım `docs/metrikler.md`. |
-| Aylık merge süresi grafiği, katkı dengesi çubukları | Yeni (sırada) | Yeni veri | Katkı dengesi: kendi repoların / başkalarınınki, yalnız sayılar; başka kişilerin adları saklanmaz. |
+| Aylık merge süresi grafiği, katkı dengesi çubukları | Yapıldı (19 Kas) | Mevcut | Yeni veri gerekmedi (saklanan PR ve commit'lerden). Aylık: son 12 ay, merge ayına göre medyan, boş ay boşluk, az PR'lı ay soluk. Katkı dengesi: commit ve PR için kendi repoların / başkalarınınki, yalnız sayılar. Tanım `metrikler.md`. |
 | "Aktif / Yeni kullanıcı" geçişi ve boş durum mesajı | Kısmen | — | Boş durum üç durumlu yeterlilik kuralıyla var; "Aktif / Yeni" geçişi prototipteki demo aracıdır, uygulamaya girmez. |
 
 ### Projeler
@@ -123,7 +123,7 @@ Bağlı özellikler: AI yorumu ve soru çipleri, "Neden?" düğmeleri, ipucu sat
 - Sağlayıcı: Google Gemini API, ücretsiz katman (16 Kas). Ayrıntı: `docs/ai_katmani.md`.
 - Faz 6 yapıldı (16 Kas): altyapı, onay, giden veri ekranı; Genel Bakış'ta AI yorumu kartı ve ipucu satırı; Süreklilik, Ritim, Oturum, Commit türleri ve Proje sağlığı kartlarında "Neden?"; her sekmede Sor balonu (5 soru); Profil'de onay ve ipucu anahtarları. Daktilo efekti eklenmedi.
 
-## Önerilen sıra (13 Kas planı; 1-9 yapıldı, kalanlar: İşbirliği grafikleri)
+## Önerilen sıra (13 Kas planı; hepsi yapıldı, 19 Kas)
 Teslime (ocak ortası) yaklaşık 9 hafta var; son 2 hafta rapor ve sunuma ayrılır. Liste uzun olduğu için
 zaman yetmezse sondaki fazlardan kısılır.
 1. Senkron ekranı + Genel Bakış yenilemesi

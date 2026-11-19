@@ -51,6 +51,18 @@ class MonthRowOut(BaseModel):
     median_merge_hours: float | None  # o ay merge yoksa None (0 değil)
 
 
+class BalanceOut(BaseModel):
+    """Katkı dengesi: kendi repoların / başkalarınınki (yalnız sayılar, repo adı yok)."""
+    own: int
+    others: int
+    others_share: float | None  # 0-1; ikisi de 0 ise None
+
+
+def balance(own: int, others: int) -> BalanceOut:
+    total = own + others
+    return BalanceOut(own=own, others=others, others_share=round(others / total, 3) if total else None)
+
+
 class CollaborationOut(BaseModel):
     total: PrGroupOut
     own: PrGroupOut  # kendi repolarına
@@ -60,6 +72,8 @@ class CollaborationOut(BaseModel):
     years: list[YearRowOut]  # eskiden yeniye
     monthly_group: str  # "others" (başkalarının repoları) ya da "total"; özet cümlesiyle aynı kural
     monthly: list[MonthRowOut]  # bu ay dahil son 12 ay, eskiden yeniye
+    balance_commits: BalanceOut  # commit'ler: kendi repoların / başkalarınınki
+    balance_prs: BalanceOut  # açılan PR'lar: kendi repoların / başkalarınınki
     sufficiency: Sufficiency
     basis: str
     summary: str
@@ -113,7 +127,8 @@ def monthly_merge(prs: list[PrFact], today: date) -> list[MonthRowOut]:
     ]
 
 
-def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], today: date) -> CollaborationOut:
+def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], today: date,
+                        commits_own: int = 0, commits_others: int = 0) -> CollaborationOut:
     total, own = group(prs), group([p for p in prs if p.is_own_repo])
     others = group([p for p in prs if not p.is_own_repo])
     resolved = total.merged + total.closed_unmerged
@@ -143,6 +158,8 @@ def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], toda
     return CollaborationOut(
         total=total, own=own, others=others, reviews_total=reviews_total,
         reviews_this_year=reviews_by_year.get(today.year, 0), years=years,
+        balance_commits=balance(commits_own, commits_others),
+        balance_prs=balance(own.opened, others.opened),
         monthly_group="others" if use_others else "total",
         monthly=monthly_merge([p for p in prs if not p.is_own_repo] if use_others else prs, today),
         sufficiency=suff, basis=basis, summary=summary,

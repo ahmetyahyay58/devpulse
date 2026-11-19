@@ -95,6 +95,15 @@ def test_monthly_uses_others_rule_and_falls_back_to_total():
     assert {m.month: m.merged for m in out.monthly}["2026-03"] == 5
 
 
+def test_contribution_balance_counts_and_share():
+    out = build_collaboration([merged(1, own=True)] * 3 + [merged(5)], {}, date(2026, 3, 10),
+                              commits_own=90, commits_others=10)
+    assert (out.balance_commits.own, out.balance_commits.others, out.balance_commits.others_share) == (90, 10, 0.1)
+    assert (out.balance_prs.own, out.balance_prs.others, out.balance_prs.others_share) == (3, 1, 0.25)
+    empty = build_collaboration([], {}, date(2026, 3, 10))
+    assert empty.balance_commits.others_share is None and empty.balance_prs.others_share is None
+
+
 def test_format_duration():
     assert format_duration(5.4) == "5 saat"
     assert format_duration(47) == "47 saat"
@@ -111,6 +120,9 @@ def test_endpoint_with_small_demo(api, demo_auth):
     assert body["reviews_total"] == 3
     assert body["sufficiency"] == "dusuk"  # 3 sonuçlanmış PR
     assert body["how"]
+    # Küçük demoda iki repo da kendi: başkalarına commit yok; PR'lar 1 kendi, 3 başkası.
+    assert body["balance_commits"]["others"] == 0 and body["balance_commits"]["own"] > 0
+    assert (body["balance_prs"]["own"], body["balance_prs"]["others"]) == (1, 3)
 
 
 def test_resync_replaces_rows_instead_of_duplicating(api, db, demo_auth):

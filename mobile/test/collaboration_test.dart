@@ -35,6 +35,14 @@ void main() {
     expect(find.text('bu ay'), findsOneWidget);
   });
 
+  testWidgets('katkı dengesi: commit ve PR sayıları yazıyla, lejant var', (tester) async {
+    await _pump(tester);
+    expect(find.text('Katkı dengesi'), findsOneWidget);
+    expect(find.text('Commit: kendi 30 · başkası 3 (başkası %9)'), findsOneWidget);
+    expect(find.text('PR: kendi 5 · başkası 7 (başkası %58)'), findsOneWidget);
+    expect(find.text('Başkalarının repoları'), findsOneWidget);
+  });
+
   testWidgets('İşbirliği dar ekran ve büyük yazıda taşmaz', (tester) async {
     await _pump(tester, width: 900, textScale: 2);
     expect(tester.takeException(), isNull);

@@ -47,6 +47,65 @@ class CollaborationView extends StatelessWidget {
     return h < 48 ? '${h.round()} saat' : '${(h / 24).toStringAsFixed(1).replaceAll('.', ',')} gün';
   }
 
+  static const _ownColor = Color(0xFF3987E5); // kategorik 1 (mavi)
+  static const _othersColor = Color(0xFFD95926); // kategorik 2 (turuncu)
+
+  /// "Katkı dengesi" (docs/metrikler.md): commit ve PR'ların kendi / başkalarının repoları
+  /// arasındaki dağılımı. Yalnız sayılar; renk tek başına anlam taşımaz, sayılar yazıyla da var.
+  static List<Widget> _balance(BuildContext context, MetricSection c) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    Map<String, dynamic>? read(String k) => (c.raw[k] as Map?)?.cast<String, dynamic>();
+    final rows = [('Commit', read('balance_commits')), ('PR', read('balance_prs'))]
+        .where((r) => r.$2 != null && ((r.$2!['own'] as int) + (r.$2!['others'] as int)) > 0)
+        .toList();
+    if (rows.isEmpty) return const [];
+    Widget bar(String name, Map<String, dynamic> b) {
+      final own = b['own'] as int, others = b['others'] as int;
+      final share = '%${(((b['others_share'] as num?) ?? 0) * 100).round()}';
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text('$name: kendi $own · başkası $others (başkası $share)'),
+          const SizedBox(height: 4),
+          Tooltip(
+            message: '$name · kendi repoların $own · başkalarının repoları $others',
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: SizedBox(
+                height: 12,
+                child: Row(children: [
+                  if (own > 0) Expanded(flex: own, child: Container(color: _ownColor)),
+                  if (own > 0 && others > 0) SizedBox(width: 2, child: ColoredBox(color: theme.colorScheme.surface)),
+                  if (others > 0) Expanded(flex: others, child: Container(color: _othersColor)),
+                ]),
+              ),
+            ),
+          ),
+        ]),
+      );
+    }
+    Widget key(Color color, String text) => Row(mainAxisSize: MainAxisSize.min, children: [
+          Container(width: 10, height: 10, decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2))),
+          const SizedBox(width: 6),
+          Flexible(child: Text(text, style: muted)),
+        ]);
+    return [
+      const SizedBox(height: 16),
+      Text('Katkı dengesi', style: theme.textTheme.titleSmall),
+      for (final (name, b) in rows) bar(name, b!),
+      Wrap(spacing: 16, runSpacing: 4, children: [
+        key(_ownColor, 'Kendi repoların'),
+        key(_othersColor, 'Başkalarının repoları'),
+      ]),
+      const SizedBox(height: 4),
+      Text("Betimleyicidir; payın yüksek ya da düşük olması iyi ya da kötü değildir. Başkalarının "
+          "repolarındaki commit'ler yalnız GitHub'ın katkı listesindeki repoların varsayılan dalından "
+          "gelir; başka dala atılıp birleştirilmemiş ya da ortak yazar olduğun commit'ler sayılmaz.",
+          style: muted),
+    ];
+  }
+
   /// "Aylık merge süresi" (docs/metrikler.md): son 12 ay, medyan; boş ay boşluk, az PR'lı ay soluk.
   static List<Widget> _monthly(BuildContext context, MetricSection c) {
     final theme = Theme.of(context);
@@ -124,6 +183,7 @@ class CollaborationView extends StatelessWidget {
       const SizedBox(height: 6),
       Text('Kendi repona açtığın PR\'ları çoğunlukla kendin merge edersin; bu yüzden oranı yüksek görünür. '
           'İşbirliğini asıl başkasının reposu sütunu gösterir.', style: muted),
+      ..._balance(context, c),
       if (c.sufficiency != Sufficiency.none) ..._monthly(context, c),
       if (years.isNotEmpty) ...[
         const SizedBox(height: 16),

@@ -261,6 +261,15 @@ içindeki rolü.
   kendin merge ettiğin için süreyi kısa gösterir). Tek PR'lık ayın medyanı gürültüdür: 3'ten az
   PR'lı aylar soluk çizilir ve PR sayısı her çubukta yazar. Genel yeterlilik "Yeterli veri yok"
   ise grafik gösterilmez.
+- **Katkı dengesi (19 Kas):** Commit'lerin ve açtığın PR'ların kendi repoların ile başkalarına ait
+  repolar arasındaki dağılımı; yalnız iki sayı ve başkalarının payı (%). Repo adı ve karşı tarafın
+  adı yoktur. Commit tarafı `commits` tablosundan (`repos.is_owner`), PR tarafı yukarıdaki kendi /
+  başkası gruplarından gelir. Betimleyicidir: payın yüksek ya da düşük olması iyi/kötü değildir.
+  Sınırlama: başkalarının repolarındaki commit'ler yalnız GitHub'ın katkı listesinde
+  (`commitContributionsByRepository`, yıl başına en çok 100 repo) görünen repolardan, o reponun
+  varsayılan dalından ve yalnız senin yazar olduğun commit'lerden gelir. Başka bir dala atılıp
+  birleştirilmemiş, ya da ortak yazar olarak eklendiğin commit'ler sayılmaz; katkı takviminde
+  görünüp burada görünmeyen katkıların nedeni budur. Toplam (commit + PR) 0 ise çubuk gösterilmez.
 - Bilinen sınırlama: Özel repolardaki PR'lar `read:user` kapsamıyla görünmeyebilir; sayılar
   yalnızca herkese açık etkinliği betimler.
 

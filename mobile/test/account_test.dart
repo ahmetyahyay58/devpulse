@@ -17,7 +17,7 @@ const _live = Session(sessionToken: 'jwt', githubToken: 'gho_live', userId: 3, l
 const _demo = Session(sessionToken: 'jwt', githubToken: null, userId: 1, login: 'demo-gelistirici');
 
 Future<MemorySessionStore> _start(WidgetTester tester, FakeBackend backend, Session? session) async {
-  tester.view.physicalSize = const Size(1080, 5000); // uzun Profil sayfası tamamen görünsün
+  tester.view.physicalSize = const Size(1080, 6500); // uzun Profil sayfası tamamen görünsün
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
   final store = MemorySessionStore();
@@ -90,7 +90,7 @@ void main() {
   group('Verilerimi indir', () {
     Future<List<(Uint8List, String)>> openAccount(WidgetTester tester, FakeBackend backend) async {
       final saved = <(Uint8List, String)>[];
-      tester.view.physicalSize = const Size(1080, 5000); // uzun Profil sayfası tamamen görünsün
+      tester.view.physicalSize = const Size(1080, 6500); // uzun Profil sayfası tamamen görünsün
       tester.view.devicePixelRatio = 2.5;
       addTearDown(tester.view.reset);
       final api = ApiClient(baseUrl: 'http://test', client: backend.client)..sessionToken = 'jwt';
@@ -153,6 +153,16 @@ void main() {
     expect(find.text('11.02.2027'), findsOneWidget);
     expect(find.textContaining('90 gün boyunca giriş yapmaz'), findsOneWidget);
     expect(find.textContaining('90 gün etkinlik olmazsa silinir'), findsOneWidget); // çıkış satırı
+  });
+
+  testWidgets('Veri kapsamı: commit aralığı, repo türleri ve sabit notlar', (tester) async {
+    await _start(tester, FakeBackend(), _live);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Veri kapsamı'), 200);
+    expect(find.text('02.03.2025 – 13.11.2026'), findsOneWidget);
+    expect(find.text('Katkı verdiğin başka repolar'), findsOneWidget);
+    expect(find.textContaining('ortak yazar olarak eklendiğin'), findsOneWidget);
   });
 
   testWidgets('Profil: avatar yoksa baş harf, GitHub etiketi ve rozet vitrini', (tester) async {

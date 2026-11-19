@@ -289,8 +289,13 @@ class _ProfileSectionsState extends State<_ProfileSections> {
             )
           else if (me == null)
             const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
-          else
+          else ...[
+            if (me['scope'] is Map) ...[
+              _ScopeCard(scope: (me['scope'] as Map).cast<String, dynamic>()),
+              const SizedBox(height: 12),
+            ],
             _DataCard(me: me),
+          ],
         ]);
       },
     );
@@ -372,28 +377,69 @@ class BadgeShowcase extends StatelessWidget {
   }
 }
 
+/// Etiket solda, değer sağda; büyük yazı boyutunda değer alt satıra kayar, taşmaz.
+Widget _row(String label, String value) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(children: [
+        Expanded(child: Text(label)),
+        const SizedBox(width: 8),
+        Flexible(child: Text(value, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w600))),
+      ]),
+    );
+
+String _dmy(String iso) {
+  final d = DateTime.parse(iso).toLocal();
+  return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+}
+
+/// "Veri kapsamı" (docs/metrikler.md): analizlerin hangi veriye dayandığı. Sayılar `GET /me`
+/// `scope` alanından; alttaki notlar sabit kurallardır.
+class _ScopeCard extends StatelessWidget {
+  const _ScopeCard({required this.scope});
+  final Map<String, dynamic> scope;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    final first = scope['first_commit_at'] as String?;
+    final last = scope['last_commit_at'] as String?;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text('Veri kapsamı', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          _row('Commit aralığı', first == null || last == null ? 'Henüz commit yok' : '${_dmy(first)} – ${_dmy(last)}'),
+          _row('Kendi repoların', '${scope['owned_repos']}'),
+          _row('  bunlardan fork', '${scope['forks']}'),
+          _row('  bunlardan arşivlenmiş', '${scope['archived']}'),
+          _row('Katkı verdiğin başka repolar', '${scope['contributed_repos']}'),
+          const SizedBox(height: 8),
+          Text(
+            "Yalnız herkese açık GitHub verisi kullanılır. Commit'ler her reponun varsayılan dalından "
+            "alınır ve yalnız senin yazdıkların sayılır; ortak yazar olarak eklendiğin commit'ler "
+            "sayılmaz. Katkı takvimi GitHub'ın kendi sayımıdır, metriklere karışmaz. Fork ve "
+            "arşivlenmiş repolar metriklere girer, CV'ye girmez.",
+            style: muted,
+          ),
+        ]),
+      ),
+    );
+  }
+}
+
 /// "Verilerim": sunucuda ne kadar veri saklandığı ve 90 gün kuralıyla ne zaman silineceği.
 class _DataCard extends StatelessWidget {
   const _DataCard({required this.me});
   final Map<String, dynamic> me;
-
-  static String _date(String iso) {
-    final d = DateTime.parse(iso).toLocal();
-    return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     final counts = (me['counts'] as Map).cast<String, int>();
-    Widget row(String label, String value) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Row(children: [
-            Expanded(child: Text(label)),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
-          ]),
-        );
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -401,13 +447,13 @@ class _DataCard extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text('Verilerim', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
-          row('Repo', '${counts['repos']}'),
-          row('Commit', '${counts['commits']}'),
-          row('Katkı takvimi', '${counts['contribution_days']} gün'),
-          row('Senkron kaydı', '${counts['sync_jobs']}'),
+          _row('Repo', '${counts['repos']}'),
+          _row('Commit', '${counts['commits']}'),
+          _row('Katkı takvimi', '${counts['contribution_days']} gün'),
+          _row('Senkron kaydı', '${counts['sync_jobs']}'),
           const SizedBox(height: 8),
-          row('Son etkinlik', _date(me['last_active_at'] as String)),
-          row('Otomatik silinme', _date(me['delete_after'] as String)),
+          _row('Son etkinlik', _dmy(me['last_active_at'] as String)),
+          _row('Otomatik silinme', _dmy(me['delete_after'] as String)),
           const SizedBox(height: 8),
           Text(
             '${me['retention_days']} gün boyunca giriş yapmaz ve senkron başlatmazsan hesabın ve '

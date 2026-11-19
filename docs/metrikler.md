@@ -336,6 +336,17 @@ nasıl kullanılacağını ve hangi lisansla paylaşıldığını anlayabiliyor 
 - Skora girmeyen bilgi: son push'tan bu yana geçen gün, durum etiketi ve kullanıcının o
   repodaki commit sayısı.
 
+### Veri kapsamı (Profil)
+Analizlerin hangi veriye dayandığını söyler; yeni metrik değildir, saklanan veriden sayılır
+(`GET /me`, `scope` alanı).
+- **Commit aralığı:** senkronlanan ilk ve son commit'in yazar zamanı (`authored_at`). Commit yoksa boş.
+- **Repolar:** kendi repoların (`is_owner`) ve katkı verdiğin başkalarına ait repolar ayrı sayılır;
+  kendi repolarından kaçının fork, kaçının arşivlenmiş olduğu da yazılır. Fork ve arşiv repolar
+  metriklere girer, CV'ye ve proje sağlığı önerilerine girmez.
+- **Sabit notlar (koddan, sayı değil):** yalnız herkese açık veri (`read:user`); commit'ler her
+  reponun varsayılan dalından ve yalnız senin yazdığın commit'ler (ortak yazar olarak eklendiğin
+  commit'ler sayılmaz, açık karar); katkı takvimi GitHub'ın kendi sayımıdır ve metriklere karışmaz.
+
 ## Metrik kataloğu (uygulamada)
 Uygulamadaki "Metrik kataloğu" ekranı her metriğin tanımını, birimini, nasıl yorumlanacağını ve
 hangi koşulda güvenilir olduğunu kısaca gösterir. Metinler `backend/app/metrics/catalog.py`

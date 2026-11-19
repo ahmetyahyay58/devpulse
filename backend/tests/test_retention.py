@@ -63,6 +63,17 @@ def test_sync_resets_activity(api, demo_auth):
     assert me["counts"]["repos"] == 2 and me["counts"]["commits"] > 0
 
 
+def test_me_reports_data_scope(api, demo_auth):
+    me = api.get("/me", headers=demo_auth).json()
+    assert me["scope"]["first_commit_at"] is None  # senkrondan önce commit yok
+    api.post("/sync", json={}, headers=demo_auth)
+    scope = api.get("/me", headers=demo_auth).json()["scope"]
+    first, last = (datetime.fromisoformat(scope[k]) for k in ("first_commit_at", "last_commit_at"))
+    assert first <= last
+    assert scope["owned_repos"] + scope["contributed_repos"] == 2  # küçük demo: 2 repo
+    assert scope["forks"] <= scope["owned_repos"] and scope["archived"] <= scope["owned_repos"]
+
+
 def test_me_requires_session(api):
     assert api.get("/me").status_code == 401
 

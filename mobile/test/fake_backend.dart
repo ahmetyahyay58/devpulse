@@ -279,6 +279,10 @@ class FakeBackend {
         'last_active_at': '2026-11-13T17:05:00Z', 'delete_after': '2027-02-11T17:05:00Z',
         'retention_days': 90,
         'counts': {'repos': 4, 'commits': 33, 'contribution_days': 1048, 'sync_jobs': 12},
+        'scope': {
+          'first_commit_at': '2025-03-02T09:00:00Z', 'last_commit_at': '2026-11-13T16:00:00Z',
+          'owned_repos': 3, 'contributed_repos': 1, 'forks': 1, 'archived': 0,
+        },
       });
     }
     if (path == '/me' && request.method == 'DELETE') {

@@ -1,7 +1,7 @@
 """Hesap uç noktaları.
 
 GET    /privacy    aydınlatma metni (girişsiz: kullanıcı giriş yapmadan okuyabilmeli)
-GET    /me         hesap özeti: saklanan satır sayıları, son etkinlik, 90 gün kuralıyla silinme tarihi
+GET    /me         hesap özeti: saklanan satır sayıları, veri kapsamı, son etkinlik, 90 gün kuralıyla silinme tarihi
 GET    /me/export  sunucuda saklanan tüm verilerin JSON kopyası (indirme)
 DELETE /me         hesabı ve tüm verileri kalıcı olarak siler; istenirse GitHub iznini kaldırır
 """
@@ -31,6 +31,16 @@ def privacy() -> str:
     return PRIVACY_FILE.read_text(encoding="utf-8")
 
 
+class ScopeOut(BaseModel):
+    """Veri kapsamı (docs/metrikler.md): analizler hangi veriye dayanıyor."""
+    first_commit_at: datetime | None
+    last_commit_at: datetime | None
+    owned_repos: int
+    contributed_repos: int  # başkasına ait, katkı verilen
+    forks: int  # kendi repolarından fork olanlar
+    archived: int  # kendi repolarından arşivlenmiş olanlar
+
+
 class MeOut(BaseModel):
     login: str
     avatar_url: str | None
@@ -40,6 +50,7 @@ class MeOut(BaseModel):
     delete_after: datetime  # bu tarihe kadar giriş/senkron olmazsa veriler otomatik silinir
     retention_days: int
     counts: dict[str, int]  # saklanan satır sayıları
+    scope: ScopeOut
 
 
 def _counts(db, user_id: int) -> dict[str, int]:
@@ -56,15 +67,30 @@ def _counts(db, user_id: int) -> dict[str, int]:
     }
 
 
+def _scope(db, user_id: int) -> ScopeOut:
+    first, last = db.execute(
+        select(func.min(Commit.authored_at), func.max(Commit.authored_at)).join(Repo).where(Repo.user_id == user_id)
+    ).one()
+    owned, contributed, forks, archived = db.execute(select(
+        func.count().filter(Repo.is_owner),
+        func.count().filter(~Repo.is_owner),
+        func.count().filter(Repo.is_owner, Repo.is_fork),
+        func.count().filter(Repo.is_owner, Repo.is_archived),
+    ).where(Repo.user_id == user_id)).one()
+    return ScopeOut(first_commit_at=first, last_commit_at=last, owned_repos=owned,
+                    contributed_repos=contributed, forks=forks, archived=archived)
+
+
 @router.get("/me", response_model=MeOut)
 def me(user: User = Depends(current_user)) -> MeOut:
     """"Verilerim" kartı için: ne kadar veri saklanıyor ve ne zaman otomatik silinir."""
     with SessionLocal() as db:
         counts = _counts(db, user.id)
+        scope = _scope(db, user.id)
     return MeOut(
         login=user.github_login, avatar_url=user.avatar_url, created_at=user.created_at, last_synced_at=user.last_synced_at,
         last_active_at=user.last_active_at, delete_after=retention.delete_after(user.last_active_at),
-        retention_days=retention.RETENTION.days, counts=counts,
+        retention_days=retention.RETENTION.days, counts=counts, scope=scope,
     )
 
 

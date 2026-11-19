@@ -108,7 +108,7 @@ class _AiCommentCardState extends State<AiCommentCard> {
               Row(children: [
                 const Icon(Icons.auto_awesome, size: 18),
                 const SizedBox(width: 8),
-                Text('AI yorumu', style: theme.textTheme.titleMedium),
+                Expanded(child: Text('AI yorumu', style: theme.textTheme.titleMedium)),
               ]),
               const SizedBox(height: 8),
               Wrap(spacing: 8, runSpacing: 4, children: [

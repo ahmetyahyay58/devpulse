@@ -8,11 +8,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_backend.dart';
 
-Future<void> _pumpHome(WidgetTester tester, FakeBackend backend) async {
-  tester.view.physicalSize = const Size(1080, 4000); // uzun ekran: her şey görünür olsun
+Future<void> _pumpHome(WidgetTester tester, FakeBackend backend, {double textScale = 1, double width = 1080}) async {
+  tester.view.physicalSize = Size(width, 4000); // uzun ekran: her şey görünür olsun
   tester.view.devicePixelRatio = 2.5;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(MaterialApp(
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+      child: child!,
+    ),
     home: HomeScreen(
       session: const Session(sessionToken: 'jwt', githubToken: 'gho', userId: 1, login: 'ben'),
       api: ApiClient(baseUrl: 'http://test', client: backend.client),
@@ -132,6 +136,12 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Test: nasıl hesaplandı metni.'), findsOneWidget);
     expect(find.textContaining('Dayanak: test dayanağı'), findsOneWidget);
+  });
+
+  testWidgets('dar ekran ve büyük yazı boyutunda Genel Bakış taşmaz', (tester) async {
+    await _pumpHome(tester, FakeBackend(), textScale: 2, width: 900); // 360 dp genişlik, yazı 2 kat
+    expect(tester.takeException(), isNull);
+    expect(find.text('Toplam commit'), findsOneWidget);
   });
 
   testWidgets('commit yoksa senkrona yönlendirir', (tester) async {

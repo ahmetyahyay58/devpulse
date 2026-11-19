@@ -128,7 +128,9 @@ class _Stat extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 3),
         child: Row(children: [
           Expanded(child: Text(label)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(width: 8),
+          // Büyük yazı boyutunda değer (ör. tarih) sığmazsa alt satıra kayar, taşmaz.
+          Flexible(child: Text(value, textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w600))),
         ]),
       );
 }

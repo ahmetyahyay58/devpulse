@@ -133,7 +133,8 @@ konumdan değil. Yeniden senkronda sıra değişse de telefondaki düzenleme do�
 2. **Özet:** Verideki sayılardan tek cümle (en çok kullanılan dil, repo ve commit sayısı). Aktif
    gün ve en uzun seri "Etkinlik" bölümündedir; aynı sayı iki kez yazılmaz.
 3. **Projeler (uygun repoların hepsi, sıralı; ilk 6 varsayılan seçili):** Kullanıcının kendi, fork olmayan, arşivlenmemiş ve herkese açık
-   repoları (CV başkalarına gösterilen bir belgedir; özel repo listelenmez); proje
+   repoları (CV başkalarına gösterilen bir belgedir; özel repo listelenmez). Adı kullanıcı adıyla
+   aynı olan profil README reposu (`login/login`) proje değildir, listelenmez (19 Kas); proje
    sağlık puanına, eşitlikte commit sayısına göre sıralanır. Her proje için:
    - `desc`: GitHub açıklaması (yoksa madde yok).
    - `stack`: ana dil ve tespit edilen araçlar.

@@ -156,6 +156,11 @@ def _project(repo: CvRepo, t: dict, login: str, selected: bool) -> CvProject:
     )
 
 
+def cv_repos(f: CvFacts) -> list[CvRepo]:
+    """Profil README reposu (adı kullanıcı adıyla aynı, GitHub'da büyük/küçük harf fark etmez) proje değildir."""
+    return [r for r in f.repos if r.name.lower() != f.login.lower()]
+
+
 def order_projects(repos: list[CvRepo]) -> list[CvRepo]:
     """Sağlık puanı yüksekten düşüğe, eşitlikte commit sayısı; puanlanmayan en sonda."""
     return sorted(repos, key=lambda r: (r.score is None, -(r.score or 0), -r.commit_count, r.name))[:MAX_LISTED]
@@ -189,6 +194,6 @@ def build_draft(f: CvFacts, lang: Lang) -> CvDraftOut:
 
     return CvDraftOut(
         lang=lang, login=f.login, profile_url=f"https://github.com/{f.login}", summary=summary,
-        projects=[_project(r, t, f.login, i < MAX_PROJECTS) for i, r in enumerate(order_projects(f.repos))], skills=skills, activity=activity,
+        projects=[_project(r, t, f.login, i < MAX_PROJECTS) for i, r in enumerate(order_projects(cv_repos(f)))], skills=skills, activity=activity,
         languages=f.languages[:MAX_LANGUAGES], tools=f.tools,
     )

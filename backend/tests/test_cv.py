@@ -57,6 +57,11 @@ def test_projects_ordered_by_health_then_commits_first_six_selected():
         ("hi2", True), ("hi", True), ("mid", True), ("m2", True), ("m3", True), ("low", True), ("none", False)]
 
 
+def test_profile_readme_repo_is_not_a_project():
+    d = build_draft(facts(login="Ben", repos=[repo("ben", score=99), repo("a")]), "tr")
+    assert [p.name for p in d.projects] == ["a"]
+
+
 def test_languages_same_ids_in_both_languages():
     tr, en = build_draft(facts(), "tr"), build_draft(facts(), "en")
     assert [i.id for i in all_items(tr)] == [i.id for i in all_items(en)]

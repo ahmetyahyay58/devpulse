@@ -38,7 +38,7 @@ class ChartColors {
 }
 
 const _weekdayShort = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-const _monthShort = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+const monthShortTr = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 
 String _date(DateTime d) =>
     '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
@@ -315,7 +315,7 @@ class ContributionHeatmap extends StatelessWidget {
                           if (w * 7 + r < cells.length && cells[w * 7 + r]?.$1.day == 1) cells[w * 7 + r]
                       ];
                       return Text(
-                        firstOfMonth.isEmpty ? '' : _monthShort[firstOfMonth.first!.$1.month - 1],
+                        firstOfMonth.isEmpty ? '' : monthShortTr[firstOfMonth.first!.$1.month - 1],
                         softWrap: false,
                         overflow: TextOverflow.visible,
                         style: TextStyle(fontSize: 10, color: muted),

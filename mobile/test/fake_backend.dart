@@ -405,6 +405,15 @@ class FakeBackend {
           {'year': 2025, 'prs': 4, 'reviews': 7},
           {'year': 2026, 'prs': 8, 'reviews': 11},
         ],
+        'monthly_group': 'others',
+        'monthly': [
+          for (var i = 0; i < 12; i++)
+            {
+              'month': '${i < 2 ? 2025 : 2026}-${((i + 10) % 12 + 1).toString().padLeft(2, '0')}',
+              'merged': i == 9 ? 3 : (i == 11 ? 1 : 0),
+              'median_merge_hours': i == 9 ? 60.0 : (i == 11 ? 5.0 : null),
+            },
+        ],
         'sufficiency': 'normal', 'basis': '11 sonuçlanmış PR, 18 inceleme',
         'summary': 'Başkalarının repolarına açılan PR: 7, merge edilen: 4 (oran %67).',
         'how': 'Test: işbirliği nasıl hesaplandı.',

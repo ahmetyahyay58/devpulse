@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../ai/ai_features.dart';
 
+import '../overview/charts.dart';
 import '../overview/metric_card.dart';
 import '../overview/overview_controller.dart';
 import '../overview/overview_models.dart';
@@ -44,6 +45,39 @@ class CollaborationView extends StatelessWidget {
     if (hours == null) return '-';
     final h = (hours as num).toDouble();
     return h < 48 ? '${h.round()} saat' : '${(h / 24).toStringAsFixed(1).replaceAll('.', ',')} gün';
+  }
+
+  /// "Aylık merge süresi" (docs/metrikler.md): son 12 ay, medyan; boş ay boşluk, az PR'lı ay soluk.
+  static List<Widget> _monthly(BuildContext context, MetricSection c) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    final months = (c.raw['monthly'] as List? ?? const []).cast<Map<String, dynamic>>();
+    if (months.every((m) => (m['merged'] as int? ?? 0) == 0)) return const [];
+    // Çubuk yüksekliği dakika: bir saatten kısa medyanlar da görünsün. Merge yoksa 0 (boşluk).
+    final minutes = [for (final m in months) (((m['median_merge_hours'] as num?) ?? 0) * 60).round()];
+    String label(int i) {
+      final parts = (months[i]['month'] as String).split('-');
+      return '${monthShortTr[int.parse(parts[1]) - 1]} ${parts[0]}';
+    }
+    final group = c.raw['monthly_group'] == 'others' ? "başkalarının repolarına açtığın PR'lar" : "tüm PR'ların";
+    return [
+      const SizedBox(height: 16),
+      Text('Aylık merge süresi (medyan)', style: theme.textTheme.titleSmall),
+      Text('Son 12 ay, $group', style: muted),
+      const SizedBox(height: 8),
+      BarChart(
+        values: minutes,
+        colorFor: (i) => (months[i]['merged'] as int) < 3 ? ChartColors.bar.withValues(alpha: 0.4) : ChartColors.bar,
+        labelFor: (i) => i == months.length - 1 ? 'bu ay' : (i % 3 == 0 ? label(i).split(' ').first : null),
+        tooltipFor: (i, _) {
+          final n = months[i]['merged'] as int;
+          return n == 0 ? '${label(i)} · merge yok' : '${label(i)} · $n PR · medyan ${duration(months[i]['median_merge_hours'])}';
+        },
+      ),
+      const SizedBox(height: 4),
+      Text("PR'ın ayı merge edildiği aydır. Boş ay: o ay merge yok. Soluk çubuk: 3'ten az PR, "
+          "medyan tek PR'a dayanabilir. Aylar UTC'ye göredir.", style: muted),
+    ];
   }
 
   Widget _details(BuildContext context, MetricSection c) {
@@ -90,6 +124,7 @@ class CollaborationView extends StatelessWidget {
       const SizedBox(height: 6),
       Text('Kendi repona açtığın PR\'ları çoğunlukla kendin merge edersin; bu yüzden oranı yüksek görünür. '
           'İşbirliğini asıl başkasının reposu sütunu gösterir.', style: muted),
+      if (c.sufficiency != Sufficiency.none) ..._monthly(context, c),
       if (years.isNotEmpty) ...[
         const SizedBox(height: 16),
         Text('Yıl yıl', style: theme.textTheme.titleSmall),

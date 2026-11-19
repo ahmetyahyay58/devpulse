@@ -1,7 +1,7 @@
 """İşbirliği metrikleri (docs/metrikler.md, "İşbirliği"): saf fonksiyon ve uç nokta."""
 from datetime import date, datetime, timedelta, timezone
 
-from app.metrics.collaboration import PrFact, build_collaboration, format_duration, group
+from app.metrics.collaboration import PrFact, build_collaboration, format_duration, group, last_months
 
 T0 = datetime(2026, 3, 1, 10, tzinfo=timezone.utc)
 
@@ -63,6 +63,36 @@ def test_years_merge_pr_and_review_years():
     out = build_collaboration(prs, {2025: 3, 2026: 4}, date(2026, 3, 10))
     assert [(y.year, y.prs, y.reviews) for y in out.years] == [(2024, 1, 0), (2025, 0, 3), (2026, 1, 4)]
     assert out.reviews_total == 7 and out.reviews_this_year == 4
+
+
+def test_last_months_crosses_year_boundary():
+    months = last_months(date(2026, 3, 10))
+    assert len(months) == 12 and months[0] == "2025-04" and months[-1] == "2026-03"
+
+
+def test_monthly_merge_time_by_merge_month_with_gaps():
+    jan = datetime(2026, 1, 5, tzinfo=timezone.utc)
+    prs = [
+        merged(10, start=jan), merged(30, start=jan), merged(20, start=jan),  # ocak: medyan 20
+        merged(24 * 40, start=jan),  # ocakta açıldı, şubatta merge edildi: şubat ayına sayılır
+        closed(), opened(),  # merge edilmeyenler aylara girmez
+    ]
+    out = build_collaboration(prs, {}, date(2026, 3, 10))
+    by = {m.month: m for m in out.monthly}
+    assert out.monthly_group == "others"
+    assert (by["2026-01"].merged, by["2026-01"].median_merge_hours) == (3, 20.0)
+    assert (by["2026-02"].merged, by["2026-02"].median_merge_hours) == (1, 960.0)
+    assert (by["2025-12"].merged, by["2025-12"].median_merge_hours) == (0, None)  # boş ay 0 değil
+
+
+def test_monthly_uses_others_rule_and_falls_back_to_total():
+    own_fast = [merged(0.1, own=True)] * 5
+    out = build_collaboration(own_fast + [merged(48)], {}, date(2026, 3, 10))
+    assert out.monthly_group == "others"
+    assert {m.month: m.merged for m in out.monthly}["2026-03"] == 1  # kendi repondakiler karışmaz
+    out = build_collaboration(own_fast, {}, date(2026, 3, 10))
+    assert out.monthly_group == "total"
+    assert {m.month: m.merged for m in out.monthly}["2026-03"] == 5
 
 
 def test_format_duration():

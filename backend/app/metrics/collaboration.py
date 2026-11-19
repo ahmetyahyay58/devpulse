@@ -45,6 +45,12 @@ class YearRowOut(BaseModel):
     reviews: int
 
 
+class MonthRowOut(BaseModel):
+    month: str  # "2026-03" (UTC ay; PR'ın ayı merge zamanına göre)
+    merged: int
+    median_merge_hours: float | None  # o ay merge yoksa None (0 değil)
+
+
 class CollaborationOut(BaseModel):
     total: PrGroupOut
     own: PrGroupOut  # kendi repolarına
@@ -52,6 +58,8 @@ class CollaborationOut(BaseModel):
     reviews_total: int
     reviews_this_year: int
     years: list[YearRowOut]  # eskiden yeniye
+    monthly_group: str  # "others" (başkalarının repoları) ya da "total"; özet cümlesiyle aynı kural
+    monthly: list[MonthRowOut]  # bu ay dahil son 12 ay, eskiden yeniye
     sufficiency: Sufficiency
     basis: str
     summary: str
@@ -78,11 +86,39 @@ def format_duration(hours: float) -> str:
     return f"{hours / 24:.1f} gün".replace(".", ",")
 
 
+MONTHS = 12
+
+
+def last_months(today: date, n: int = MONTHS) -> list[str]:
+    """Bu ay dahil son n ay, eskiden yeniye: ["2025-04", ..., "2026-03"]."""
+    y, m = today.year, today.month
+    out = []
+    for _ in range(n):
+        out.append(f"{y:04d}-{m:02d}")
+        y, m = (y, m - 1) if m > 1 else (y - 1, 12)
+    return out[::-1]
+
+
+def monthly_merge(prs: list[PrFact], today: date) -> list[MonthRowOut]:
+    """Ay ay merge edilen PR sayısı ve merge süresi medyanı (PR'ın ayı = merge zamanının UTC ayı)."""
+    hours: dict[str, list[float]] = {}
+    for p in prs:
+        if p.state == "MERGED" and p.merged_at is not None:
+            key = p.merged_at.strftime("%Y-%m")
+            hours.setdefault(key, []).append((p.merged_at - p.created_at).total_seconds() / 3600)
+    return [
+        MonthRowOut(month=k, merged=len(hours.get(k, [])),
+                    median_merge_hours=round(statistics.median(hours[k]), 1) if k in hours else None)
+        for k in last_months(today)
+    ]
+
+
 def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], today: date) -> CollaborationOut:
     total, own = group(prs), group([p for p in prs if p.is_own_repo])
     others = group([p for p in prs if not p.is_own_repo])
     resolved = total.merged + total.closed_unmerged
     suff = sufficiency.collaboration(resolved)
+    use_others = others.merge_rate is not None  # asıl işbirliği göstergesi; yoksa toplam
     reviews_total = sum(reviews_by_year.values())
     basis = f"{resolved} sonuçlanmış PR, {reviews_total} inceleme"
 
@@ -90,7 +126,7 @@ def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], toda
         summary = f"PR metrikleri için henüz yeterli veri yok ({basis})."
     else:
         # Asıl işbirliği göstergesi başkasının reposu; orada sonuçlanmış PR yoksa toplam kullanılır.
-        g, where = (others, "Başkalarının repolarına") if others.merge_rate is not None else (total, "Toplam")
+        g, where = (others, "Başkalarının repolarına") if use_others else (total, "Toplam")
         parts = [f"{where} açılan PR: {g.opened}, merge edilen: {g.merged} (oran %{round(g.merge_rate * 100)})."]
         if g.median_merge_hours is not None:
             parts.append(f"Merge süresi medyanı {format_duration(g.median_merge_hours)}.")
@@ -107,5 +143,7 @@ def build_collaboration(prs: list[PrFact], reviews_by_year: dict[int, int], toda
     return CollaborationOut(
         total=total, own=own, others=others, reviews_total=reviews_total,
         reviews_this_year=reviews_by_year.get(today.year, 0), years=years,
+        monthly_group="others" if use_others else "total",
+        monthly=monthly_merge([p for p in prs if not p.is_own_repo] if use_others else prs, today),
         sufficiency=suff, basis=basis, summary=summary,
     )

@@ -253,6 +253,14 @@ içindeki rolü.
 - **İnceleme sayısı:** Tüm yılların toplamı ve bu yıl (1 Ocak'tan bugüne, UTC yıl sınırı:
   GitHub yıl aralıklarını UTC verir).
 - **Yıl yıl:** Açılan PR ve inceleme sayıları yıllara göre (çubuk grafik).
+- **Aylık merge süresi (19 Kas):** Bu ay dahil son 12 ay (UTC ay sınırı, yıl satırlarıyla aynı).
+  Her ay için o ay merge edilen PR sayısı ve açılıştan merge'e sürenin medyanı; PR'ın ayı
+  **merge zamanına** göre belirlenir. O ay merge yoksa medyan yoktur (boş bırakılır, 0 çizilmez).
+  Grup özet cümlesindeki kuralla seçilir: başkalarının repolarında sonuçlanmış PR varsa onlar,
+  yoksa toplam; grafik hangi grubu gösterdiğini yazar (kendi reponda PR çoğunlukla dakikalar içinde
+  kendin merge ettiğin için süreyi kısa gösterir). Tek PR'lık ayın medyanı gürültüdür: 3'ten az
+  PR'lı aylar soluk çizilir ve PR sayısı her çubukta yazar. Genel yeterlilik "Yeterli veri yok"
+  ise grafik gösterilmez.
 - Bilinen sınırlama: Özel repolardaki PR'lar `read:user` kapsamıyla görünmeyebilir; sayılar
   yalnızca herkese açık etkinliği betimler.
 

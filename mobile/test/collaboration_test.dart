@@ -6,7 +6,40 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_backend.dart';
 
+Future<void> _pump(WidgetTester tester, {double width = 1080, double textScale = 1}) async {
+  tester.view.physicalSize = Size(width, 5000);
+  tester.view.devicePixelRatio = 2.5;
+  addTearDown(tester.view.reset);
+  final controller = OverviewController(
+    api: ApiClient(baseUrl: 'http://test', client: FakeBackend().client),
+    onUnauthorized: () {},
+  );
+  await controller.load();
+  await tester.pumpWidget(MaterialApp(
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+      child: child!,
+    ),
+    home: Scaffold(body: CollaborationView(controller: controller)),
+  ));
+  await tester.pumpAndSettle();
+}
+
 void main() {
+  testWidgets('aylık merge süresi: 12 çubuk, grup adı, boş ay "merge yok"', (tester) async {
+    await _pump(tester);
+    expect(find.text('Aylık merge süresi (medyan)'), findsOneWidget);
+    expect(find.textContaining("başkalarının repolarına açtığın PR'lar"), findsOneWidget);
+    expect(find.byWidgetPredicate((w) => w is Tooltip && (w.message ?? '').contains('merge yok')), findsNWidgets(10));
+    expect(find.byTooltip('Ağu 2026 · 3 PR · medyan 2,5 gün'), findsOneWidget);
+    expect(find.text('bu ay'), findsOneWidget);
+  });
+
+  testWidgets('İşbirliği dar ekran ve büyük yazıda taşmaz', (tester) async {
+    await _pump(tester, width: 900, textScale: 2);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('İşbirliği: özet, kendi/başkası tablosu ve yıllar', (tester) async {
     tester.view.physicalSize = const Size(1080, 4000);
     tester.view.devicePixelRatio = 2.5;

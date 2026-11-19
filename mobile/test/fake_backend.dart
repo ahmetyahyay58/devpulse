@@ -22,6 +22,7 @@ class FakeBackend {
       job(5, 'done', reposTotal: 4, reposDone: 4, progress: 1.0, commitsInserted: 12);
   int? runningJobId; // doluysa POST /sync 409 döner (zaten süren iş)
   bool sessionExpired = false; // doluysa /sync uçları 401 döner
+  String? avatarUrl; // GET /me avatar_url (varsayılan: fotoğraf yok)
   bool exportFails = false; // doluysa /me/export 500 döner
   // AI katmanı: sunucuda anahtar var mı ve kullanıcının onayı (POST /ai/consent değiştirir).
   bool aiLlmReady = true;
@@ -275,7 +276,7 @@ class FakeBackend {
     }
     if (path == '/me' && request.method == 'GET') {
       return _json({
-        'login': 'ben', 'avatar_url': null, 'created_at': '2026-11-01T10:00:00Z', 'last_synced_at': '2026-11-13T17:05:00Z',
+        'login': 'ben', 'avatar_url': avatarUrl, 'created_at': '2026-11-01T10:00:00Z', 'last_synced_at': '2026-11-13T17:05:00Z',
         'last_active_at': '2026-11-13T17:05:00Z', 'delete_after': '2027-02-11T17:05:00Z',
         'retention_days': 90,
         'counts': {'repos': 4, 'commits': 33, 'contribution_days': 1048, 'sync_jobs': 12},

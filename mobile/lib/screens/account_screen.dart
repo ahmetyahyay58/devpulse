@@ -354,6 +354,23 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
+/// Ana ekranın sağ üstündeki profil düğmesi: GitHub fotoğrafı; yoksa ya da yüklenemezse simge.
+class ProfileAvatarIcon extends StatelessWidget {
+  const ProfileAvatarIcon({super.key, this.url, this.size = 28});
+  final String? url;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = Icon(Icons.account_circle_outlined, size: size);
+    if (url == null) return fallback;
+    return ClipOval(
+      child: Image.network(url!, width: size, height: size, fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => fallback),
+    );
+  }
+}
+
 /// Rozet vitrini: açılan rozetler; hiç yoksa Başarımlar sekmesine yönlendirir.
 class BadgeShowcase extends StatelessWidget {
   const BadgeShowcase({super.key, required this.achievements});

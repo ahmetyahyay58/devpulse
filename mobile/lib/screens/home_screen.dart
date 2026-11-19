@@ -83,11 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
     ..loadPrefs();
 
   bool _wasRunning = false;
+  String? _avatarUrl; // GitHub profil fotoğrafı (GET /me); yoksa simge gösterilir
   int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar, 4: CV
 
   @override
   void initState() {
     super.initState();
+    _loadAvatar();
     _sync.addListener(_reloadWhenSyncFinishes);
     if (widget.syncOnOpen) {
       // İlk kare çizildikten sonra (Navigator hazır olunca) ekranı aç ve senkronu başlat.
@@ -109,6 +111,15 @@ class _HomeScreenState extends State<HomeScreen> {
     if (firstLogin && mounted) _startSync();
   }
 
+  /// Profil fotoğrafı adresi. Alınamazsa sessizce simgede kalır (asıl ekranları etkilemez).
+  Future<void> _loadAvatar() async {
+    if (widget.auth == null) return;
+    try {
+      final me = await widget.api.get('/me');
+      if (mounted) setState(() => _avatarUrl = me['avatar_url'] as String?);
+    } catch (_) {}
+  }
+
   /// Senkron "sürüyor"dan "bitti"ye geçince iki sekme de yeni veriyle yeniden yüklenir.
   void _reloadWhenSyncFinishes() {
     final running = _sync.isRunning;
@@ -116,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _overview.load();
       _projects.load();
       _cv.load();
+      _loadAvatar(); // senkron profil fotoğrafını güncelleyebilir
     }
     _wasRunning = running;
   }
@@ -152,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (widget.auth != null)
             IconButton(
               tooltip: 'Profil',
-              icon: const Icon(Icons.account_circle_outlined),
+              icon: ProfileAvatarIcon(url: _avatarUrl),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => AccountScreen(

@@ -172,6 +172,20 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('ana ekranda profil fotoğrafı Profil açılmadan görünür', (tester) async {
+    final backend = FakeBackend()..avatarUrl = 'https://avatars.example/ben.png';
+    await _start(tester, backend, _live);
+    final icon = tester.widget<ProfileAvatarIcon>(find.byType(ProfileAvatarIcon));
+    expect(icon.url, 'https://avatars.example/ben.png');
+    expect(find.descendant(of: find.byTooltip('Profil'), matching: find.byType(ClipOval)), findsOneWidget);
+  });
+
+  testWidgets('fotoğraf yoksa ana ekranda simge kalır', (tester) async {
+    await _start(tester, FakeBackend(), _live);
+    expect(find.descendant(of: find.byTooltip('Profil'), matching: find.byIcon(Icons.account_circle_outlined)),
+        findsOneWidget);
+  });
+
   testWidgets('Veri kapsamı: commit aralığı, repo türleri ve sabit notlar', (tester) async {
     await _start(tester, FakeBackend(), _live);
     await tester.tap(find.byTooltip('Profil'));

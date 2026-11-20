@@ -40,11 +40,12 @@ HIDDEN_NAME = "Gizli rozet"
 HIDDEN_DESCRIPTION = "Açınca ne olduğunu göreceksin."
 
 
-def _badge(key: str, name: str, description: str, current: int, target: int, hidden: bool = False) -> BadgeOut:
+def _badge(key: str, name: str, description: str, current: int, target: int, hidden: bool = False,
+           secret_key: str = "gizli") -> BadgeOut:
     current = max(0, current)
     unlocked = current >= target
-    if hidden and not unlocked:  # sır sunucuda kalır: ad ve koşul uygulamaya gitmez
-        return BadgeOut(key=key, name=HIDDEN_NAME, description=HIDDEN_DESCRIPTION, current=0, target=1,
+    if hidden and not unlocked:  # sır sunucuda kalır: ad, koşul ve gerçek anahtar uygulamaya gitmez
+        return BadgeOut(key=secret_key, name=HIDDEN_NAME, description=HIDDEN_DESCRIPTION, current=0, target=1,
                         unlocked=False, hidden=True)
     return BadgeOut(key=key, name=name, description=description, current=min(current, target),
                     target=target, unlocked=unlocked, hidden=hidden)
@@ -145,9 +146,9 @@ def habit_badges(f: HabitFacts) -> list[BadgeOut]:
                night_pct, 30),
         _badge("early_bird", "Erkenci", "06:00-07:59 arasında 10 commit at." + tz, early, 10),
         _badge("new_year", "Yılbaşı", "1 Ocak'ta commit at." + tz,
-               int(any(t.month == 1 and t.day == 1 for t in times)), 1, hidden=True),
+               int(any(t.month == 1 and t.day == 1 for t in times)), 1, hidden=True, secret_key="gizli-1"),
         _badge("leet", "13:37", "Saat tam 13:37'de commit at." + tz,
-               int(any(t.hour == 13 and t.minute == 37 for t in times)), 1, hidden=True),
+               int(any(t.hour == 13 and t.minute == 37 for t in times)), 1, hidden=True, secret_key="gizli-2"),
         _badge("marathon", "Maraton", "4 saat ya da daha uzun bir oturum (aradaki boşluk 2 saati geçmeden)." + tz,
                round(longest.minutes) if longest else 0, 240),
         _badge("comeback", "Geri Dönüş", "30 günden uzun bir aradan sonra yeniden commit at.",

@@ -349,7 +349,7 @@ class FakeBackend {
             'unlocked': true, 'tier': 'bronz', 'tiers': [10, 50, 100]},
           {'key': 'long_haul', 'name': 'Uzun Soluklu', 'description': 'Uzun.', 'current': 1095, 'target': 1095,
             'unlocked': true, 'tier': 'altin', 'tiers': [365, 730, 1095]},
-          {'key': 'leet', 'name': 'Gizli rozet', 'description': 'Açınca ne olduğunu göreceksin.',
+          {'key': 'gizli-2', 'name': 'Gizli rozet', 'description': 'Açınca ne olduğunu göreceksin.',
             'current': 0, 'target': 1, 'unlocked': false, 'hidden': true},
           {'key': 'new_year', 'name': 'Yılbaşı', 'description': "1 Ocak'ta commit at.",
             'current': 1, 'target': 1, 'unlocked': true, 'hidden': true},

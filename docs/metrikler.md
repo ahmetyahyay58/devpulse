@@ -232,7 +232,7 @@ Böcek Avcısı da seviyelidir (10 · 25 · 50 fix commit). Seviye rengi yazıyl
 ("Bronz", "Gümüş", "Altın"); renk tek başına anlam taşımaz. Eşikler sezgiseldir.
 
 **Gizli rozetler:** Yılbaşı ve 13:37 açılana kadar adı ve koşulu gösterilmez ("Gizli rozet",
-"???"); sunucu da göndermez (`hidden: true`). Açılınca normal rozet gibi görünür. Tür rozetleri
+"???"); sunucu ad, koşul ve gerçek anahtarı göndermez, yerine sabit `gizli-1` / `gizli-2` gider (`hidden: true`). Açılınca normal rozet gibi görünür. Tür rozetleri
 commit türü sınıflandırmasının (kural + model) sonucunu kullanır; sınıflandırma hatası rozeti
 etkileyebilir (ölçülen doğruluk `docs/olcumler.md`).
 

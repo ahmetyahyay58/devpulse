@@ -101,6 +101,7 @@ def test_achievements_endpoint(api, demo_auth):
     assert len(body["badges"]) == 29  # 9 temel + 20 alışkanlık
     hidden = [b for b in body["badges"] if b["hidden"] and not b["unlocked"]]
     assert all(b["name"] == "Gizli rozet" and "13:37" not in b["description"] for b in hidden)
+    assert all(b["key"].startswith("gizli-") for b in hidden)
     assert body["unlocked"] == sum(b["unlocked"] for b in body["badges"])
     assert [s["label"] for s in body["year"]["stats"]][0] == "Commit"
 
@@ -139,8 +140,9 @@ def test_early_bird_window():
 
 def test_hidden_badges_keep_secret_until_unlocked():
     b = habits([lt(TODAY, 13, 36)])
-    assert b["leet"].hidden and not b["leet"].unlocked
-    assert b["leet"].name == HIDDEN_NAME and "13:37" not in b["leet"].description
+    assert "leet" not in b and "new_year" not in b  # gerçek anahtar da sır: uygulamaya gitmez
+    assert b["gizli-2"].hidden and not b["gizli-2"].unlocked
+    assert b["gizli-2"].name == HIDDEN_NAME and "13:37" not in b["gizli-2"].description
     b = habits([lt(TODAY, 13, 37), lt(date(2026, 1, 1), 11)])
     assert b["leet"].unlocked and b["leet"].name == "13:37"
     assert b["new_year"].unlocked and b["new_year"].name == "Yılbaşı"
@@ -156,7 +158,7 @@ def test_marathon_uses_session_rule():
 
 def test_time_badges_locked_without_timezone():
     b = habits([lt(TODAY, h) for h in range(24)] + [lt(TODAY, 13, 37)], tz_known=False)
-    assert not b["hours24"].unlocked and not b["leet"].unlocked and not b["marathon"].unlocked
+    assert not b["hours24"].unlocked and not b["gizli-2"].unlocked and not b["marathon"].unlocked
     assert "saat dilimin bilinmiyor" in b["hours24"].description
 
 

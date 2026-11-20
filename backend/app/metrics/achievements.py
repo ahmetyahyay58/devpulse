@@ -3,6 +3,7 @@
 Rozetler yeni bir hesap yapmaz: süreklilik, proje sağlığı ve teknoloji sonuçlarını eşikle
 karşılaştırır. Ham commit sayısını ödüllendiren rozet yoktur.
 """
+import statistics
 from dataclasses import dataclass, field
 from datetime import date, datetime
 
@@ -31,6 +32,8 @@ class BadgeOut(BaseModel):
     target: int
     unlocked: bool
     hidden: bool = False  # gizli rozet: açılana kadar adı ve koşulu gönderilmez
+    tier: str | None = None  # seviyeli rozette ulaşılan seviye: "bronz" | "gumus" | "altin"
+    tiers: list[int] | None = None  # seviyeli rozetin eşikleri (bronz, gümüş, altın)
 
 
 HIDDEN_NAME = "Gizli rozet"
@@ -71,12 +74,27 @@ def badges(
         _badge("license", "Lisanslı", "Bütün repolarına lisans ekle.", all_ok("license"), max(n, 1)),
         _badge("polyglot", "Çok dilli", "Kodunun en az %5'i olan 3 dilde yaz.", multi, 3),
         _badge("contributor", "Katkıcı", "Başkasına ait bir repoya commit at.", contributed, 1),
+        _badge("topics", "Etiketçi", "Bütün repolarına topic ekle.", all_ok("topics"), max(n, 1)),
     ]
+
+
+TIER_NAMES = ["bronz", "gumus", "altin"]
+
+
+def _tiered(key: str, name: str, description: str, current: int, thresholds: list[int]) -> BadgeOut:
+    """Seviyeli rozet: bronz eşiğinde açılır; ilerleme sıradaki seviyenin eşiğine göre."""
+    current = max(0, current)
+    reached = sum(1 for t in thresholds if current >= t)
+    target = thresholds[min(reached, len(thresholds) - 1)]
+    return BadgeOut(key=key, name=name, description=description, current=min(current, target), target=target,
+                    unlocked=reached > 0, tier=TIER_NAMES[reached - 1] if reached else None, tiers=thresholds)
 
 
 # --- Alışkanlık rozetleri (docs/metrikler.md "Alışkanlık rozetleri") ---------------------
 
 NIGHT_MIN_COMMITS = 20
+WEEKEND_MIN_COMMITS = 20
+SMALL_STEPS_MIN_COMMITS = 20
 NO_TZ = " (saat dilimin bilinmiyor; senkronla gelir)"
 
 
@@ -88,6 +106,13 @@ class HabitFacts:
     max_net_removed: int = 0  # en büyük (silinen - eklenen) satır, tek commit'te
     has_actions: bool = False  # kendi repolarından birinde GitHub Actions
     merged_to_others: int = 0  # başkasının reposunda merge edilen PR
+    repo_ids: list[int] = field(default_factory=list)  # labels ile aynı sırada: commit'in reposu
+    changed_files: list[int] = field(default_factory=list)  # bilinen değişen dosya sayıları
+    longest_repo_days: int = 0  # kendi repolarında açılıştan son push'a en uzun süre
+    newest_repo_age_days: int | None = None  # en yeni kendi reposunun yaşı (gün); repo yoksa None
+    has_docker: bool = False  # kendi repolarından birinde Dockerfile
+    reviews_total: int = 0  # GitHub'ın saydığı kod incelemeleri, bütün yıllar
+    best_year_months: int = 0  # bir takvim yılında katkı olan ay sayısının en yükseği
 
 
 def _longest_gap_then_back(days: set[date]) -> int:
@@ -108,6 +133,11 @@ def habit_badges(f: HabitFacts) -> list[BadgeOut]:
     longest = activity.longest_session(activity.sessions(sorted(times)))
     tz = "" if f.tz_known else NO_TZ
     days = activity.active_days(f.local_times)
+    weekend_pct = (round(sum(1 for t in times if t.weekday() in activity.WEEKEND) / n * 100)
+                   if n >= WEEKEND_MIN_COMMITS else 0)
+    test_repos = len({r for l, r in zip(f.labels, f.repo_ids) if l == "test"})
+    files = sorted(f.changed_files)
+    small_steps = (len(files) >= SMALL_STEPS_MIN_COMMITS and statistics.median(files) <= 3)
     return [
         _badge("hours24", "24 Saat", "Günün 24 saatinin her birinde en az bir commit at." + tz, len(hours), 24),
         _badge("night_owl", "Gece Kuşu",
@@ -122,14 +152,30 @@ def habit_badges(f: HabitFacts) -> list[BadgeOut]:
                round(longest.minutes) if longest else 0, 240),
         _badge("comeback", "Geri Dönüş", "30 günden uzun bir aradan sonra yeniden commit at.",
                int(_longest_gap_then_back(days) > 30), 1),
-        _badge("bug_hunter", "Böcek Avcısı", "\"Hata düzeltme\" türünde 10 commit at.",
-               sum(1 for l in f.labels if l == "fix"), 10),
+        _tiered("bug_hunter", "Böcek Avcısı", "\"Hata düzeltme\" türünde commit at (10 · 25 · 50).",
+                sum(1 for l in f.labels if l == "fix"), [10, 25, 50]),
         _badge("all_types", "Her Telden", "6 commit türünün hepsinde en az bir commit at.",
                len(set(f.labels) & set(APP_LABELS)), len(APP_LABELS)),
         _badge("less_is_more", "Az Çoktur", "Sildiği satır eklediğinden en az 100 fazla olan bir commit at.",
                int(f.max_net_removed >= 100), 1),
         _badge("automation", "Otomasyoncu", "Repolarından birine GitHub Actions ekle.", int(f.has_actions), 1),
         _badge("first_merge", "İlk Merge", "Başkasının reposuna açtığın bir PR merge edilsin.", f.merged_to_others, 1),
+        # Ek rozetler (20 Kas)
+        _badge("weekend", "Hafta Sonu Kahramanı",
+               f"En az {WEEKEND_MIN_COMMITS} commit'in %40'ı hafta sonu olsun. Betimler, övmez." + tz, weekend_pct, 40),
+        _tiered("tester", "Testçi", "Farklı repolarda \"Test\" türünde commit at (3 · 5 · 10 repo).",
+                test_repos, [3, 5, 10]),
+        _badge("small_steps", "Küçük Adımlar",
+               f"Commit'lerinin medyanında 3 ya da daha az dosya değişsin (en az {SMALL_STEPS_MIN_COMMITS} commit).",
+               int(small_steps), 1),
+        _tiered("long_haul", "Uzun Soluklu", "Bir reponu uzun süre geliştir: açılıştan son push'a 1 · 2 · 3 yıl (gün).",
+                f.longest_repo_days, [365, 730, 1095]),
+        _badge("fresh_start", "Yeni Başlangıç", "Son 30 günde yeni bir repo aç.",
+               int(f.newest_repo_age_days is not None and f.newest_repo_age_days <= 30), 1),
+        _badge("container", "Konteynerci", "Repolarından birine Dockerfile ekle.", int(f.has_docker), 1),
+        _tiered("reviewer", "İncelemeci", "Başkalarının kodunu incele (10 · 50 · 100 inceleme).",
+                f.reviews_total, [10, 50, 100]),
+        _badge("twelve_months", "On İki Ay", "Bir takvim yılının 12 ayının hepsinde katkı yap.", f.best_year_months, 12),
     ]
 
 

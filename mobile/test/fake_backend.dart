@@ -345,12 +345,16 @@ class FakeBackend {
           badge('polyglot', 'Çok dilli', 2, 3),
           badge('contributor', 'Katkıcı', 0, 1),
           badge('marathon', 'Maraton', 180, 240),
+          {'key': 'reviewer', 'name': 'İncelemeci', 'description': 'İncele.', 'current': 18, 'target': 50,
+            'unlocked': true, 'tier': 'bronz', 'tiers': [10, 50, 100]},
+          {'key': 'long_haul', 'name': 'Uzun Soluklu', 'description': 'Uzun.', 'current': 1095, 'target': 1095,
+            'unlocked': true, 'tier': 'altin', 'tiers': [365, 730, 1095]},
           {'key': 'leet', 'name': 'Gizli rozet', 'description': 'Açınca ne olduğunu göreceksin.',
             'current': 0, 'target': 1, 'unlocked': false, 'hidden': true},
           {'key': 'new_year', 'name': 'Yılbaşı', 'description': "1 Ocak'ta commit at.",
             'current': 1, 'target': 1, 'unlocked': true, 'hidden': true},
         ],
-        'unlocked': 3,
+        'unlocked': 5,
         'year': {
           'this_year': 2026, 'last_year': 2025, 'period_end': '2026-11-14',
           'stats': [

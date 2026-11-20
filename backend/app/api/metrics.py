@@ -174,12 +174,22 @@ def achievements(user: User = Depends(current_user)) -> AchievementsOut:
     today = datetime.now(ZoneInfo(tz or "UTC")).date()
     with SessionLocal() as db:
         rows = db.execute(
-            select(Commit.authored_at, Commit.repo_id, Commit.message, Commit.additions, Commit.deletions)
+            select(Commit.authored_at, Commit.repo_id, Commit.message, Commit.additions, Commit.deletions,
+                   Commit.changed_files)
             .join(Repo).where(Repo.user_id == user.id).order_by(Commit.authored_at)
         ).all()
-        own_tools = db.scalars(select(Repo.tools).where(Repo.user_id == user.id, Repo.is_owner)).all()
+        own_repos = db.execute(select(Repo.tools, Repo.created_at, Repo.pushed_at)
+                               .where(Repo.user_id == user.id, Repo.is_owner)).all()
+        reviews_total = db.scalar(select(func.coalesce(func.sum(ReviewYear.count), 0))
+                                  .where(ReviewYear.user_id == user.id))
+        month_rows = db.execute(
+            select(func.extract("year", ContributionDay.day), func.count(func.distinct(func.extract("month", ContributionDay.day))))
+            .where(ContributionDay.user_id == user.id, ContributionDay.count > 0)
+            .group_by(func.extract("year", ContributionDay.day))
+        ).all()
         merged_to_others = db.scalar(select(func.count(PullRequest.id)).where(
             PullRequest.user_id == user.id, PullRequest.state == "MERGED", ~PullRequest.is_own_repo))
+    now_utc = datetime.now(ZoneInfo("UTC"))
     zone = ZoneInfo(tz or "UTC")
     pairs = [(r.authored_at.astimezone(zone), r.repo_id) for r in rows]  # (yerel zaman, repo)
     days = activity.active_days([t for t, _ in pairs])
@@ -188,8 +198,16 @@ def achievements(user: User = Depends(current_user)) -> AchievementsOut:
         labels=[c.label for c in classify_many([r.message for r in rows])],
         max_net_removed=max((r.deletions - r.additions for r in rows
                              if r.additions is not None and r.deletions is not None), default=0),
-        has_actions=any("GitHub Actions" in (t or []) for t in own_tools),
+        has_actions=any("GitHub Actions" in (r.tools or []) for r in own_repos),
         merged_to_others=merged_to_others or 0,
+        repo_ids=[r.repo_id for r in rows],
+        changed_files=[r.changed_files for r in rows if r.changed_files is not None],
+        longest_repo_days=max(((r.pushed_at - r.created_at).days for r in own_repos
+                               if r.created_at and r.pushed_at), default=0),
+        newest_repo_age_days=min(((now_utc - r.created_at).days for r in own_repos if r.created_at), default=None),
+        has_docker=any("Docker" in (r.tools or []) for r in own_repos),
+        reviews_total=int(reviews_total or 0),
+        best_year_months=max((int(m) for _, m in month_rows), default=0),
     )
     out_badges = badges(days, today, load_projects(user), _load_technology(user)) + habit_badges(habits)
     return AchievementsOut(

@@ -32,8 +32,8 @@ Future<void> _open(WidgetTester tester) async {
 void main() {
   testWidgets('rozetler: açıklar tam, kilitliler soluk ve ilerlemeli', (tester) async {
     await _open(tester);
-    expect(find.byType(BadgeTile), findsNWidgets(11));
-    expect(find.text('Açılan rozet: 3 / 11'), findsOneWidget);
+    expect(find.byType(BadgeTile), findsNWidgets(13));
+    expect(find.text('Açılan rozet: 5 / 13'), findsOneWidget);
     expect(find.text('Açıldı'), findsNWidgets(2));
     expect(find.text('7 / 30'), findsOneWidget); // bir aylık seri ilerlemesi
     expect(find.text('180 dk / 240 dk'), findsOneWidget); // maraton: birimli ilerleme
@@ -42,6 +42,14 @@ void main() {
         find.ancestor(of: find.text('Lisanslı'), matching: find.byType(Opacity)).first);
     expect(locked.opacity, lessThan(1));
     expect(find.textContaining('commit sayısını ödüllendirmez'), findsOneWidget);
+  });
+
+  testWidgets('seviyeli rozet: seviye adı yazılı, ilerleme sıradaki seviyeye; en üstte "en üst seviye"', (tester) async {
+    await _open(tester);
+    expect(find.text('Bronz'), findsOneWidget);
+    expect(find.text('Bronz · sıradaki seviye: 18 / 50'), findsOneWidget);
+    expect(find.text('Altın'), findsOneWidget);
+    expect(find.text('Altın · en üst seviye'), findsOneWidget);
   });
 
   testWidgets('gizli rozet: kilitliyken ??? ve soru işareti, ilerleme çubuğu yok; açılınca adı görünür', (tester) async {

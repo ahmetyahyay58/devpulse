@@ -206,11 +206,30 @@ sonu çalışmak övülmez: rozet yalnız alışkanlığı betimler.
 | 13:37 (gizli) 🕐 | Yerel saati tam 13:37 olan bir commit | 0 / 1 |
 | Maraton 🕐 | En uzun oturum ≥ 4 saat ("Oturum" kuralı, 2 saat boşluk) | en uzun oturum (dk) / 240 |
 | Geri Dönüş | İki aktif gün arasında 30 günden uzun ara, sonra yeniden commit | 0 / 1 |
-| Böcek Avcısı | "Hata düzeltme" türünde en az 10 commit ("Commit türleri") | fix commit / 10 |
+| Böcek Avcısı (seviyeli) | "Hata düzeltme" türünde en az 10 commit ("Commit türleri") | fix commit / 10 · 25 · 50 |
 | Her Telden | 6 uygulama türünün hepsinde en az bir commit | kullanılan tür / 6 |
 | Az Çoktur | Silinen satırın eklenenden en az 100 fazla olduğu bir commit (temizlik) | 0 / 1 |
 | Otomasyoncu | Kendi repolarından birinde GitHub Actions ("Teknoloji" araç tespiti) | 0 / 1 |
 | İlk Merge | Başkasının reposuna açılan PR'lardan en az biri merge edildi ("İşbirliği") | merge edilen / 1 |
+
+**Ek rozetler (20 Kas).** Aynı ilkeler; yeni veri çekilmez.
+
+| Rozet | Koşul | İlerleme |
+|---|---|---|
+| Hafta Sonu Kahramanı 🕐 | En az 20 commit ve commit'lerin en az %40'ı hafta sonu (Cumartesi-Pazar, "Ritim" ile aynı) | hafta sonu payı (%) / 40; 20 commit'ten azsa 0 |
+| Testçi (seviyeli) | "Test" türünde commit atılan farklı repo sayısı | repo / 3 · 5 · 10 |
+| Küçük Adımlar | Değişen dosya sayısı bilinen en az 20 commit ve bunların medyanı ≤ 3 dosya | 20 commit'ten azsa 0; değilse 1 / 1 |
+| Etiketçi | Puanlanan bütün repolarda topic var (en az 1 repo) | topic'i olan / puanlanan repo |
+| Uzun Soluklu (seviyeli) | Kendi repolarından birinde açılıştan son push'a geçen süre | gün / 365 · 730 · 1095 |
+| Yeni Başlangıç | Son 30 günde açılmış kendi reposu | 0 / 1 |
+| Konteynerci | Kendi repolarından birinde Dockerfile ("Docker" aracı) | 0 / 1 |
+| İncelemeci (seviyeli) | GitHub'ın saydığı kod incelemesi katkıları, bütün yıllar | inceleme / 10 · 50 · 100 |
+| On İki Ay | Aynı takvim yılının 12 ayının hepsinde en az bir katkı (katkı takvimi; PR, issue, inceleme dahil) | o yıl katkı olan ay sayısının en yükseği / 12 |
+
+**Seviyeler (bronz, gümüş, altın):** Seviyeli rozetlerin üç eşiği vardır. Bronz eşiğine ulaşınca
+rozet açılır; ilerleme bir sonraki seviyenin eşiğine göre gösterilir, altında son eşik.
+Böcek Avcısı da seviyelidir (10 · 25 · 50 fix commit). Seviye rengi yazıyla birlikte verilir
+("Bronz", "Gümüş", "Altın"); renk tek başına anlam taşımaz. Eşikler sezgiseldir.
 
 **Gizli rozetler:** Yılbaşı ve 13:37 açılana kadar adı ve koşulu gösterilmez ("Gizli rozet",
 "???"); sunucu da göndermez (`hidden: true`). Açılınca normal rozet gibi görünür. Tür rozetleri

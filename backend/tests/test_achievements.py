@@ -1,7 +1,7 @@
 """Başarımlar ve yıl kıyası (docs/metrikler.md "Başarımlar", "Yıl kıyası")."""
 from datetime import date, datetime, timedelta
 
-from app.metrics.achievements import HIDDEN_NAME, HabitFacts, badges, habit_badges, year_compare
+from app.metrics.achievements import HIDDEN_NAME, HabitFacts, _tiered, badges, habit_badges, year_compare
 from app.metrics.projects import RepoFacts, build_projects
 from app.metrics.sufficiency import Sufficiency
 from app.metrics.technology import RepoTech, build_technology
@@ -44,7 +44,7 @@ def test_badges_progress_and_unlock():
     assert (b["license"].current, b["license"].target, b["license"].unlocked) == (1, 2, False)
     assert (b["polyglot"].current, b["polyglot"].unlocked) == (2, False)  # Shell %4 sayılmaz
     assert b["contributor"].unlocked
-    assert len(b) == 8
+    assert len(b) == 9  # 8 + Etiketçi
 
 
 def test_no_scored_repos_keeps_repo_badges_locked():
@@ -98,7 +98,7 @@ def test_achievements_endpoint(api, demo_auth):
     assert api.get("/metrics/achievements").status_code == 401
     api.post("/sync", json={}, headers=demo_auth)
     body = api.get("/metrics/achievements", headers=demo_auth).json()
-    assert len(body["badges"]) == 20  # 8 temel + 12 alışkanlık
+    assert len(body["badges"]) == 29  # 9 temel + 20 alışkanlık
     hidden = [b for b in body["badges"] if b["hidden"] and not b["unlocked"]]
     assert all(b["name"] == "Gizli rozet" and "13:37" not in b["description"] for b in hidden)
     assert body["unlocked"] == sum(b["unlocked"] for b in body["badges"])
@@ -174,3 +174,62 @@ def test_type_and_repo_badges():
     assert b["first_merge"].unlocked and b["first_merge"].current == 1
     b = habits([lt(TODAY, 10)], max_net_removed=99)
     assert not b["less_is_more"].unlocked and not b["first_merge"].unlocked
+
+
+# --- Seviyeler ve ek rozetler (20 Kas) ---
+
+def test_tiers_progress_to_next_threshold():
+    t = _tiered("x", "X", "", 0, [10, 25, 50])
+    assert (t.unlocked, t.tier, t.current, t.target) == (False, None, 0, 10)
+    t = _tiered("x", "X", "", 12, [10, 25, 50])
+    assert (t.unlocked, t.tier, t.current, t.target) == (True, "bronz", 12, 25)
+    t = _tiered("x", "X", "", 25, [10, 25, 50])
+    assert (t.tier, t.target) == ("gumus", 50)
+    t = _tiered("x", "X", "", 80, [10, 25, 50])
+    assert (t.tier, t.current, t.target, t.tiers) == ("altin", 50, 50, [10, 25, 50])
+
+
+def test_bug_hunter_is_tiered():
+    b = habits([lt(TODAY, 10)], labels=["fix"] * 26)["bug_hunter"]
+    assert b.tier == "gumus" and (b.current, b.target) == (26, 50)
+
+
+def test_weekend_needs_min_commits_and_share():
+    sat = date(2026, 11, 14)  # Cumartesi
+    few = [lt(sat, 10)] * 10
+    assert habits(few)["weekend"].current == 0
+    week = [lt(sat - timedelta(days=d), 10) for d in (1, 2, 3, 4, 5)] * 2 + [lt(sat - timedelta(days=3), 11)] * 2
+    b = habits([lt(sat, 10)] * 8 + week)["weekend"]  # 8/20 = %40
+    assert b.unlocked
+    assert not habits([lt(sat, 10)] * 8 + week, tz_known=False)["weekend"].unlocked
+
+
+def test_tester_counts_distinct_repos():
+    b = habits([lt(TODAY, 10)], labels=["test", "test", "test", "fix"], repo_ids=[1, 1, 2, 3])["tester"]
+    assert (b.current, b.unlocked) == (2, False)
+    b = habits([lt(TODAY, 10)], labels=["test"] * 3, repo_ids=[1, 2, 3])["tester"]
+    assert b.tier == "bronz" and b.target == 5
+
+
+def test_small_steps_median_and_minimum():
+    assert not habits([lt(TODAY, 10)], changed_files=[1] * 19)["small_steps"].unlocked  # 20'den az
+    assert habits([lt(TODAY, 10)], changed_files=[1] * 15 + [40] * 5)["small_steps"].unlocked  # medyan 1
+    assert not habits([lt(TODAY, 10)], changed_files=[5] * 20)["small_steps"].unlocked
+
+
+def test_repo_and_activity_badges():
+    b = habits([lt(TODAY, 10)], longest_repo_days=800, newest_repo_age_days=12, has_docker=True,
+               reviews_total=55, best_year_months=12)
+    assert b["long_haul"].tier == "gumus"
+    assert b["fresh_start"].unlocked and b["container"].unlocked
+    assert b["reviewer"].tier == "gumus" and b["reviewer"].target == 100
+    assert b["twelve_months"].unlocked
+    b = habits([lt(TODAY, 10)], newest_repo_age_days=31, best_year_months=11)
+    assert not b["fresh_start"].unlocked and (b["twelve_months"].current, b["twelve_months"].target) == (11, 12)
+    assert not habits([lt(TODAY, 10)])["fresh_start"].unlocked  # repo yok
+
+
+def test_topics_badge_needs_all_scored_repos():
+    projects = build_projects([repo("a"), repo("b", topics=[])], NOW)
+    b = by_key(badges(set(), TODAY, projects, build_technology([])))
+    assert (b["topics"].current, b["topics"].target, b["topics"].unlocked) == (1, 2, False)

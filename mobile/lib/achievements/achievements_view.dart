@@ -103,10 +103,27 @@ const _icons = {
   'less_is_more': Icons.content_cut,
   'automation': Icons.precision_manufacturing_outlined,
   'first_merge': Icons.merge_type,
+  // Ek rozetler (20 Kas)
+  'topics': Icons.sell_outlined,
+  'weekend': Icons.weekend_outlined,
+  'tester': Icons.science_outlined,
+  'small_steps': Icons.stairs_outlined,
+  'long_haul': Icons.park_outlined,
+  'fresh_start': Icons.eco_outlined,
+  'container': Icons.inventory_2_outlined,
+  'reviewer': Icons.rate_review_outlined,
+  'twelve_months': Icons.calendar_month_outlined,
+};
+
+/// Seviye adı ve rengi (renk tek başına anlam taşımaz: ad da yazılır).
+const _tiers = {
+  'bronz': ('Bronz', Color(0xFFCD7F32)),
+  'gumus': ('Gümüş', Color(0xFFB4B8BE)),
+  'altin': ('Altın', Color(0xFFE0B020)),
 };
 
 /// İlerleme birimi: sayı tek başına anlaşılmayan rozetler için.
-const _units = {'marathon': ' dk', 'night_owl': '%'};
+const _units = {'marathon': ' dk', 'night_owl': '%', 'weekend': '%', 'long_haul': ' gün'};
 
 /// İki sütunlu ızgara (Row + Expanded; GridView içerik yüksekliğine uymadığı için).
 class _BadgeGrid extends StatelessWidget {
@@ -146,6 +163,9 @@ class BadgeTile extends StatelessWidget {
     final secret = badge['hidden'] == true && !unlocked; // gizli: ad ve koşul sunucudan gelmez
     final unit = _units[badge['key']] ?? '';
     final progress = unit == '%' ? '%$current / %$target' : '$current$unit / $target$unit';
+    final tier = _tiers[badge['tier']]; // seviyeli rozette ulaşılan seviye (yoksa null)
+    final tiers = (badge['tiers'] as List?)?.cast<int>();
+    final maxed = tier != null && tiers != null && current >= tiers.last;
     return Opacity(
       opacity: unlocked ? 1 : 0.55, // kilitli rozet soluk
       child: Card(
@@ -157,6 +177,21 @@ class BadgeTile extends StatelessWidget {
               Icon(secret ? Icons.help_outline : (_icons[badge['key']] ?? Icons.emoji_events_outlined),
                   color: unlocked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
               const Spacer(),
+              if (tier != null) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: tier.$2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.military_tech, size: 14, color: tier.$2),
+                    const SizedBox(width: 2),
+                    Text(tier.$1, style: theme.textTheme.labelSmall),
+                  ]),
+                ),
+                const SizedBox(width: 6),
+              ],
               // Durum ikonla ve yazıyla (renk tek başına anlam taşımaz).
               Icon(unlocked ? Icons.check_circle : Icons.lock_outline, size: 16,
                   color: unlocked ? const Color(0xFF0CA30C) : theme.colorScheme.onSurfaceVariant),
@@ -174,7 +209,12 @@ class BadgeTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
             ],
-            Text(unlocked ? (badge['hidden'] == true ? 'Gizli rozet açıldı' : 'Açıldı') : (secret ? '???' : progress),
+            Text(
+                tier != null
+                    ? (maxed ? '${tier.$1} · en üst seviye' : '${tier.$1} · sıradaki seviye: $progress')
+                    : unlocked
+                        ? (badge['hidden'] == true ? 'Gizli rozet açıldı' : 'Açıldı')
+                        : (secret ? '???' : progress),
                 style: muted),
           ]),
         ),

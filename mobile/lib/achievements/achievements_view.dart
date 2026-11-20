@@ -8,7 +8,7 @@ import '../overview/overview_models.dart';
 import '../share/share_card.dart';
 import '../year/year_summary_screen.dart';
 
-/// Başarımlar: 20 rozet (kilitliler soluk, ilerlemeli; gizliler açılana kadar "???") ve yıl kıyası.
+/// Başarımlar: 29 rozet (kilitliler soluk, ilerlemeli; gizliler açılana kadar "???"; bazıları seviyeli) ve yıl kıyası.
 /// Rozetler alışkanlığı ve proje bakımını tanır; ham commit sayısını ödüllendirmez.
 class AchievementsView extends StatelessWidget {
   const AchievementsView({super.key, required this.controller});

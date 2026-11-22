@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'theme_settings.dart';
+
 /// Kısa bildirim balonu: ekranın üst ortasında belirir, birkaç saniye sonra kendiliğinden kaybolur.
 /// Alttaki çubuk (SnackBar) yerine kullanılır (kullanıcı tercihi, 17 Kas). Başarı/hata hem simge hem
 /// renkle söylenir; renk tek başına anlam taşımaz.
@@ -49,7 +51,7 @@ class _ToastState extends State<_Toast> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = widget.success ? const Color(0xFF0CA30C) : theme.colorScheme.error;
+    final color = widget.success ? successColor(context) : theme.colorScheme.error;
     return Positioned(
       top: MediaQuery.paddingOf(context).top + 72,
       left: 24,

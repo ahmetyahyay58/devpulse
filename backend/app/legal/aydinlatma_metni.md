@@ -32,6 +32,7 @@ Yalnızca "read:user" (profilini okuma). Uygulama özel repolarına ve koduna er
 - CV bilgilerin ("Bilgilerim"): adın, e-postan, telefonun, şehrin, LinkedIn adresin, eğitim, deneyim ve sertifika kayıtların, dil düzeylerin, "Hakkımda" metnin ve ilgi alanların yalnızca bu cihazda saklanır (web sürümünde tarayıcının yerel deposunda) ve sunucuya hiç gönderilmez; bu yüzden "Verilerimi indir" dosyasında da yer almaz. Çıkış yaptığında ya da "Verilerimi sil" dediğinde cihazdan da silinir. Yapay zekâya da gönderilmez.
 - Haftalık bildirim tercihin (Android, varsayılan kapalı): telefonunda tutulur. Bildirim telefonda planlanır, sunucudan gönderilmez ve içinde sayı yoktur; çıkış yaptığında iptal edilir.
 - Paylaşım kartı telefonunda üretilir; yalnızca sen "Paylaş" dersen telefondan çıkar.
+- Tema tercihin (Sistem, Açık ya da Koyu): telefonunda tutulur, sunucuya gönderilmez.
 - Gördüğün rozetlerin listesi (yalnızca rozet adları, ör. "streak7"): yeni açılan bir rozeti bir kez kutlamak için telefonunda tutulur, sunucuya gönderilmez.
 
 ## Verinin işlenme amacı

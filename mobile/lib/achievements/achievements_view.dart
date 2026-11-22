@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../ai/ai_features.dart';
 
 import '../overview/metric_card.dart';
@@ -171,7 +173,7 @@ class BadgeTile extends StatelessWidget {
               const Spacer(),
               // Durum ikonla ve yazıyla (renk tek başına anlam taşımaz).
               Icon(unlocked ? Icons.check_circle : Icons.lock_outline, size: 16,
-                  color: unlocked ? const Color(0xFF0CA30C) : theme.colorScheme.onSurfaceVariant),
+                  color: unlocked ? successColor(context) : theme.colorScheme.onSurfaceVariant),
             ]),
             if (tier != null) ...[
               const SizedBox(height: 8),

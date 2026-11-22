@@ -13,6 +13,18 @@ class ChartColors {
     Color(0xFF86B6EF), // 4: çok  (mavi 250)
   ];
 
+  /// Açık tema: aynı mavi, açıktan koyuya ("az" açık, "çok" koyu). Doğrulandı: tek ton,
+  /// adımlar ayırt edilir, en açık adım zemine karşı ≥ 2:1.
+  static const heatLight = [
+    Color(0xFF7FAEEC), // 1: az
+    Color(0xFF4686DF), // 2
+    Color(0xFF2160C0), // 3
+    Color(0xFF123E80), // 4: çok
+  ];
+
+  static List<Color> heatFor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? heat : heatLight;
+
   /// Olağan dışı gün halkası: "uyarı" durumu rengi (amber). Kategorik renklerden ayrı;
   /// lejantta yazıyla da açıklanır.
   static const anomaly = Color(0xFFFAB219);
@@ -337,7 +349,7 @@ class ContributionHeatmap extends StatelessWidget {
                             child: square(
                               switch (level(cells[w * 7 + r]!.$2, maxCount)) {
                                 0 => empty,
-                                final l => ChartColors.heat[l - 1],
+                                final l => ChartColors.heatFor(context)[l - 1],
                               },
                               ring: highlighted.contains(cells[w * 7 + r]!.$1),
                             ),
@@ -356,7 +368,7 @@ class ContributionHeatmap extends StatelessWidget {
           Text('Az', style: TextStyle(fontSize: 11, color: muted)),
           const SizedBox(width: 4),
           square(empty),
-          for (final c in ChartColors.heat) square(c),
+          for (final c in ChartColors.heatFor(context)) square(c),
           const SizedBox(width: 4),
           Text('Çok', style: TextStyle(fontSize: 11, color: muted)),
         ]),

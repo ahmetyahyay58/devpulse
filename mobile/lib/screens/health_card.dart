@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../api/health_api.dart';
 
 /// Backend'in ayakta olup olmadığını gösteren kart.
@@ -154,7 +156,7 @@ class _StatusRow extends StatelessWidget {
             color: ok == null
                 ? colors.onSurfaceVariant
                 : ok!
-                    ? Colors.greenAccent
+                    ? successColor(context)
                     : colors.error,
           ),
           const SizedBox(width: 12),

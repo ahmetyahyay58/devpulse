@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../api/sync_api.dart';
 import 'sync_controller.dart';
 
@@ -90,7 +92,7 @@ class SyncCard extends StatelessWidget {
     final unchanged = job.reposSkipped > 0 ? ' (${job.reposSkipped} değişmemiş)' : '';
     return [
       Row(children: [
-        const Icon(Icons.check_circle, color: Colors.greenAccent, size: 20),
+        Icon(Icons.check_circle, color: successColor(context), size: 20),
         const SizedBox(width: 8),
         // Expanded: dar ekranda taşmak yerine alt satıra geçer.
         Expanded(child: Text('Son senkron: ${_formatLocal(job.finishedAt)}')),

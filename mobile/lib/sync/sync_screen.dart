@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../api/sync_api.dart';
 import '../overview/charts.dart';
 import 'sync_controller.dart';
@@ -251,7 +253,7 @@ class _StepRow extends StatelessWidget {
     final icon = switch (step.state) {
       SyncStepState.active => const SizedBox.square(
           dimension: 20, child: CircularProgressIndicator(strokeWidth: 2.5)),
-      SyncStepState.done => const Icon(Icons.check_circle, color: Colors.greenAccent, size: 22),
+      SyncStepState.done => Icon(Icons.check_circle, color: successColor(context), size: 22),
       SyncStepState.failed => Icon(Icons.error, color: scheme.error, size: 22),
       SyncStepState.waiting => Icon(Icons.radio_button_unchecked, color: scheme.outline, size: 22),
     };

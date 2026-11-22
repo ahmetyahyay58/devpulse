@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'ui/theme_settings.dart';
+
 import 'api/api_client.dart';
 import 'api/health_api.dart';
 import 'auth/auth_service.dart';
@@ -71,6 +73,7 @@ class _DevPulseAppState extends State<DevPulseApp> {
   @override
   void initState() {
     super.initState();
+    ThemeController.instance.load(); // kayıtlı tema tercihi (yoksa Sistem)
     _wakeServer();
     widget.auth.restore().then((session) {
       if (mounted) {
@@ -141,19 +144,18 @@ class _DevPulseAppState extends State<DevPulseApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DevPulse',
-      debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: _messenger,
-      // Yalnızca koyu tema; renkler tek bir "tohum" renkten türetilir.
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4F8CFF),
-          brightness: Brightness.dark,
-        ),
+    // Tema: Sistem (varsayılan) / Açık / Koyu; Profil'den seçilir, cihazda tutulur.
+    return ListenableBuilder(
+      listenable: ThemeController.instance,
+      builder: (context, _) => MaterialApp(
+        title: 'DevPulse',
+        debugShowCheckedModeBanner: false,
+        scaffoldMessengerKey: _messenger,
+        themeMode: ThemeController.instance.mode,
+        theme: appTheme(Brightness.light),
+        darkTheme: appTheme(Brightness.dark),
+        home: _home(),
       ),
-      home: _home(),
     );
   }
 }

@@ -8,6 +8,8 @@ import 'package:devpulse/auth/session_store.dart';
 import 'package:devpulse/main.dart';
 import 'package:devpulse/screens/account_screen.dart';
 import 'package:devpulse/screens/file_saver.dart';
+import 'package:devpulse/ui/theme_settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -184,6 +186,22 @@ void main() {
     await _start(tester, FakeBackend(), _live);
     expect(find.descendant(of: find.byTooltip('Profil'), matching: find.byIcon(Icons.account_circle_outlined)),
         findsOneWidget);
+  });
+
+  testWidgets("tema: Profil'den Açık/Koyu/Sistem seçilir, uygulama değişir ve cihazda saklanır", (tester) async {
+    addTearDown(() => ThemeController.instance.set(ThemeMode.system));
+    await _start(tester, FakeBackend(), _live);
+    await tester.tap(find.byTooltip('Profil'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tema'), findsOneWidget);
+    await tester.tap(find.text('Koyu'));
+    await tester.pumpAndSettle();
+    expect(tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode, ThemeMode.dark);
+    expect(Theme.of(tester.element(find.text('Tema'))).brightness, Brightness.dark);
+    await tester.tap(find.text('Açık'));
+    await tester.pumpAndSettle();
+    expect(Theme.of(tester.element(find.text('Tema'))).brightness, Brightness.light);
+    expect((await SharedPreferences.getInstance()).getString(ThemeController.prefKey), 'light');
   });
 
   testWidgets('Veri kapsamı: commit aralığı, repo türleri ve sabit notlar', (tester) async {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../overview/charts.dart';
 import 'projects_models.dart';
 
@@ -208,7 +210,7 @@ class CheckRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (icon, color, word) = switch (check.status) {
-      'ok' => (Icons.check_circle, const Color(0xFF0CA30C), 'var'),
+      'ok' => (Icons.check_circle, successColor(context), 'var'),
       'missing' => (Icons.cancel, const Color(0xFFEC835A), 'eksik'),
       _ => (Icons.help_outline, theme.colorScheme.onSurfaceVariant, 'bilinmiyor'),
     };

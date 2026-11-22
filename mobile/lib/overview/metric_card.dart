@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
+
 import '../ai/ai_features.dart';
 import 'overview_models.dart';
 
@@ -13,7 +15,7 @@ class SufficiencyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final muted = Theme.of(context).colorScheme.onSurfaceVariant;
     final (icon, color) = switch (sufficiency) {
-      Sufficiency.normal => (Icons.check_circle, const Color(0xFF0CA30C)),
+      Sufficiency.normal => (Icons.check_circle, successColor(context)),
       Sufficiency.low => (Icons.warning_amber_rounded, const Color(0xFFFAB219)),
       Sufficiency.none => (Icons.info_outline, muted),
     };

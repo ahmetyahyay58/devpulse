@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../achievements/badge_art.dart';
+import '../ui/theme_settings.dart';
 
 import '../ai/ai_controller.dart';
 import '../ai/ai_widgets.dart';
@@ -282,6 +283,8 @@ class _ProfileSectionsState extends State<_ProfileSections> {
             const SizedBox(height: 12),
             AiSettingsCard(ai: widget.ai!),
           ],
+          const SizedBox(height: 12),
+          ThemeModeTile(controller: ThemeController.instance),
           if (widget.reminder.supported) ...[
             const SizedBox(height: 12),
             WeeklyReminderTile(reminder: widget.reminder),

@@ -369,10 +369,10 @@ class ProfileAvatarIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final fallback = Icon(Icons.account_circle_outlined, size: size);
     if (url == null) return fallback;
-    return ClipOval(
-      child: Image.network(url!, width: size, height: size, fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => fallback),
-    );
+    // Fotoğraf gelene kadar (yavaş ağ) ve gelmezse simge görünür: düğme hiç boş kalmaz.
+    return Image.network(url!, width: size, height: size, fit: BoxFit.cover,
+        frameBuilder: (_, child, frame, sync) => frame == null && !sync ? fallback : ClipOval(child: child),
+        errorBuilder: (_, _, _) => fallback);
   }
 }
 

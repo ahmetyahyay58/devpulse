@@ -179,7 +179,9 @@ void main() {
     await _start(tester, backend, _live);
     final icon = tester.widget<ProfileAvatarIcon>(find.byType(ProfileAvatarIcon));
     expect(icon.url, 'https://avatars.example/ben.png');
-    expect(find.descendant(of: find.byTooltip('Profil'), matching: find.byType(ClipOval)), findsOneWidget);
+    // Fotoğraf yüklenene kadar (testte hiç yüklenmez) düğme boş kalmaz, simge görünür.
+    expect(find.descendant(of: find.byTooltip('Profil'), matching: find.byIcon(Icons.account_circle_outlined)),
+        findsOneWidget);
   });
 
   testWidgets('fotoğraf yoksa ana ekranda simge kalır', (tester) async {

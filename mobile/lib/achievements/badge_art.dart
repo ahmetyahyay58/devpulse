@@ -195,10 +195,14 @@ class BadgeSeenStore {
   }
 }
 
-/// Yeni açılan rozet kutlaması: rozet hafif yaylanarak büyür, arkasında ışınlar bir kez parlar.
+/// Yeni açılan rozet kutlaması (tek seferlik, ~1,6 sn): rozet yukarıdan yaylanarak düşer ve
+/// küçük bir sallanmayla oturur, üstünden bir parlama geçer, konfeti bir kez patlar, yazılar
+/// sırayla belirir. Birden çok rozet açıldıysa "Sıradaki" ile her biri kendi kutlamasıyla gelir.
+/// Sürekli dönen bir şey yoktur; animasyonlar kapalıysa son hal anında gösterilir.
 Future<void> showBadgeCelebration(BuildContext context, List<Map<String, dynamic>> fresh) {
   return showDialog<void>(
     context: context,
+    barrierColor: Colors.black.withValues(alpha: 0.7),
     builder: (_) => _Celebration(fresh: fresh),
   );
 }
@@ -212,16 +216,28 @@ class _Celebration extends StatefulWidget {
 }
 
 class _CelebrationState extends State<_Celebration> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  late final AnimationController _c =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1600));
+  int _index = 0;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_c.value == 0 && !_c.isAnimating) _play();
+  }
+
+  void _play() {
     if (MediaQuery.disableAnimationsOf(context)) {
       _c.value = 1; // animasyon kapalı: son hal
-    } else if (!_c.isAnimating && _c.value == 0) {
-      _c.forward(); // tek sefer
+      return;
     }
+    HapticFeedback.mediumImpact(); // telefonda küçük bir titreşim (web'de etkisiz)
+    _c.forward(from: 0);
+  }
+
+  void _next() {
+    setState(() => _index++);
+    _play();
   }
 
   @override
@@ -233,72 +249,205 @@ class _CelebrationState extends State<_Celebration> with SingleTickerProviderSta
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final first = widget.fresh.first;
-    final more = widget.fresh.length - 1;
-    final tier = tierLabels[first['tier']];
-    // Rozet: ilk %55'te büyür (hafif yay); ışınlar: parlayıp söner.
-    final pop = CurvedAnimation(parent: _c, curve: const Interval(0, 0.55, curve: Curves.easeOutBack));
-    final rays = CurvedAnimation(parent: _c, curve: const Interval(0.1, 1, curve: easeOutStrong));
-    return AlertDialog(
-      contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-      content: Column(mainAxisSize: MainAxisSize.min, children: [
-        SizedBox(
-          width: 200,
-          height: 200,
-          child: AnimatedBuilder(
-            animation: _c,
-            builder: (_, child) => Stack(alignment: Alignment.center, children: [
-              Opacity(
-                opacity: (1 - rays.value).clamp(0, 1) * (rays.value > 0 ? 1 : 0),
-                child: Transform.scale(
-                  scale: 0.7 + 0.5 * rays.value,
-                  child: CustomPaint(size: const Size(200, 200), painter: _RaysPainter(tier?.$2 ?? const Color(0xFFFFD25A))),
-                ),
-              ),
-              Opacity(
-                opacity: pop.value.clamp(0, 1),
-                child: Transform.scale(scale: 0.9 + 0.1 * pop.value, child: child),
-              ),
-            ]),
-            child: BadgeArt(badge: first, size: 150),
+    final badge = widget.fresh[_index];
+    final last = _index == widget.fresh.length - 1;
+    final tier = tierLabels[badge['tier']];
+    final accent = tier?.$2 ?? const Color(0xFFFFD25A);
+
+    // Zaman dilimleri (0-1 arası, toplam 1,6 sn).
+    final drop = CurvedAnimation(parent: _c, curve: const Interval(0, 0.45, curve: Curves.easeOutBack));
+    final wobble = CurvedAnimation(parent: _c, curve: const Interval(0.3, 0.75, curve: Curves.easeOut));
+    final shine = CurvedAnimation(parent: _c, curve: const Interval(0.45, 0.8, curve: Curves.easeInOut));
+    final burst = CurvedAnimation(parent: _c, curve: const Interval(0.3, 1));
+    final glow = CurvedAnimation(parent: _c, curve: const Interval(0.25, 1, curve: easeOutStrong));
+    Animation<double> textIn(double start) =>
+        CurvedAnimation(parent: _c, curve: Interval(start, math.min(start + 0.3, 1), curve: easeOutStrong));
+
+    // Yazılar: aşağıdan 10 px yükselerek belirir.
+    Widget reveal(Animation<double> a, Widget child) => AnimatedBuilder(
+          animation: a,
+          builder: (_, c) => Opacity(
+            opacity: a.value.clamp(0, 1),
+            child: Transform.translate(offset: Offset(0, 10 * (1 - a.value)), child: c),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(tier == null ? 'Yeni rozet açıldı' : 'Yeni seviye: ${tier.$1}', style: theme.textTheme.labelLarge),
-        const SizedBox(height: 4),
-        Text(first['name'] as String, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
-        const SizedBox(height: 6),
-        Text(first['description'] as String, textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        if (more > 0) ...[
-          const SizedBox(height: 8),
-          Text('ve $more rozet daha', style: theme.textTheme.bodySmall),
-        ],
-      ]),
-      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Harika'))],
+          child: child,
+        );
+
+    return Dialog(
+      backgroundColor: theme.colorScheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          SizedBox(
+            width: 260,
+            height: 240,
+            child: AnimatedBuilder(
+              animation: _c,
+              builder: (_, child) {
+                // Düşüş: 60 px yukarıdan, %80 boydan; sallanma: söndükçe azalan küçük dönüş.
+                final d = drop.value;
+                final angle = math.sin(wobble.value * math.pi * 3) * 0.12 * (1 - wobble.value);
+                return Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
+                  // Arkada yumuşak bir hale (seviyenin ya da altın rengi).
+                  Opacity(
+                    opacity: 0.55 * glow.value,
+                    child: Container(
+                      width: 150 + 40 * glow.value,
+                      height: 150 + 40 * glow.value,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(colors: [accent.withValues(alpha: 0.8), accent.withValues(alpha: 0)]),
+                      ),
+                    ),
+                  ),
+                  CustomPaint(size: const Size(260, 240), painter: _ConfettiPainter(burst.value, seed: _index)),
+                  Opacity(
+                    opacity: (d * 2).clamp(0, 1),
+                    child: Transform.translate(
+                      offset: Offset(0, -60 * (1 - d)),
+                      child: Transform.rotate(
+                        angle: angle,
+                        child: Transform.scale(
+                          scale: 0.8 + 0.2 * d,
+                          child: _Shine(progress: shine.value, child: child!),
+                        ),
+                      ),
+                    ),
+                  ),
+                ]);
+              },
+              child: BadgeArt(key: ValueKey(_index), badge: badge, size: 150),
+            ),
+          ),
+          reveal(
+            textIn(0.45),
+            Text(tier == null ? 'Yeni rozet açıldı' : 'Yeni seviye: ${tier.$1}',
+                style: theme.textTheme.labelLarge?.copyWith(color: accent)),
+          ),
+          const SizedBox(height: 4),
+          reveal(
+            textIn(0.52),
+            Text(badge['name'] as String, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+          ),
+          const SizedBox(height: 6),
+          reveal(
+            textIn(0.6),
+            Text(badge['description'] as String,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          ),
+          if (widget.fresh.length > 1) ...[
+            const SizedBox(height: 10),
+            Text('${_index + 1} / ${widget.fresh.length}', style: theme.textTheme.bodySmall),
+          ],
+          const SizedBox(height: 12),
+          reveal(
+            textIn(0.68),
+            FilledButton(
+              onPressed: last ? () => Navigator.of(context).pop() : _next,
+              child: Text(last ? 'Harika' : 'Sıradaki'),
+            ),
+          ),
+        ]),
+      ),
     );
   }
 }
 
-/// Rozetin arkasındaki 12 ışın (tek renk, yumuşak uçlu).
-class _RaysPainter extends CustomPainter {
-  _RaysPainter(this.color);
-  final Color color;
+/// Rozetin üstünden çapraz geçen parlama. Yalnız rozetin boyalı yerlerine düşer (srcATop):
+/// madalyon, altıgen, kalkan ve elmasın her birine kendi şeklinde uyar.
+class _Shine extends StatelessWidget {
+  const _Shine({required this.progress, required this.child});
+  final double progress; // 0: başlamadı, 1: geçti
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (progress <= 0 || progress >= 1) return child;
+    final x = -0.6 + 2.2 * progress; // bandın merkezi soldan sağa
+    return ShaderMask(
+      blendMode: BlendMode.srcATop,
+      shaderCallback: (rect) => LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withValues(alpha: 0),
+          Colors.white.withValues(alpha: 0.55),
+          Colors.white.withValues(alpha: 0),
+        ],
+        stops: [(x - 0.15).clamp(0, 1), x.clamp(0, 1), (x + 0.15).clamp(0, 1)],
+      ).createShader(rect),
+      child: child,
+    );
+  }
+}
+
+/// Tek seferlik konfeti: merkezden dışa savrulur, yerçekimiyle düşer, döner ve söner.
+/// Rastgelelik sabit tohumla: her açılışta aynı, testlerde kararlı.
+class _ConfettiPainter extends CustomPainter {
+  _ConfettiPainter(this.t, {required int seed}) : _pieces = _make(seed);
+  final double t;
+  final List<_Piece> _pieces;
+
+  static const _colors = [
+    Color(0xFFFFD25A), Color(0xFFFF6FA8), Color(0xFF7FD4FF), Color(0xFF7FD49B), Color(0xFFB9A7FF), Color(0xFFFFB347),
+  ];
+
+  static List<_Piece> _make(int seed) {
+    final r = math.Random(42 + seed);
+    return [
+      for (var i = 0; i < 36; i++)
+        _Piece(
+          angle: -math.pi / 2 + (r.nextDouble() - 0.5) * math.pi * 1.6, // çoğu yukarı ve yanlara
+          speed: 110 + r.nextDouble() * 90,
+          spin: (r.nextDouble() - 0.5) * 14,
+          size: 5 + r.nextDouble() * 4,
+          color: _colors[i % _colors.length],
+          round: i % 3 == 0,
+        ),
+    ];
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
-    final c = size.center(Offset.zero);
-    final paint = Paint()
-      ..color = color.withValues(alpha: 0.55)
-      ..strokeWidth = 6
-      ..strokeCap = StrokeCap.round;
-    for (var i = 0; i < 12; i++) {
-      final a = i * math.pi / 6;
-      final d = Offset(math.cos(a), math.sin(a));
-      canvas.drawLine(c + d * 70, c + d * (i.isEven ? 98 : 88), paint);
+    if (t <= 0 || t >= 1) return;
+    final c = Offset(size.width / 2, size.height / 2);
+    final fade = t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
+    final e = 1 - (1 - t) * (1 - t); // ilk anda hızlı, sonra yavaşlar
+    for (final p in _pieces) {
+      final pos = c + Offset(math.cos(p.angle), math.sin(p.angle)) * p.speed * e + Offset(0, 160 * t * t);
+      final paint = Paint()..color = p.color.withValues(alpha: fade);
+      canvas.save();
+      canvas.translate(pos.dx, pos.dy);
+      canvas.rotate(p.spin * t);
+      if (p.round) {
+        canvas.drawCircle(Offset.zero, p.size / 2, paint);
+      } else {
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.5), const Radius.circular(1.5)),
+          paint,
+        );
+      }
+      canvas.restore();
     }
   }
 
   @override
-  bool shouldRepaint(_RaysPainter old) => old.color != color;
+  bool shouldRepaint(_ConfettiPainter old) => old.t != t;
+}
+
+class _Piece {
+  const _Piece({
+    required this.angle,
+    required this.speed,
+    required this.spin,
+    required this.size,
+    required this.color,
+    required this.round,
+  });
+  final double angle, speed, spin, size;
+  final Color color;
+  final bool round;
 }

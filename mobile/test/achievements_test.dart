@@ -119,10 +119,32 @@ void main() {
     await tester.pumpAndSettle(); // animasyon biter (sonsuz döngü yok)
     expect(find.text('Yeni rozet açıldı'), findsOneWidget);
     expect(find.text('Maraton'), findsOneWidget);
-    expect(find.text('ve 1 rozet daha'), findsOneWidget);
+    expect(find.text('1 / 2'), findsOneWidget);
+    await tester.tap(find.text('Sıradaki')); // ikinci rozet kendi kutlamasıyla gelir
+    await tester.pumpAndSettle();
+    expect(find.text('Bir aylık seri'), findsOneWidget);
+    expect(find.text('2 / 2'), findsOneWidget);
     await tester.tap(find.text('Harika'));
     await tester.pumpAndSettle();
-    expect(find.text('Maraton'), findsNothing);
+    expect(find.text('Bir aylık seri'), findsNothing);
+  });
+
+  testWidgets('animasyonlar kapalıysa kutlama son haliyle anında görünür', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      builder: (context, child) =>
+          MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!),
+      home: Builder(builder: (context) => TextButton(
+        onPressed: () => showBadgeCelebration(context, [
+          {'key': 'marathon', 'name': 'Maraton', 'description': 'Uzun oturum.', 'unlocked': true},
+        ]),
+        child: const Text('aç'),
+      )),
+    ));
+    await tester.tap(find.text('aç'));
+    await tester.pump();
+    await tester.pump();
+    final op = tester.widget<Opacity>(find.ancestor(of: find.text('Maraton'), matching: find.byType(Opacity)).first);
+    expect(op.opacity, 1); // yazılar beklemeden tam görünür
   });
 
   testWidgets('gizli rozet: kilitliyken ??? ve soru işareti, ilerleme çubuğu yok; açılınca adı görünür', (tester) async {

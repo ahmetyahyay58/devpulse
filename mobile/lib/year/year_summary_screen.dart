@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api/api_client.dart';
+import 'year_scenes.dart';
 
 /// Yıllık özet (`GET /metrics/year-summary`, docs/metrikler.md "Yıllık özet").
 class YearSummary {
@@ -58,12 +59,28 @@ String periodText(YearSummary s) =>
 
 /// Bir slayt: büyük değer, açıklama ve verinin kaynağı (her slayt nereden geldiğini söyler).
 class Slide {
-  const Slide({required this.title, required this.value, required this.caption, required this.source, required this.colors});
+  const Slide({
+    required this.title,
+    required this.value,
+    required this.caption,
+    required this.source,
+    required this.colors,
+    this.scene,
+    this.count,
+    this.format,
+  });
   final String title;
-  final String value;
+  final String value; // son hal (paylaşım ve testler bunu okur)
   final String caption;
   final String source;
-  final List<Color> colors; // arka plan geçişi (sabit; tekrar eden animasyon yok)
+  final List<Color> colors; // arka plan geçişi
+  final CustomPainter Function(double t)? scene; // slaydın konusunu anlatan çizim (year_scenes.dart)
+  final int? count; // sayaç: 0'dan bu sayıya sayarak gelir
+  final String Function(int n)? format; // sayacın yazılışı; son değerde [value] ile aynı
+
+  /// t anındaki büyük yazı: sayaç varsa sayarak, yoksa sabit.
+  String valueAt(double t) =>
+      count == null || format == null ? value : format!((count! * seg(t, 0.05, 0.35)).round());
 }
 
 /// Veriden slayt listesi. Yetersiz veride tek kart. Sayıdan sonra Türkçe ek yok.
@@ -93,6 +110,9 @@ List<Slide> buildSlides(YearSummary s) {
       caption: '${s.activeDays} farklı günde commit attın.',
       source: 'Senkronlanan commit\'ler · $period',
       colors: blue,
+      scene: CommitsScene.new,
+      count: s.commits,
+      format: (n) => '$n commit',
     ),
     if (s.busiestMonth != null)
       Slide(
@@ -101,6 +121,7 @@ List<Slide> buildSlides(YearSummary s) {
         caption: 'Bu ayda ${s.busiestMonthCommits} commit.',
         source: 'Aylara göre commit sayısı · $period',
         colors: purple,
+        scene: (t) => BusiestMonthScene(t, s.busiestMonth!),
       ),
     if (s.topLanguage != null)
       Slide(
@@ -109,6 +130,7 @@ List<Slide> buildSlides(YearSummary s) {
         caption: 'Ana dili bilinen repolardaki commit payı: ${_pct(s.topLanguageShare!)}',
         source: 'Commit\'in atıldığı reponun ana diline göre (bayt payı değil)',
         colors: teal,
+        scene: (t) => LanguageScene(t, s.topLanguageShare!),
       ),
     if (s.nightShare != null)
       Slide(
@@ -117,6 +139,9 @@ List<Slide> buildSlides(YearSummary s) {
         caption: s.peakHour == null ? '' : 'En yoğun saat: ${s.peakHour.toString().padLeft(2, '0')}:00',
         source: 'Gece = 00:00-06:00, yerel saat',
         colors: night,
+        scene: (t) => NightScene(t, s.peakHour),
+        count: (s.nightShare! * 100).round(),
+        format: (n) => 'Gece payı: %$n',
       ),
     Slide(
       title: 'En uzun seri',
@@ -124,6 +149,9 @@ List<Slide> buildSlides(YearSummary s) {
       caption: 'Art arda commit attığın en uzun dönem.',
       source: 'Dönem içindeki aktif günler',
       colors: orange,
+      scene: (t) => StreakScene(t, s.longestStreak),
+      count: s.longestStreak,
+      format: (n) => '$n gün',
     ),
     Slide(
       title: 'Kodlama süresi (tahmin)',
@@ -131,6 +159,9 @@ List<Slide> buildSlides(YearSummary s) {
       caption: '${s.sessions} oturum. Tek commit\'lik oturum 0 sayıldığı için gerçek süre daha uzundur.',
       source: 'Oturum kuralı: commit\'ler arası 2 saatten kısa boşluklar',
       colors: purple,
+      scene: HourglassScene.new,
+      count: s.codingHours,
+      format: (n) => 'en az $n saat',
     ),
     if (s.journey.length >= 2)
       Slide(
@@ -139,6 +170,7 @@ List<Slide> buildSlides(YearSummary s) {
         caption: s.journey.map((j) => '${j.language}: ${monthsTr[j.firstMonth - 1]}').join(' · '),
         source: 'Her dilde ilk commit\'in ayı (reponun ana dili)',
         colors: teal,
+        scene: (t) => JourneyScene(t, [for (final j in s.journey) (language: j.language, firstMonth: j.firstMonth)]),
       ),
     if (s.reviews != null && s.reviews! > 0)
       Slide(
@@ -147,6 +179,9 @@ List<Slide> buildSlides(YearSummary s) {
         caption: 'Başkalarının kodunu inceledin.',
         source: 'GitHub\'ın ${s.year} için saydığı inceleme katkısı',
         colors: green,
+        scene: ReviewScene.new,
+        count: s.reviews,
+        format: (n) => '$n inceleme',
       ),
     Slide(
       title: '${s.year} böyle geçti',
@@ -154,6 +189,9 @@ List<Slide> buildSlides(YearSummary s) {
       caption: s.sufficiency == 'dusuk' ? 'Veri az olduğu için bu özet düşük güvenle hazırlandı.' : 'Teşekkürler!',
       source: 'Başarımlar sekmesi',
       colors: blue,
+      scene: (t) => FinaleScene(t, s.badgesUnlocked, s.badgesTotal),
+      count: s.badgesUnlocked,
+      format: (n) => 'Rozet: $n / ${s.badgesTotal}',
     ),
   ];
 }
@@ -285,7 +323,7 @@ class _YearSummaryScreenState extends State<YearSummaryScreen> with SingleTicker
                 onTapUp: (d) => _go(d.localPosition.dx < MediaQuery.sizeOf(context).width / 3 ? -1 : 1),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  child: _SlideView(key: ValueKey(_index), slide: slide),
+                  child: _SlideView(key: ValueKey(_index), slide: slide, progress: _progress),
                 ),
               ),
             ),
@@ -313,24 +351,67 @@ class _YearSummaryScreenState extends State<YearSummaryScreen> with SingleTicker
   }
 }
 
+/// Bir slayt: üstte konunun sahnesi, altta sırayla beliren başlık, sayarak gelen değer ve açıklama.
+/// Hepsi slaydın ilerlemesinden (tek denetleyici) çizilir; animasyonlar kapalıysa son hal.
 class _SlideView extends StatelessWidget {
-  const _SlideView({super.key, required this.slide});
+  const _SlideView({super.key, required this.slide, required this.progress});
   final Slide slide;
+  final Animation<double> progress;
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(slide.title, style: t.titleLarge?.copyWith(color: Colors.white70)),
-        const SizedBox(height: 12),
-        Text(slide.value, style: t.displaySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 12),
-        if (slide.caption.isNotEmpty) Text(slide.caption, style: t.titleMedium?.copyWith(color: Colors.white)),
-        const SizedBox(height: 24),
-        Text(slide.source, style: t.bodySmall?.copyWith(color: Colors.white60)),
-      ]),
+    final still = MediaQuery.disableAnimationsOf(context);
+    return AnimatedBuilder(
+      animation: progress,
+      builder: (context, _) {
+        final p = still ? 1.0 : progress.value;
+        // Yazılar aşağıdan 16 px yükselerek sırayla belirir.
+        Widget rise(double start, Widget child) {
+          final k = seg(p, start, start + 0.18);
+          return Opacity(opacity: k, child: Transform.translate(offset: Offset(0, 16 * (1 - k)), child: child));
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (slide.scene != null)
+              Expanded(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 260, maxWidth: 330),
+                    child: AspectRatio(
+                      aspectRatio: 1.25,
+                      child: CustomPaint(painter: slide.scene!(p), size: Size.infinite),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 16),
+            rise(0.0, Text(slide.title, style: t.titleLarge?.copyWith(color: Colors.white70))),
+            const SizedBox(height: 12),
+            // Değer: hafif büyüyerek gelir, sayaç saydıkça artar (ekran okuyucu son değeri okur).
+            Semantics(
+              label: slide.value,
+              excludeSemantics: true,
+              child: Transform.scale(
+                alignment: Alignment.centerLeft,
+                scale: 0.9 + 0.1 * seg(p, 0.03, 0.25),
+                child: Opacity(
+                  opacity: seg(p, 0.0, 0.12),
+                  child: Text(slide.valueAt(p),
+                      style: t.displaySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (slide.caption.isNotEmpty)
+              rise(0.2, Text(slide.caption, style: t.titleMedium?.copyWith(color: Colors.white))),
+            const SizedBox(height: 24),
+            rise(0.3, Text(slide.source, style: t.bodySmall?.copyWith(color: Colors.white60))),
+          ]),
+        );
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:devpulse/api/api_client.dart';
+import 'package:devpulse/year/year_scenes.dart';
 import 'package:devpulse/year/year_summary_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +21,30 @@ Future<FakeBackend> _open(WidgetTester tester, {Map<String, dynamic>? override})
 }
 
 void main() {
+  testWidgets('her slaydın sahnesi var; animasyonlar kapalıysa sayaç beklemeden son değerde', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final backend = FakeBackend();
+    await tester.pumpWidget(MaterialApp(
+      builder: (context, child) =>
+          MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!),
+      home: YearSummaryScreen(api: ApiClient(baseUrl: 'http://test', client: backend.client)),
+    ));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('120 commit'), findsOneWidget);
+    expect(find.byWidgetPredicate((w) => w is CustomPaint && w.painter is CommitsScene), findsOneWidget);
+  });
+
+  test('sayaç: başta 0, sonunda slaydın değeri', () {
+    final slides = buildSlides(YearSummary(FakeBackend().yearSummary));
+    expect(slides.first.valueAt(0), '0 commit');
+    expect(slides.first.valueAt(1), slides.first.value);
+    expect(slides.every((s) => s.valueAt(1) == s.value), isTrue);
+    expect(slides.every((s) => s.scene != null), isTrue);
+  });
+
   test('slaytlar: veriden, kaynaklı; inceleme 0 ise ve tek dil varsa ilgili slayt yok', () {
     final s = YearSummary(FakeBackend().yearSummary);
     final slides = buildSlides(s);
@@ -52,8 +77,11 @@ void main() {
     expect(find.text('Mart'), findsOneWidget);
 
     await tester.tapAt(const Offset(30, 400)); // sol: geri
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('120 commit'), findsOneWidget);
+    await tester.pump(); // slayt saati yeniden başlar
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('120 commit'), findsNothing); // sayaç henüz saymakta
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('120 commit'), findsOneWidget); // sayıp son değere vardı
 
     for (var i = 0; i < 30; i++) { // her slayt: saat başlar + süre dolar
       await tester.pump(const Duration(seconds: 1));

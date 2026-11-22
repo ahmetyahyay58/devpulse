@@ -108,7 +108,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 |---|---|---|---|
 | Hikâye gibi otomatik slaytlar, üstte ilerleme çubukları, İleri/Kapat | Yapıldı (17 Kas) | Mevcut | Başarımlar'dan açılır; dokunarak ileri/geri. |
 | Slaytlar: yıl toplamı, en yoğun ay, en çok dil, gece kuşu, en uzun seri, kodlama saati, dil yolculuğu, review sayısı, son kart | Yapıldı (17 Kas) | Mevcut | Dil yolculuğu Teknoloji verisine, review sayısı İşbirliği verisine bağlı. "Kodlama saati" oturum kuralından tahmindir; öyle yazılır. |
-| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Kısmen | — | Slayt başına renk geçişi var. "Rozet kazanıldı" kutlaması Başarımlar'da var (20 Kas, tek seferlik ışın + büyüme). Sürekli dönen animasyon yok (pil ve test kararlılığı). |
+| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Var (22 Kas) | — | Slayt başına renk geçişi ve her slaydın konusunu anlatan animasyonlu sahne (`lib/year/year_scenes.dart`: yükselen commit kareleri, ayların üzerinde gezip en yoğun ayda duran ışık, payına dolan dil halkası, doğan ay ve en yoğun saate dönen ibre, alev alan seri günleri, kum saati, dil zaman çizgisi, satır inceleyen büyüteç, rozet halkası ve konfeti); büyük sayılar sayarak gelir. Hepsi slayt zamanlayıcısından çizilir, sahnelerde yalnız özetin gerçek sayıları kullanılır. "Rozet kazanıldı" kutlaması Başarımlar'da var (20 Kas, tek seferlik ışın + büyüme). Sürekli dönen animasyon yok (pil ve test kararlılığı). |
 
 ### Sor balonu
 | Madde | Durum | Veri | Not |

@@ -7,13 +7,46 @@ import '../overview/overview_controller.dart';
 import '../overview/overview_models.dart';
 import '../share/share_card.dart';
 import '../year/year_summary_screen.dart';
+import 'badge_art.dart';
 
 /// Başarımlar: 29 rozet (kilitliler soluk, ilerlemeli; gizliler açılana kadar "???"; bazıları seviyeli) ve yıl kıyası.
 /// Rozetler alışkanlığı ve proje bakımını tanır; ham commit sayısını ödüllendirmez.
-class AchievementsView extends StatelessWidget {
-  const AchievementsView({super.key, required this.controller});
+class AchievementsView extends StatefulWidget {
+  const AchievementsView({super.key, required this.controller, this.seenStore});
 
   final OverviewController controller;
+  final BadgeSeenStore? seenStore; // yeni rozet kutlaması (cihazda); null: varsayılan depo
+
+  @override
+  State<AchievementsView> createState() => _AchievementsViewState();
+}
+
+class _AchievementsViewState extends State<AchievementsView> {
+  late final BadgeSeenStore _seen = widget.seenStore ?? BadgeSeenStore();
+  Object? _checked; // kutlama her yeni rozet verisi için bir kez denetlenir
+
+  OverviewController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(_celebrateNew);
+    _celebrateNew();
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_celebrateNew);
+    super.dispose();
+  }
+
+  Future<void> _celebrateNew() async {
+    final a = controller.achievements;
+    if (a == null || identical(a, _checked)) return;
+    _checked = a;
+    final fresh = await _seen.takeNew((a['badges'] as List).cast<Map<String, dynamic>>());
+    if (fresh.isNotEmpty && mounted) await showBadgeCelebration(context, fresh);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,47 +114,6 @@ class AchievementsView extends StatelessWidget {
   }
 }
 
-const _icons = {
-  'streak7': Icons.local_fire_department_outlined,
-  'streak30': Icons.whatshot_outlined,
-  'regular': Icons.event_repeat,
-  'showcase': Icons.star_outline,
-  'docs': Icons.description_outlined,
-  'license': Icons.gavel_outlined,
-  'polyglot': Icons.translate,
-  'contributor': Icons.handshake_outlined,
-  // Alışkanlık rozetleri (docs/metrikler.md)
-  'hours24': Icons.schedule,
-  'night_owl': Icons.nightlight_outlined,
-  'early_bird': Icons.wb_twilight,
-  'new_year': Icons.celebration_outlined,
-  'leet': Icons.terminal,
-  'marathon': Icons.directions_run,
-  'comeback': Icons.replay,
-  'bug_hunter': Icons.bug_report_outlined,
-  'all_types': Icons.palette_outlined,
-  'less_is_more': Icons.content_cut,
-  'automation': Icons.precision_manufacturing_outlined,
-  'first_merge': Icons.merge_type,
-  // Ek rozetler (20 Kas)
-  'topics': Icons.sell_outlined,
-  'weekend': Icons.weekend_outlined,
-  'tester': Icons.science_outlined,
-  'small_steps': Icons.stairs_outlined,
-  'long_haul': Icons.park_outlined,
-  'fresh_start': Icons.eco_outlined,
-  'container': Icons.inventory_2_outlined,
-  'reviewer': Icons.rate_review_outlined,
-  'twelve_months': Icons.calendar_month_outlined,
-};
-
-/// Seviye adı ve rengi (renk tek başına anlam taşımaz: ad da yazılır).
-const _tiers = {
-  'bronz': ('Bronz', Color(0xFFCD7F32)),
-  'gumus': ('Gümüş', Color(0xFFB4B8BE)),
-  'altin': ('Altın', Color(0xFFE0B020)),
-};
-
 /// İlerleme birimi: sayı tek başına anlaşılmayan rozetler için.
 const _units = {'marathon': ' dk', 'night_owl': '%', 'weekend': '%', 'long_haul': ' gün'};
 
@@ -163,41 +155,39 @@ class BadgeTile extends StatelessWidget {
     final secret = badge['hidden'] == true && !unlocked; // gizli: ad ve koşul sunucudan gelmez
     final unit = _units[badge['key']] ?? '';
     final progress = unit == '%' ? '%$current / %$target' : '$current$unit / $target$unit';
-    final tier = _tiers[badge['tier']]; // seviyeli rozette ulaşılan seviye (yoksa null)
+    final tier = tierLabels[badge['tier']]; // seviyeli rozette ulaşılan seviye (yoksa null)
     final tiers = (badge['tiers'] as List?)?.cast<int>();
     final maxed = tier != null && tiers != null && current >= tiers.last;
-    return Opacity(
-      opacity: unlocked ? 1 : 0.55, // kilitli rozet soluk
-      child: Card(
-        margin: EdgeInsets.zero,
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => showBadgeDetail(context, badge, progressText: secret ? null : progress),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Icon(secret ? Icons.help_outline : (_icons[badge['key']] ?? Icons.emoji_events_outlined),
-                  color: unlocked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              BadgeArt(badge: badge, size: 64), // kilitliyse görsel kendisi gri ve soluk
               const Spacer(),
-              if (tier != null) ...[
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: tier.$2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.military_tech, size: 14, color: tier.$2),
-                    const SizedBox(width: 2),
-                    Text(tier.$1, style: theme.textTheme.labelSmall),
-                  ]),
-                ),
-                const SizedBox(width: 6),
-              ],
               // Durum ikonla ve yazıyla (renk tek başına anlam taşımaz).
               Icon(unlocked ? Icons.check_circle : Icons.lock_outline, size: 16,
                   color: unlocked ? const Color(0xFF0CA30C) : theme.colorScheme.onSurfaceVariant),
             ]),
+            if (tier != null) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(border: Border.all(color: tier.$2), borderRadius: BorderRadius.circular(8)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Icon(Icons.military_tech, size: 14, color: tier.$2),
+                  const SizedBox(width: 2),
+                  Text(tier.$1, style: theme.textTheme.labelSmall),
+                ]),
+              ),
+            ],
             const SizedBox(height: 8),
-            Text(badge['name'] as String, style: theme.textTheme.titleSmall),
+            Text(badge['name'] as String,
+                style: theme.textTheme.titleSmall?.copyWith(color: unlocked ? null : theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 2),
             Text(badge['description'] as String, style: muted),
             const Spacer(),

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<defs>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A93A8"/><stop offset="1" stop-color="#3A4052"/></linearGradient>
+<clipPath id="in"><path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z"/></clipPath>
+
+</defs>
+<path d="M100.0,8.0 C130.0,22.0 160.0,24.0 184.0,22.0 L184.0,96.0 C184.0,146.0 146.0,178.0 100.0,194.0 C54.0,178.0 16.0,146.0 16.0,96.0 L16.0,22.0 C40.0,24.0 70.0,22.0 100.0,8.0 Z" fill="url(#rim)"/>
+<path d="M100.0,8.0 C130.0,22.0 160.0,24.0 184.0,22.0 L184.0,96.0 C184.0,146.0 146.0,178.0 100.0,194.0 C54.0,178.0 16.0,146.0 16.0,96.0 L16.0,22.0 C40.0,24.0 70.0,22.0 100.0,8.0 Z" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="2"/>
+<g clip-path="url(#in)">
+<rect width="200" height="200" fill="#2C3A2A"/><circle cx="100" cy="100" r="58" fill="#8C5A2B"/><circle cx="100" cy="100" r="52" fill="#E3B77A"/><circle cx="100.0" cy="100.0" r="44" fill="none" stroke="#B98446" stroke-width="3"/><circle cx="101.2" cy="99.2" r="35" fill="none" stroke="#B98446" stroke-width="3"/><circle cx="102.4" cy="98.4" r="26" fill="none" stroke="#B98446" stroke-width="3"/><circle cx="103.6" cy="97.6" r="17" fill="none" stroke="#B98446" stroke-width="3"/><circle cx="104.8" cy="96.8" r="8" fill="none" stroke="#B98446" stroke-width="3"/><circle cx="105" cy="97" r="4" fill="#8C5A2B"/><path d="M100,100 L152,74" stroke="#8C5A2B" stroke-width="2" opacity="0.5"/><path d="M146,52 q16,-6 22,8 q-14,6 -22,-8 Z" fill="#5CC08B"/>
+</g>
+<path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z" fill="none" stroke="#000000" stroke-opacity="0.45" stroke-width="3"/>
+<path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" transform="translate(0,1.5)"/>
+</svg>

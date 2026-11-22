@@ -78,7 +78,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 ### Başarımlar
 | Madde | Durum | Veri | Not |
 |---|---|---|---|
-| 29 rozet: kilitliler soluk, ilerleme çubuklu | Var | Mevcut | 9 temel + 20 alışkanlık rozeti (19-20 Kas; ikisi gizli, açılana kadar "???"; dördü bronz/gümüş/altın seviyeli). Kurallar `metrikler.md`'de tanımlanır. |
+| 29 rozet: kilitliler soluk, ilerleme çubuklu | Var | Mevcut | 9 temel + 20 alışkanlık rozeti (19-20 Kas; ikisi gizli, açılana kadar "???"; dördü bronz/gümüş/altın seviyeli). Kurallar `metrikler.md`'de tanımlanır. 20 Kas: her rozetin kendi SVG görseli (emaye rozet; şekil kategoriyi, metal kenar seviyeyi söyler; `mobile/tool/make_badges.py`, elle çizildi), dokununca ayrıntı sayfası, yeni açılan rozet ya da seviye için tek seferlik kutlama (görülenler yalnız cihazda). |
 | Yıl kıyası: iki yıl yan yana, yüzde değişim | Var | Mevcut | Betimleyici dil. |
 | Hedef koçu: 3 soru çipi | Çıkarıldı (17 Kas) | Mevcut | Yapıldı, sonra geliştirici kararıyla şimdilik kaldırıldı (geri alma commit'leri cb668d3, 5e759bf); ileride geri gelebilir. |
 
@@ -108,7 +108,7 @@ Veri: **Mevcut** = senkronla zaten çekiliyor · **Yeni veri** = GitHub'dan ek a
 |---|---|---|---|
 | Hikâye gibi otomatik slaytlar, üstte ilerleme çubukları, İleri/Kapat | Yapıldı (17 Kas) | Mevcut | Başarımlar'dan açılır; dokunarak ileri/geri. |
 | Slaytlar: yıl toplamı, en yoğun ay, en çok dil, gece kuşu, en uzun seri, kodlama saati, dil yolculuğu, review sayısı, son kart | Yapıldı (17 Kas) | Mevcut | Dil yolculuğu Teknoloji verisine, review sayısı İşbirliği verisine bağlı. "Kodlama saati" oturum kuralından tahmindir; öyle yazılır. |
-| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Kısmen | — | Slayt başına renk geçişi var; sürekli dönen animasyon ve parıltı yok (pil ve test kararlılığı). |
+| Temalı animasyonlu arka planlar, "Rozet kazanıldı" parıltısı | Kısmen | — | Slayt başına renk geçişi var. "Rozet kazanıldı" kutlaması Başarımlar'da var (20 Kas, tek seferlik ışın + büyüme). Sürekli dönen animasyon yok (pil ve test kararlılığı). |
 
 ### Sor balonu
 | Madde | Durum | Veri | Not |

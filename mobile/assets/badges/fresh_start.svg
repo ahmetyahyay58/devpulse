@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<defs>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A93A8"/><stop offset="1" stop-color="#3A4052"/></linearGradient>
+<clipPath id="in"><path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z"/></clipPath>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BDE7FF"/><stop offset="1" stop-color="#E8F7E0"/></linearGradient>
+</defs>
+<path d="M100.0,8.0 C130.0,22.0 160.0,24.0 184.0,22.0 L184.0,96.0 C184.0,146.0 146.0,178.0 100.0,194.0 C54.0,178.0 16.0,146.0 16.0,96.0 L16.0,22.0 C40.0,24.0 70.0,22.0 100.0,8.0 Z" fill="url(#rim)"/>
+<path d="M100.0,8.0 C130.0,22.0 160.0,24.0 184.0,22.0 L184.0,96.0 C184.0,146.0 146.0,178.0 100.0,194.0 C54.0,178.0 16.0,146.0 16.0,96.0 L16.0,22.0 C40.0,24.0 70.0,22.0 100.0,8.0 Z" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="2"/>
+<g clip-path="url(#in)">
+<rect width="200" height="200" fill="url(#bg)"/><circle cx="150" cy="60" r="16" fill="#FFE27A"/><path d="M-10,140 Q100,124 210,140 V210 H-10 Z" fill="#6B4A2B"/><path d="M100,140 C100,120 98,104 100,88" stroke="#3FA34D" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M100,104 C80,104 64,92 62,74 C82,72 98,84 100,104 Z" fill="#5CC08B"/><path d="M100,92 C118,90 134,76 134,58 C114,58 100,72 100,92 Z" fill="#7FD49B"/><path d="M70,148 q6,4 12,0 M118,152 q6,4 12,0" stroke="#8C6A45" stroke-width="3" fill="none"/>
+</g>
+<path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z" fill="none" stroke="#000000" stroke-opacity="0.45" stroke-width="3"/>
+<path d="M100.0,22.7 C125.2,34.5 150.4,36.2 170.6,34.5 L170.6,96.6 C170.6,138.6 138.6,165.5 100.0,179.0 C61.4,165.5 29.4,138.6 29.4,96.6 L29.4,34.5 C49.6,36.2 74.8,34.5 100.0,22.7 Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" transform="translate(0,1.5)"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<defs>
+<linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8A93A8"/><stop offset="1" stop-color="#3A4052"/></linearGradient>
+<clipPath id="in"><circle cx="100" cy="100" r="79"/></clipPath>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A1220"/><stop offset="1" stop-color="#6E1F25"/></linearGradient>
+</defs>
+<circle cx="100" cy="100" r="94" fill="url(#rim)"/>
+<circle cx="100" cy="100" r="94" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="2"/>
+<g clip-path="url(#in)">
+<rect width="200" height="200" fill="url(#bg)"/><path d="M100,150 C60,150 56.0,106.8 86.0,78.0 C84.0,102.0 96.0,106.8 100,54 C112.0,82.80000000000001 144.0,102.0 140,130.8 C136.0,150 116.0,150 100,150 Z" fill="#FF7A1A"/><path d="M100,150 C74,150 71.4,121.2 90.9,102.0 C89.6,118.0 97.4,121.2 100,86 C107.8,105.2 128.6,118.0 126,137.2 C123.4,150 110.4,150 100,150 Z" fill="#FFC23D"/><path d="M100,150 C87,150 85.7,135.6 95.45,126.0 C94.8,134.0 98.7,135.6 100,118 C103.9,127.6 114.3,134.0 113,143.6 C111.7,150 105.2,150 100,150 Z" fill="#FFF1B8"/><circle cx="46" cy="168" r="5" fill="#FFC23D"/><circle cx="64" cy="168" r="5" fill="#FFC23D"/><circle cx="82" cy="168" r="5" fill="#FFC23D"/><circle cx="100" cy="168" r="5" fill="#FFC23D"/><circle cx="118" cy="168" r="5" fill="#FFC23D"/><circle cx="136" cy="168" r="5" fill="#FFC23D"/><circle cx="154" cy="168" r="5" fill="#FFC23D"/>
+</g>
+<circle cx="100" cy="100" r="79" fill="none" stroke="#000000" stroke-opacity="0.45" stroke-width="3"/>
+<circle cx="100" cy="100" r="79" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5" transform="translate(0,1.5)"/>
+</svg>

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../achievements/badge_art.dart';
+
 import '../ai/ai_controller.dart';
 import '../ai/ai_widgets.dart';
 import '../api/api_client.dart';
@@ -392,12 +394,21 @@ class BadgeShowcase extends StatelessWidget {
           if (open.isEmpty)
             Text('Henüz açılan rozet yok. Başarımlar sekmesinde ilerlemeni görebilirsin.', style: muted)
           else
-            Wrap(spacing: 6, runSpacing: 6, children: [
+            // Açılan rozetler görselleriyle; dokununca ayrıntı.
+            Wrap(spacing: 8, runSpacing: 10, children: [
               for (final b in open)
-                Chip(
-                  visualDensity: VisualDensity.compact,
-                  avatar: Icon(Icons.emoji_events_outlined, size: 16, color: theme.colorScheme.primary),
-                  label: Text(b['name'] as String),
+                InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () => showBadgeDetail(context, b),
+                  child: SizedBox(
+                    width: 76,
+                    child: Column(children: [
+                      BadgeArt(badge: b, size: 52),
+                      const SizedBox(height: 4),
+                      Text(b['name'] as String, textAlign: TextAlign.center, maxLines: 2,
+                          overflow: TextOverflow.ellipsis, style: theme.textTheme.labelSmall),
+                    ]),
+                  ),
                 ),
             ]),
         ]),

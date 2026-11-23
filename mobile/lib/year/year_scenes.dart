@@ -339,19 +339,34 @@ class JourneyScene extends CustomPainter {
       final mx = left + (right - left) * (m - 1) / 11;
       _drawCentered(canvas, _text(_monthsShort[m - 1], 10, color: _white.withValues(alpha: 0.7)), Offset(mx, y + 18));
     }
-    for (final (i, s) in steps.take(5).indexed) {
-      final mx = left + (right - left) * (s.firstMonth - 1) / 11;
+    // Aynı ayda başlayan diller tek noktada toplanır, adları alt alta yazılır (üst üste binmez).
+    final byMonth = <int, List<(int, String)>>{};
+    for (final (i, s) in steps.take(6).indexed) {
+      byMonth.putIfAbsent(s.firstMonth, () => []).add((i, s.language));
+    }
+    for (final (g, entry) in byMonth.entries.indexed) {
+      final month = entry.key;
+      final langs = entry.value;
+      final mx = left + (right - left) * (month - 1) / 11;
       if (x < mx) continue; // çizgi oraya varınca belirir
-      final pop = seg(t, 0.02 + 0.43 * (s.firstMonth - 1) / 11, 0.1 + 0.43 * (s.firstMonth - 1) / 11);
-      final color = _colors[i % _colors.length];
+      final pop = seg(t, 0.02 + 0.43 * (month - 1) / 11, 0.1 + 0.43 * (month - 1) / 11);
+      final color = _colors[langs.first.$1 % _colors.length];
       canvas.drawCircle(Offset(mx, y), 9 * pop, Paint()..color = color);
-      final up = i.isEven ? -1 : 1;
-      final labelY = y + up * (40 + 0.0) * pop - (up > 0 ? -6 : 0);
-      canvas.drawLine(Offset(mx, y), Offset(mx, labelY), Paint()
+      final up = g.isEven ? -1 : 1; // komşu aylar çizginin iki yanına
+      const gap = 17.0;
+      final stem = 26.0 + (up < 0 ? (langs.length - 1) * gap : 0);
+      final end = y + up * stem * pop;
+      canvas.drawLine(Offset(mx, y), Offset(mx, end), Paint()
         ..color = color.withValues(alpha: pop)
         ..strokeWidth = 2);
-      _drawCentered(canvas, _text(s.language, 14, color: _white.withValues(alpha: pop)),
-          Offset(mx.clamp(40, size.width - 40), labelY + up * 12));
+      final cx = mx.clamp(44.0, size.width - 44);
+      for (final (k, (i, lang)) in langs.indexed) {
+        final ly = end + up * 11 + (up < 0 ? -(langs.length - 1 - k) * gap : k * gap);
+        final dot = _colors[i % _colors.length];
+        final label = _text(lang, 14, color: _white.withValues(alpha: pop));
+        _drawCentered(canvas, label, Offset(cx, ly));
+        canvas.drawCircle(Offset(cx - label.width / 2 - 8, ly), 4 * pop, Paint()..color = dot);
+      }
     }
   }
 

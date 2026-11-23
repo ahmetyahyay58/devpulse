@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../auth/auth_service.dart';
 import '../auth/session_store.dart';
+import '../ui/theme_settings.dart';
 import 'privacy_screen.dart';
 
 /// Giriş ekranı: GitHub ile giriş ya da demo kullanıcıyla deneme.
@@ -48,9 +49,21 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(Icons.insights, size: 56, color: theme.colorScheme.primary),
-                const SizedBox(height: 16),
-                Text('DevPulse', textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
+                // Logo: yazısız kare (tool/make_icons.py üretir), uygulama simgesi gibi yuvarlak köşeli.
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [BoxShadow(color: Brand.violet.withValues(alpha: 0.35), blurRadius: 32)],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Image.asset('assets/brand/logo_mark.png', width: 112, height: 112, excludeFromSemantics: true),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Center(child: BrandWordmark()),
                 const SizedBox(height: 8),
                 Text(
                   'GitHub etkinliğinden çalışma alışkanlıklarını ve projelerinin eksiklerini gösterir.',

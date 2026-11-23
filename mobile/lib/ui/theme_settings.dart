@@ -30,12 +30,129 @@ class ThemeController extends ChangeNotifier {
   }
 }
 
-const _seed = Color(0xFF4F8CFF);
+/// Logodan ölçülen renkler (assets/icon/app_icon.png): çivit-mor halka, lavanta parıltı,
+/// neredeyse siyah zemin. Temanın geri kalanı bunlardan türer.
+class Brand {
+  static const violet = Color(0xFF6C5CE7); // halkanın ve "Pulse" yazısının ana tonu
+  static const lavender = Color(0xFFA99CFF); // koyu zeminde birincil (okunur açık ton)
+  static const ink = Color(0xFF090B14); // logonun zemini
+  static const inkRaised = Color(0xFF121528); // kart: zeminden bir adım açık, mora çalan
+  static const mist = Color(0xFFF6F5FF); // açık temanın zemini: lavantaya çalan beyaz
 
-/// Uygulamanın iki teması; renkler aynı tohum renkten türer.
-ThemeData appTheme(Brightness brightness) => ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: _seed, brightness: brightness),
+  /// "Dev" beyazdan "Pulse" morundan geçen logo geçişi (başlıklar, vurgular).
+  static const gradient = LinearGradient(colors: [Color(0xFFB9B3FF), violet]);
+  static const gradientOnLight = LinearGradient(colors: [violet, Color(0xFF4B3CC4)]);
+}
+
+/// Uygulamanın iki teması; renkler logonun morundan türer, koyu temanın zemini logonun zemini.
+ThemeData appTheme(Brightness brightness) {
+  final dark = brightness == Brightness.dark;
+  var scheme = ColorScheme.fromSeed(
+    seedColor: Brand.violet,
+    brightness: brightness,
+    dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+  );
+  scheme = dark
+      ? scheme.copyWith(
+          primary: Brand.lavender,
+          surface: Brand.ink,
+          surfaceContainerLowest: const Color(0xFF06070D),
+          surfaceContainerLow: const Color(0xFF0E1020),
+          surfaceContainer: Brand.inkRaised,
+          surfaceContainerHigh: const Color(0xFF191C33),
+          surfaceContainerHighest: const Color(0xFF22253F),
+          outlineVariant: const Color(0xFF2A2D4A),
+        )
+      : scheme.copyWith(
+          primary: const Color(0xFF5546D6), // beyaz zeminde 4.5:1 üstü
+          surface: Brand.mist,
+          surfaceContainerLowest: Colors.white,
+          surfaceContainerLow: Colors.white,
+          surfaceContainer: const Color(0xFFEFEDFC),
+          surfaceContainerHigh: const Color(0xFFE8E5FA),
+          surfaceContainerHighest: const Color(0xFFE0DCF7),
+          outlineVariant: const Color(0xFFDCD8F2),
+        );
+  final cardColor = dark ? Brand.inkRaised : Colors.white;
+  return ThemeData(
+    colorScheme: scheme,
+    scaffoldBackgroundColor: scheme.surface,
+    // Kartlar: zeminden bir adım ayrık, ince mor kenar (logodaki parlayan çerçevenin sakin hali).
+    cardTheme: CardThemeData(
+      color: cardColor,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: scheme.surface,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: scheme.onSurface),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: dark ? const Color(0xFF0E1020) : Colors.white,
+      surfaceTintColor: Colors.transparent,
+      indicatorColor: Brand.violet.withValues(alpha: dark ? 0.35 : 0.16),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: Brand.violet,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+    ),
+    dividerTheme: DividerThemeData(color: scheme.outlineVariant),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: Brand.violet,
+      foregroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    ),
+  );
+}
+
+/// Logodaki gibi "DevPulse": "Dev" düz, "Pulse" mor geçişli.
+class BrandWordmark extends StatelessWidget {
+  const BrandWordmark({super.key, this.style});
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = (style ?? Theme.of(context).textTheme.headlineMedium)?.copyWith(fontWeight: FontWeight.w800);
+    return Semantics(
+      label: 'DevPulse',
+      excludeSemantics: true,
+      // Dar ekranda ve büyük yazı boyutunda taşmasın: sığmazsa orantılı küçülür.
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Dev', style: base),
+            ShaderMask(
+              // Açık zeminde lavanta soluk kalır: aynı geçişin koyu hali.
+              shaderCallback: (Theme.of(context).brightness == Brightness.dark ? Brand.gradient : Brand.gradientOnLight)
+                  .createShader,
+              blendMode: BlendMode.srcIn,
+              child: Text('Pulse', style: base),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+}
 
 /// "Tamam / var / bitti" yeşili: koyu zeminde açık, açık zeminde koyu ton (okunurluk).
 Color successColor(BuildContext context) =>
@@ -55,23 +172,32 @@ class ThemeModeTile extends StatelessWidget {
         margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Text('Tema', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 10),
-            SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.brightness_auto_outlined), label: Text('Sistem')),
-                ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode_outlined), label: Text('Açık')),
-                ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_outlined), label: Text('Koyu')),
-              ],
-              selected: {controller.mode},
-              showSelectedIcon: false,
-              onSelectionChanged: (s) => controller.set(s.first),
-            ),
-            const SizedBox(height: 8),
-            Text('Sistem: telefonunun açık/koyu ayarını izler. Tercih yalnız bu cihazda tutulur.',
-                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Tema', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 10),
+              SegmentedButton<ThemeMode>(
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.system,
+                    icon: Icon(Icons.brightness_auto_outlined),
+                    label: Text('Sistem'),
+                  ),
+                  ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode_outlined), label: Text('Açık')),
+                  ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_outlined), label: Text('Koyu')),
+                ],
+                selected: {controller.mode},
+                showSelectedIcon: false,
+                onSelectionChanged: (s) => controller.set(s.first),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Sistem: telefonunun açık/koyu ayarını izler. Tercih yalnız bu cihazda tutulur.',
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ],
+          ),
         ),
       ),
     );

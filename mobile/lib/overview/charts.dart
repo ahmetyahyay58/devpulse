@@ -2,24 +2,24 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Grafik renkleri. Büyüklük tek renk tonuyla (mavi) gösterilir; koyu temada
-/// "az" yüzeye yakın koyu mavi, "çok" açık mavidir. Gökkuşağı yok.
+/// Grafik renkleri. Büyüklük tek renk tonuyla (logonun moru) gösterilir; koyu temada
+/// "az" yüzeye yakın koyu mor, "çok" açık lavantadır. Gökkuşağı yok.
 class ChartColors {
-  static const bar = Color(0xFF3987E5); // mavi 400
+  static const bar = Color(0xFF7C6CF2); // tek seri: kart zeminine karşı koyuda ~5:1, açıkta ~4:1
   static const heat = [
-    Color(0xFF184F95), // 1: az   (mavi 600)
-    Color(0xFF256ABF), // 2       (mavi 500)
-    Color(0xFF3987E5), // 3       (mavi 400)
-    Color(0xFF86B6EF), // 4: çok  (mavi 250)
+    Color(0xFF3A3399), // 1: az
+    Color(0xFF5546CF), // 2
+    Color(0xFF7C6CF2), // 3
+    Color(0xFFB9AFFF), // 4: çok
   ];
 
-  /// Açık tema: aynı mavi, açıktan koyuya ("az" açık, "çok" koyu). Doğrulandı: tek ton,
-  /// adımlar ayırt edilir, en açık adım zemine karşı ≥ 2:1.
+  /// Açık tema: aynı mor, açıktan koyuya ("az" açık, "çok" koyu). Tek ton; komşu adımlar
+  /// arası ≥ 1,7:1, en açık adım beyaz karta karşı ≥ 2:1.
   static const heatLight = [
-    Color(0xFF7FAEEC), // 1: az
-    Color(0xFF4686DF), // 2
-    Color(0xFF2160C0), // 3
-    Color(0xFF123E80), // 4: çok
+    Color(0xFFA79DF7), // 1: az
+    Color(0xFF7363EC), // 2
+    Color(0xFF4B3CC4), // 3
+    Color(0xFF2A1F82), // 4: çok
   ];
 
   static List<Color> heatFor(BuildContext context) =>

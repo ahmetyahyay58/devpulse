@@ -6,17 +6,32 @@ from PIL import Image, ImageStat
 M = Path(__file__).resolve().parent.parent  # mobile/
 src = Image.open(M / "assets/icon/app_icon.png").convert("RGB")
 
-# Yuvarlak karenin iç kısmı (kalp ve nabız çizgisi burada); kenarları maske dışında kalır.
-inner = src.crop((150, 150, 874, 874))
-border = [inner.getpixel((x, y)) for x in range(0, 724, 8) for y in (0, 723)] + \
-         [inner.getpixel((x, y)) for y in range(0, 724, 8) for x in (0, 723)]
-bg = tuple(sum(c[i] for c in border) // len(border) for i in range(3))
+# Yuvarlak karenin iç kısmı: kedi halkası ve nabız çizgisi. "DevPulse" yazısı dışarıda kalır
+# (yuvarlak maskede kesiliyor, simge boyutunda da okunmuyor).
+inner = src.crop((150, 110, 870, 730))  # yazı y=740'ta başlar
+w, h = inner.size
+# Zemin: kenarların ortancası.
+border = [inner.getpixel((x, y)) for x in range(0, w, 8) for y in (0, h - 1)] + \
+         [inner.getpixel((x, y)) for y in range(0, h, 8) for x in (0, w - 1)]
+bg = tuple(sorted(c[i] for c in border)[len(border) // 2] for i in range(3))
 bg_hex = "#{:02X}{:02X}{:02X}".format(*bg)
 
-# Uyarlanabilir ön katman: 108dp tuval, iç kısım %62 boyutta ortada (görünen alan ~%67).
+
+def soft_paste(dst, img, box):
+    """Kırpılan parçayı kenarları yumuşak geçişle yapıştırır (zeminle arasında çizgi kalmasın)."""
+    from PIL import ImageFilter
+    w_, h_ = img.size
+    f = max(8, min(w_, h_) // 10)
+    m = Image.new("L", (w_, h_), 0)
+    m.paste(255, (f, f, w_ - f, h_ - f))
+    dst.paste(img, box, m.filter(ImageFilter.GaussianBlur(f / 2)))
+
+
+# Uyarlanabilir ön katman: 108dp tuval, içerik genişliği %58, ortada (görünen daire ~%67).
 canvas = Image.new("RGB", (1024, 1024), bg)
-size = int(1024 * 0.62)
-canvas.paste(inner.resize((size, size), Image.LANCZOS), ((1024 - size) // 2,) * 2)
+cw = int(1024 * 0.58)
+ch = cw * h // w
+soft_paste(canvas, inner.resize((cw, ch), Image.LANCZOS), ((1024 - cw) // 2, (1024 - ch) // 2))
 
 res = M / "android/app/src/main/res"
 dens = {"mdpi": 1, "hdpi": 1.5, "xhdpi": 2, "xxhdpi": 3, "xxxhdpi": 4}
@@ -58,3 +73,11 @@ out.paste(prev, (0, 0), mask)
 (M / "build").mkdir(exist_ok=True)
 out.crop((60, 60, 372, 372)).save(M / "build" / "icon_preview.png")
 print("ok", bg_hex)
+
+# Uygulama içi logo (giriş ekranı): yazısız kare, içerik daha geniş; köşeleri uygulamada yuvarlanır.
+mark = Image.new("RGB", (1024, 1024), bg)
+mw = int(1024 * 0.86)
+mh = mw * h // w
+soft_paste(mark, inner.resize((mw, mh), Image.LANCZOS), ((1024 - mw) // 2, (1024 - mh) // 2))
+(M / "assets/brand").mkdir(exist_ok=True)
+mark.resize((288, 288), Image.LANCZOS).save(M / "assets/brand/logo_mark.png", optimize=True)

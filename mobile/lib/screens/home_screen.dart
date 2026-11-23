@@ -1,3 +1,4 @@
+import '../ui/theme_settings.dart';
 import 'package:flutter/material.dart';
 
 import '../notify/weekly_widgets.dart';
@@ -159,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DevPulse'),
+        title: BrandWordmark(style: Theme.of(context).appBarTheme.titleTextStyle),
         actions: [
           if (widget.auth != null)
             IconButton(

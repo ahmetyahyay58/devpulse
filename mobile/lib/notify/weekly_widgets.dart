@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/motion.dart';
+
 import '../ui/theme_settings.dart';
 import '../ui/toast.dart';
 import 'weekly_notifications.dart';
@@ -16,9 +18,11 @@ class WeeklyCard extends StatelessWidget {
     final muted = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant);
     final now = (weekly['this_week'] as Map).cast<String, dynamic>();
     final last = (weekly['last_week'] as Map).cast<String, dynamic>();
-    Widget cell(String value, String label) => Expanded(
+    Widget cell(Object? value, String label) => Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(value, style: theme.textTheme.titleLarge),
+            value is int
+                ? CountUp(value: value, style: theme.textTheme.titleLarge)
+                : Text('$value', style: theme.textTheme.titleLarge),
             Text(label, style: muted),
           ]),
         );
@@ -34,8 +38,8 @@ class WeeklyCard extends StatelessWidget {
           ]),
           const SizedBox(height: 8),
           Row(children: [
-            cell('${now['commits']}', 'commit (geçen hafta ${last['commits']})'),
-            cell('${now['active_days']}', 'aktif gün (geçen hafta ${last['active_days']})'),
+            cell(now['commits'], 'commit (geçen hafta ${last['commits']})'),
+            cell(now['active_days'], 'aktif gün (geçen hafta ${last['active_days']})'),
           ]),
           const SizedBox(height: 8),
           // Değişim şeridi: nane vurgu (B2), yön oku ile; yazı tema metin renginde kalır.

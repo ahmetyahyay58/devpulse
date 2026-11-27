@@ -115,6 +115,8 @@ class MetricsView extends StatelessWidget {
       children: [
         _chartTitle('Saate göre commit (${o.timezone})'),
         hourChart(o.rhythm.ints('by_hour')),
+        const SizedBox(height: 4),
+        const Text('Açık renkli çubuklar gece saatleri (00:00-05:59).', style: TextStyle(fontSize: 11)),
         const SizedBox(height: 16),
         _chartTitle('Haftanın gününe göre commit'),
         weekdayChart(o.rhythm.ints('by_weekday')),

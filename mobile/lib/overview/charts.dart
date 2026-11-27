@@ -140,8 +140,11 @@ class BarChart extends StatelessWidget {
 }
 
 /// Saat dağılımı: 24 çubuk, etiketler 0/6/12/18.
+// Gece saatleri (00:00-05:59, docs/metrikler.md "gece oranı") daha açık tonda; anlamı grafiğin
+// altında yazıyla söylenir (renk tek başına değil).
 Widget hourChart(List<int> byHour) => BarChart(
   values: byHour,
+  colorFor: (i) => i < 6 ? ChartColors.bar.withValues(alpha: 0.5) : ChartColors.bar,
   labelFor: (i) => i % 6 == 0 ? '$i' : null,
   tooltipFor: (i, v) => '${i.toString().padLeft(2, '0')}:00-${i.toString().padLeft(2, '0')}:59 · $v commit',
 );

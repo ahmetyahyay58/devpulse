@@ -125,6 +125,15 @@ ThemeData appTheme(Brightness brightness) {
       ),
     ),
     dividerTheme: DividerThemeData(color: scheme.outlineVariant),
+    // "Nasıl hesaplandı?" gibi açılır bölümler: uygulamanın hareket eğrisiyle açılır.
+    expansionTileTheme: const ExpansionTileThemeData(
+      expansionAnimationStyle: AnimationStyle(
+        curve: Cubic(0.23, 1, 0.32, 1),
+        duration: Duration(milliseconds: 380),
+        reverseCurve: Curves.easeInCubic,
+        reverseDuration: Duration(milliseconds: 220),
+      ),
+    ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Brand.violet,
       foregroundColor: Colors.white,

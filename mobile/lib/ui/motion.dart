@@ -24,6 +24,16 @@ class Motion {
 
   /// Kademeli girişte iki öğe arası gecikme (ms).
   static const stagger = 70;
+
+  /// Alt sayfaların açılış/kapanışı: taşmayan eğri (yaylanırsa sayfa alt kenardan kalkar).
+  static AnimationStyle sheet(BuildContext context) => off(context)
+      ? AnimationStyle.noAnimation
+      : AnimationStyle(
+          curve: out,
+          duration: of(context, 420),
+          reverseCurve: Curves.easeInCubic,
+          reverseDuration: of(context, 220),
+        );
 }
 
 /// t (0..1) içinde [a, b] aralığının [Motion.out] ile ilerlemesi (0..1, taşmaz).

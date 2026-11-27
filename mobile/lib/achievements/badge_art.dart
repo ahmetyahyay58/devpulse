@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+
+import '../ui/motion.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,6 +104,7 @@ class BadgeArt extends StatelessWidget {
 Future<void> showBadgeDetail(BuildContext context, Map<String, dynamic> badge, {String? progressText}) {
   return showModalBottomSheet<void>(
     context: context,
+    sheetAnimationStyle: Motion.sheet(context),
     showDragHandle: true,
     isScrollControlled: true,
     builder: (_) => BadgeDetail(badge: badge, progressText: progressText),

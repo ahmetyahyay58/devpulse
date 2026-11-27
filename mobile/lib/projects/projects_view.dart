@@ -181,7 +181,9 @@ class _ProjectCard extends StatelessWidget {
       if (p.scored) missing == 0 ? 'eksik yok' : '$missing eksik',
     ].join(' · ');
 
-    return Card(
+    // Basınca hafifçe küçülür.
+    return Pressable(
+      child: Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -231,6 +233,7 @@ class _ProjectCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

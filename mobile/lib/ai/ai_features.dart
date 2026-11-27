@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/motion.dart';
+
 import 'ai_controller.dart';
 import 'ai_widgets.dart';
 
@@ -46,6 +48,7 @@ class WhyButton extends StatelessWidget {
 Future<void> showAskSheet(BuildContext context, AiController ai, List<AiQuestion> questions, {String? title}) =>
     showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: Motion.sheet(context),
       isScrollControlled: true,
       showDragHandle: true,
       builder: (_) => AskSheet(ai: ai, questions: questions, title: title),

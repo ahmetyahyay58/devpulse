@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+
+import '../ui/theme_settings.dart';
 import '../ui/motion.dart';
 
 import '../ai/ai_features.dart';
@@ -223,6 +225,8 @@ class _PdfButtonState extends State<PdfButton> {
   @override
   Widget build(BuildContext context) => FilledButton.icon(
     onPressed: _busy ? null : _export,
+    // Beklerken de mor kalır: içinde beyaz nabız akar (soluk gri devre dışı görünümü yerine).
+    style: FilledButton.styleFrom(disabledBackgroundColor: Brand.violet, disabledForegroundColor: Colors.white),
     icon: _busy
         ? const PulseLoader(width: 28, height: 16, color: Colors.white) // hazırlanırken nabız akar
         : const Icon(Icons.picture_as_pdf_outlined),

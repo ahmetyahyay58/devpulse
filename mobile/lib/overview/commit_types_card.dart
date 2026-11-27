@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../ui/motion.dart';
+
 import 'charts.dart';
 import 'metric_card.dart';
 import 'overview_models.dart';
@@ -78,6 +80,7 @@ class _TypeRow extends StatelessWidget {
     final examples = (type['examples'] as List).cast<Map<String, dynamic>>();
     showModalBottomSheet<void>(
       context: context,
+      sheetAnimationStyle: Motion.sheet(context),
       showDragHandle: true,
       builder: (context) {
         final theme = Theme.of(context);

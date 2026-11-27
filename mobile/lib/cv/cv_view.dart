@@ -35,10 +35,13 @@ class CvView extends StatelessWidget {
         final Widget page;
         if (d == null) {
           page = controller.error != null
-              ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(controller.error!, style: TextStyle(color: theme.colorScheme.error)),
-                  TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
-                ])
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(controller.error!, style: TextStyle(color: theme.colorScheme.error)),
+                    TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
+                  ],
+                )
               : const PageLoader();
         } else if (d.projects.isEmpty && d.languages.isEmpty && d.activity.isEmpty) {
           page = const Card(
@@ -59,79 +62,107 @@ class CvView extends StatelessWidget {
             ),
           );
         }
-        return ListView(padding: tabPadding, children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                SegmentedButton<String>(
-                  showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(value: 'tr', label: Text('Türkçe')),
-                    ButtonSegment(value: 'en', label: Text('English')),
+        return ListView(
+          padding: tabPadding,
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 520),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SegmentedButton<String>(
+                      showSelectedIcon: false,
+                      segments: const [
+                        ButtonSegment(value: 'tr', label: Text('Türkçe')),
+                        ButtonSegment(value: 'en', label: Text('English')),
+                      ],
+                      selected: {controller.lang},
+                      onSelectionChanged: (s) => controller.setLang(s.first),
+                    ),
+                    const SizedBox(height: 8),
+                    // Beş format tek şeride sığmaz; seçim etiketleri gerekirse alt satıra geçer.
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        for (final f in cvFormats)
+                          ChoiceChip(
+                            label: Text(f.name),
+                            selected: controller.format.id == f.id,
+                            showCheckmark: false,
+                            onSelected: (_) => controller.setFormat(f),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(controller.format.note[controller.lang] ?? '', style: muted),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).push(MaterialPageRoute<void>(builder: (_) => ProfileScreen(controller: controller))),
+                      icon: const Icon(Icons.badge_outlined),
+                      // Boşken eğitim ve deneyim bölümleri sayfada görünmez: neyin eksik olduğunu söyle.
+                      label: Text(
+                        controller.profile.isEmpty
+                            ? 'Bilgilerim: ad, iletişim, hakkımda, eğitim, deneyim ekle'
+                            : 'Bilgilerimi düzenle',
+                      ),
+                    ),
+                    if (d != null && page is Material) ...[
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute<void>(builder: (_) => CvEditScreen(controller: controller))),
+                        icon: const Icon(Icons.edit_note),
+                        label: Text(controller.edits.isEmpty ? 'Maddeleri düzenle' : 'Maddeleri düzenle (düzenlendi)'),
+                      ),
+                      const SizedBox(height: 8),
+                      _checkButton(context),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute<void>(builder: (_) => InterviewScreen(controller: controller))),
+                        icon: const Icon(Icons.record_voice_over_outlined),
+                        label: const Text('Mülakat koçu'),
+                      ),
+                      const SizedBox(height: 8),
+                      PdfButton(controller: controller, saveFile: saveFile),
+                    ],
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      title: const Text('Maddelerin kaynağını göster'),
+                      subtitle: const Text('Yalnız ekranda; CV dosyasına basılmaz.'),
+                      value: controller.showSources,
+                      onChanged: controller.setShowSources,
+                    ),
+                    // Şablon ya da dil değişince sayfa hafifçe yükselerek yenilenir (eskisi solar).
+                    AnimatedSwitcher(
+                      duration: Motion.of(context, 420),
+                      switchInCurve: Motion.out,
+                      switchOutCurve: Motion.out,
+                      transitionBuilder: (child, a) => FadeTransition(
+                        opacity: a,
+                        child: SlideTransition(
+                          position: Tween(begin: const Offset(0, 0.02), end: Offset.zero).animate(a),
+                          child: ScaleTransition(scale: Tween(begin: 0.97, end: 1.0).animate(a), child: child),
+                        ),
+                      ),
+                      layoutBuilder: (current, previous) =>
+                          Stack(alignment: Alignment.topCenter, children: [...previous, ?current]),
+                      child: KeyedSubtree(key: ValueKey('${controller.format.id}-${controller.lang}'), child: page),
+                    ),
                   ],
-                  selected: {controller.lang},
-                  onSelectionChanged: (s) => controller.setLang(s.first),
                 ),
-                const SizedBox(height: 8),
-                // Beş format tek şeride sığmaz; seçim etiketleri gerekirse alt satıra geçer.
-                Wrap(spacing: 8, runSpacing: 4, alignment: WrapAlignment.center, children: [
-                  for (final f in cvFormats)
-                    ChoiceChip(
-                      label: Text(f.name),
-                      selected: controller.format.id == f.id,
-                      showCheckmark: false,
-                      onSelected: (_) => controller.setFormat(f),
-                    ),
-                ]),
-                const SizedBox(height: 6),
-                Text(controller.format.note[controller.lang] ?? '', style: muted),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => ProfileScreen(controller: controller)),
-                  ),
-                  icon: const Icon(Icons.badge_outlined),
-                  // Boşken eğitim ve deneyim bölümleri sayfada görünmez: neyin eksik olduğunu söyle.
-                  label: Text(controller.profile.isEmpty
-                      ? 'Bilgilerim: ad, iletişim, hakkımda, eğitim, deneyim ekle'
-                      : 'Bilgilerimi düzenle'),
-                ),
-                if (d != null && page is Material) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => CvEditScreen(controller: controller)),
-                    ),
-                    icon: const Icon(Icons.edit_note),
-                    label: Text(controller.edits.isEmpty ? 'Maddeleri düzenle' : 'Maddeleri düzenle (düzenlendi)'),
-                  ),
-                  const SizedBox(height: 8),
-                  _checkButton(context),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => InterviewScreen(controller: controller)),
-                    ),
-                    icon: const Icon(Icons.record_voice_over_outlined),
-                    label: const Text('Mülakat koçu'),
-                  ),
-                  const SizedBox(height: 8),
-                  PdfButton(controller: controller, saveFile: saveFile),
-                ],
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  title: const Text('Maddelerin kaynağını göster'),
-                  subtitle: const Text('Yalnız ekranda; CV dosyasına basılmaz.'),
-                  value: controller.showSources,
-                  onChanged: controller.setShowSources,
-                ),
-                page,
-              ]),
+              ),
             ),
-          ),
-        ]);
+          ],
+        );
       },
     );
   }
@@ -140,13 +171,17 @@ class CvView extends StatelessWidget {
 extension on CvView {
   /// "Biçim kontrolü (N eksik)": sayı sayfa kuralı olmadan, anında hesaplanır; ekran PDF'i de sayar.
   Widget _checkButton(BuildContext context) {
-    final missing = checkCv(draft: controller.effective!, profile: controller.profile, format: controller.format)
-        .where((c) => c.level == CheckLevel.missing)
-        .length;
+    final missing = checkCv(
+      draft: controller.effective!,
+      profile: controller.profile,
+      format: controller.format,
+    ).where((c) => c.level == CheckLevel.missing).length;
     return OutlinedButton.icon(
-      onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (_) => CvCheckScreen(controller: controller, countPages: countPages),
-      )),
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => CvCheckScreen(controller: controller, countPages: countPages),
+        ),
+      ),
       icon: Icon(missing == 0 ? Icons.task_alt : Icons.rule),
       label: Text(missing == 0 ? 'Biçim kontrolü' : 'Biçim kontrolü ($missing eksik)'),
     );
@@ -187,10 +222,10 @@ class _PdfButtonState extends State<PdfButton> {
 
   @override
   Widget build(BuildContext context) => FilledButton.icon(
-        onPressed: _busy ? null : _export,
-        icon: _busy
-            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-            : const Icon(Icons.picture_as_pdf_outlined),
-        label: Text(_busy ? 'PDF hazırlanıyor…' : 'PDF olarak indir'),
-      );
+    onPressed: _busy ? null : _export,
+    icon: _busy
+        ? const PulseLoader(width: 28, height: 16, color: Colors.white) // hazırlanırken nabız akar
+        : const Icon(Icons.picture_as_pdf_outlined),
+    label: Text(_busy ? 'PDF hazırlanıyor…' : 'PDF olarak indir'),
+  );
 }

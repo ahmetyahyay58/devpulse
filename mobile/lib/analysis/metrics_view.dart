@@ -27,27 +27,31 @@ class MetricsView extends StatelessWidget {
         final Widget body;
         if (o == null) {
           body = controller.error != null
-              ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                  TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
-                ])
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                    TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
+                  ],
+                )
               : const PageLoader();
         } else {
           body = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _continuity(o.continuity),
+              // Kartlar sırayla yükselerek gelir.
+              Rise(child: _continuity(o.continuity)),
               const SizedBox(height: 12),
-              _rhythm(o),
+              Rise(index: 1, child: _rhythm(o)),
               const SizedBox(height: 12),
-              _sessions(o.sessions),
+              Rise(index: 2, child: _sessions(o.sessions)),
               if (controller.changePoints != null) ...[
                 const SizedBox(height: 12),
-                ChangePointsCard(section: controller.changePoints!),
+                Rise(index: 3, child: ChangePointsCard(section: controller.changePoints!)),
               ],
               if (controller.anomalies != null) ...[
                 const SizedBox(height: 12),
-                _anomalies(controller.anomalies!),
+                Rise(index: 4, child: _anomalies(controller.anomalies!)),
               ],
             ],
           );
@@ -62,15 +66,18 @@ class MetricsView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Başlık üstteki bölüm seçicide yazıyor; burada yalnız katalog düğmesi.
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                      TextButton.icon(
-                        icon: const Icon(Icons.menu_book_outlined, size: 18),
-                        label: const Text('Metrik kataloğu'),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(builder: (_) => CatalogScreen(api: api)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton.icon(
+                          icon: const Icon(Icons.menu_book_outlined, size: 18),
+                          label: const Text('Metrik kataloğu'),
+                          onPressed: () => Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute<void>(builder: (_) => CatalogScreen(api: api))),
                         ),
-                      ),
-                    ]),
+                      ],
+                    ),
                     const SizedBox(height: 8),
                     body,
                   ],
@@ -89,29 +96,31 @@ class MetricsView extends StatelessWidget {
       title: 'Süreklilik',
       section: s,
       whyId: 'neden_sureklilik',
-      body: Column(children: [
-        StatRow('Güncel seri', '${s.raw['current_streak']} gün'),
-        StatRow('En uzun seri', '${s.raw['longest_streak']} gün'),
-        StatRow('Son 90 günde aktif gün', ratio == null ? '-' : '%${(ratio * 100).round()}'),
-      ]),
+      body: Column(
+        children: [
+          StatRow('Güncel seri', '${s.raw['current_streak']} gün'),
+          StatRow('En uzun seri', '${s.raw['longest_streak']} gün'),
+          StatRow('Son 90 günde aktif gün', ratio == null ? '-' : '%${(ratio * 100).round()}'),
+        ],
+      ),
     );
   }
 
   Widget _rhythm(Overview o) => MetricCard(
-        title: 'Ritim',
-        section: o.rhythm,
-        whyId: 'neden_ritim',
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _chartTitle('Saate göre commit (${o.timezone})'),
-            hourChart(o.rhythm.ints('by_hour')),
-            const SizedBox(height: 16),
-            _chartTitle('Haftanın gününe göre commit'),
-            weekdayChart(o.rhythm.ints('by_weekday')),
-          ],
-        ),
-      );
+    title: 'Ritim',
+    section: o.rhythm,
+    whyId: 'neden_ritim',
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _chartTitle('Saate göre commit (${o.timezone})'),
+        hourChart(o.rhythm.ints('by_hour')),
+        const SizedBox(height: 16),
+        _chartTitle('Haftanın gününe göre commit'),
+        weekdayChart(o.rhythm.ints('by_weekday')),
+      ],
+    ),
+  );
 
   Widget _sessions(MetricSection s) {
     // Tam sayıysa ondalıksız (2), değilse tek ondalık (4.5) yaz.
@@ -125,22 +134,24 @@ class MetricsView extends StatelessWidget {
     final longest = s.raw['longest_minutes'] == null
         ? '-'
         : '${fmt((s.raw['longest_minutes'] as num).round(), ' dk')}'
-            '${longestDay == null ? '' : ' · ${_date(longestDay)}'}';
+              '${longestDay == null ? '' : ' · ${_date(longestDay)}'}';
     String two(int n) => n.toString().padLeft(2, '0');
 
     return MetricCard(
       title: 'Oturum ve yoğunluk',
       whyId: 'neden_oturum',
       section: s,
-      body: Column(children: [
-        StatRow('Oturum sayısı', '${s.raw['count']}'),
-        StatRow('Oturum süresi (medyan)', fmt(s.raw['session_minutes'], ' dk')),
-        StatRow('En uzun oturum', longest),
-        StatRow('Oturumların en sık başladığı saat', hour == null ? '-' : '${two(hour)}:00-${two(hour)}:59'),
-        StatRow('Oturum başına commit (medyan)', fmt(s.raw['commits_per_session'])),
-        StatRow('Aktif gün başına commit (medyan)', fmt(s.raw['commits_per_active_day'])),
-        StatRow('Commit başına değişen satır (medyan)', fmt(s.raw['lines_per_commit'])),
-      ]),
+      body: Column(
+        children: [
+          StatRow('Oturum sayısı', '${s.raw['count']}'),
+          StatRow('Oturum süresi (medyan)', fmt(s.raw['session_minutes'], ' dk')),
+          StatRow('En uzun oturum', longest),
+          StatRow('Oturumların en sık başladığı saat', hour == null ? '-' : '${two(hour)}:00-${two(hour)}:59'),
+          StatRow('Oturum başına commit (medyan)', fmt(s.raw['commits_per_session'])),
+          StatRow('Aktif gün başına commit (medyan)', fmt(s.raw['commits_per_active_day'])),
+          StatRow('Commit başına değişen satır (medyan)', fmt(s.raw['lines_per_commit'])),
+        ],
+      ),
     );
   }
 
@@ -152,26 +163,28 @@ class MetricsView extends StatelessWidget {
       // İşaretlenen gün yoksa gövde boş: özet cümle durumu zaten söyler.
       body: flagged.isEmpty
           ? null
-          : Column(children: [
-              for (final a in flagged)
-                StatRow(
-                  _date(a['day'] as String),
-                  '${a['commits']} commit · z ${(a['robust_z'] as num).toStringAsFixed(1)}',
+          : Column(
+              children: [
+                for (final a in flagged)
+                  StatRow(
+                    _date(a['day'] as String),
+                    '${a['commits']} commit · z ${(a['robust_z'] as num).toStringAsFixed(1)}',
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  'Aktif günlerde medyan ${s.raw['median_commits']} commit. Bu bir yargı değil; '
+                  'yalnızca alışkanlığının dışında kalan günler.',
+                  style: const TextStyle(fontSize: 12),
                 ),
-              const SizedBox(height: 4),
-              Text(
-                'Aktif günlerde medyan ${s.raw['median_commits']} commit. Bu bir yargı değil; '
-                'yalnızca alışkanlığının dışında kalan günler.',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ]),
+              ],
+            ),
     );
   }
 
   static Widget _chartTitle(String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-      );
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+  );
 }
 
 String _date(String iso) {
@@ -215,23 +228,27 @@ class ChangePointsCard extends StatelessWidget {
           for (final p in phases)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Row(children: [
-                Container(
-                  width: 12,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: colorOf(p['index'] as int),
-                    borderRadius: BorderRadius.circular(3),
+              child: Row(
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: colorOf(p['index'] as int),
+                      borderRadius: BorderRadius.circular(3),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  // Yıl yazılır: 52 haftalık aralıkta "17.11-09.11" yanıltıcı olurdu.
-                  child: Text('Evre ${(p['index'] as int) + 1} · '
-                      '${_date(p['start'] as String)}-${_date(p['end'] as String)}'),
-                ),
-                Text('haftada ${mean(p['mean'] as num)}', style: const TextStyle(fontWeight: FontWeight.w600)),
-              ]),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    // Yıl yazılır: 52 haftalık aralıkta "17.11-09.11" yanıltıcı olurdu.
+                    child: Text(
+                      'Evre ${(p['index'] as int) + 1} · '
+                      '${_date(p['start'] as String)}-${_date(p['end'] as String)}',
+                    ),
+                  ),
+                  Text('haftada ${mean(p['mean'] as num)}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                ],
+              ),
             ),
         ],
       ),

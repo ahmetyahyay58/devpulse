@@ -32,8 +32,7 @@ class _CvCheckScreenState extends State<CvCheckScreen> {
   String? _pagesKey;
 
   /// CV'nin o anki hali (format, dil, bilgiler, düzenlemeler): değişince sayfa yeniden sayılır.
-  String _stateKey(CvController c) =>
-      jsonEncode([c.format.id, c.lang, c.profile.toJson(), c.edits.toJson()]);
+  String _stateKey(CvController c) => jsonEncode([c.format.id, c.lang, c.profile.toJson(), c.edits.toJson()]);
 
   Future<void> _count(String key) async {
     try {
@@ -79,43 +78,59 @@ class _CvCheckScreenState extends State<CvCheckScreen> {
           final checks = checkCv(draft: draft, profile: c.profile, format: c.format, pages: pages);
           final missing = checks.where((x) => x.level == CheckLevel.missing).length;
           final suggestions = checks.length - missing;
-          return ListView(padding: const EdgeInsets.all(16), children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 520),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Text('${c.format.name} · ${c.lang == 'en' ? 'English' : 'Türkçe'}',
-                      style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(
-                    checks.isEmpty ? 'Kurallara göre eksik ya da öneri yok.' : '$missing eksik, $suggestions öneri',
-                    style: theme.textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    pages == null
-                        ? 'PDF sayfa sayısı hesaplanıyor…'
-                        : 'PDF: $pages sayfa (bu format için önerilen en çok ${c.format.maxPages}).',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Icon(Icons.info_outline, size: 18, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Bu kontrol düzen ve eksiklikler içindir; işe alım yazılımlarından (ATS) geçeceğini '
-                        'garanti etmez. Kurallar sabittir ve docs/cv.md\'de yazılıdır.',
-                        style: theme.textTheme.bodySmall,
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        '${c.format.name} · ${c.lang == 'en' ? 'English' : 'Türkçe'}',
+                        style: theme.textTheme.titleMedium,
                       ),
-                    ),
-                  ]),
-                  const SizedBox(height: 12),
-                  for (final x in checks) _CheckTile(check: x, onFix: () => _open(x.target)),
-                ]),
+                      const SizedBox(height: 4),
+                      Text(
+                        checks.isEmpty ? 'Kurallara göre eksik ya da öneri yok.' : '$missing eksik, $suggestions öneri',
+                        style: theme.textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        pages == null
+                            ? 'PDF sayfa sayısı hesaplanıyor…'
+                            : 'PDF: $pages sayfa (bu format için önerilen en çok ${c.format.maxPages}).',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline, size: 18, color: theme.colorScheme.onSurfaceVariant),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Bu kontrol düzen ve eksiklikler içindir; işe alım yazılımlarından (ATS) geçeceğini '
+                              'garanti etmez. Kurallar sabittir ve docs/cv.md\'de yazılıdır.',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // Maddeler tek tek gelir (puan yok, yalnız liste).
+                      for (final (i, x) in checks.indexed)
+                        Rise(
+                          index: i < 8 ? i : 8,
+                          child: _CheckTile(check: x, onFix: () => _open(x.target)),
+                        ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ]);
+            ],
+          );
         },
       ),
     );
@@ -135,8 +150,10 @@ class _CheckTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         // Düzey hem simge hem yazıyla söylenir (yalnız renge bağlı değil).
-        leading: Icon(isMissing ? Icons.error_outline : Icons.lightbulb_outline,
-            color: isMissing ? scheme.error : scheme.primary),
+        leading: Icon(
+          isMissing ? Icons.error_outline : Icons.lightbulb_outline,
+          color: isMissing ? scheme.error : scheme.primary,
+        ),
         title: Text(check.message),
         subtitle: Text(isMissing ? 'Eksik' : 'Öneri'),
         trailing: check.target == CheckTarget.none ? null : TextButton(onPressed: onFix, child: const Text('Düzelt')),

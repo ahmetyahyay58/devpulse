@@ -81,8 +81,15 @@ class _ProjectsViewState extends State<ProjectsView> {
                     if (_clusters)
                       _ClustersSection(future: _clusterData!)
                     else ...[
-                      _SummaryCard(data: data),
-                      for (final p in scored) ...[const SizedBox(height: 8), _ProjectCard(project: p)],
+                      Rise(child: _SummaryCard(data: data)),
+                      // Proje kartları sırayla gelir (ilk 8'i kademeli, gerisi birlikte).
+                      for (final (i, p) in scored.indexed) ...[
+                        const SizedBox(height: 8),
+                        Rise(
+                          index: 1 + (i < 8 ? i : 8),
+                          child: _ProjectCard(project: p),
+                        ),
+                      ],
                       if (unscored.isNotEmpty) ...[
                         const SizedBox(height: 24),
                         Text('Puanlanmayan repolar', style: Theme.of(context).textTheme.titleMedium),
@@ -205,7 +212,13 @@ class _ProjectCard extends StatelessWidget {
                       // Tek değerli ilerleme çubuğu: skoru görselleştirir, sayı yanında yazılıdır.
                       ClipRRect(
                         borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(value: (p.score ?? 0) / 100, minHeight: 4),
+                        // Sağlık çubuğu dolarak gelir (taşmaz: puanı geçmez).
+                        child: OnEnter(
+                          ms: 900,
+                          delayMs: 150,
+                          builder: (context, t, _) =>
+                              LinearProgressIndicator(value: (p.score ?? 0) / 100 * seg(t, 0, 1), minHeight: 4),
+                        ),
                       ),
                     ],
                   ],

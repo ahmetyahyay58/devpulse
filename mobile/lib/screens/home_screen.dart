@@ -253,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text('Merhaba, ${widget.session.login}', style: theme.textTheme.headlineSmall),
+              const PulseSignature(), // logodaki nabız çizgisi kendini çizer
               if (widget.session.isDemo) ...[
                 const SizedBox(height: 8),
                 const Align(
@@ -273,12 +274,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? const SizedBox.shrink()
                     : Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: WeeklyCard(weekly: _overview.weekly!),
+                        child: Rise(child: WeeklyCard(weekly: _overview.weekly!)),
                       ),
               ),
               OverviewSection(controller: _overview),
               const SizedBox(height: 12),
-              AiCommentCard(ai: _ai),
+              Rise(index: 7, child: AiCommentCard(ai: _ai)),
               const SizedBox(height: 24),
               HealthCard(api: widget.healthApi), // geliştirme amaçlı; en altta
             ],

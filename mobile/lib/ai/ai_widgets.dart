@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../api/api_client.dart';
 import 'ai_controller.dart';
@@ -193,7 +194,7 @@ class AiFactsScreen extends StatelessWidget {
         future: facts != null ? Future.value(facts) : ai.facts(),
         builder: (context, snap) {
           if (snap.hasError) return Center(child: Text(userMessage(snap.error!, fallback: 'Yüklenemedi.')));
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snap.hasData) return const PageLoader();
           final f = snap.data!;
           return ListView(padding: const EdgeInsets.all(16), children: [
             Text('Yalnızca bu sayılar gider. Kullanıcı adın, repo adların, commit mesajların ve kodun gitmez.',

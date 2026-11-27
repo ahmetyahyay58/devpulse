@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../ui/theme_settings.dart';
 
@@ -41,7 +42,7 @@ class SyncCard extends StatelessWidget {
   List<Widget> _content(BuildContext context) {
     final c = controller;
     final job = c.job;
-    if (c.loading) return const [Center(child: CircularProgressIndicator())];
+    if (c.loading) return const [PageLoader()];
     if (job != null && job.isActive) return _running(context, job);
 
     return [

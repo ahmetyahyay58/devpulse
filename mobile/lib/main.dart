@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'ui/motion.dart';
 
 import 'ui/theme_settings.dart';
 
@@ -120,7 +121,7 @@ class _DevPulseAppState extends State<DevPulseApp> {
         onContinue: () => setState(() => _serverReady = true), // çevrimdışı da açılabilsin
       );
     }
-    if (_restoring || !_serverReady) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_restoring || !_serverReady) return const Scaffold(body: PageLoader());
     final session = _session;
     if (session == null) {
       return LoginScreen(
@@ -176,7 +177,7 @@ class WakeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(32),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             if (error == null) ...[
-              const CircularProgressIndicator(),
+              const PulseLoader(),
               const SizedBox(height: 24),
               Text('Sunucu uyanıyor…', style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),

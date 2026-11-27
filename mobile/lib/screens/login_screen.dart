@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../api/api_client.dart';
 import '../auth/auth_service.dart';
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 if (_busy) ...[
                   const SizedBox(height: 24),
-                  const Center(child: CircularProgressIndicator()),
+                  const PageLoader(),
                 ],
                 if (_error != null) ...[
                   const SizedBox(height: 24),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../ai/ai_features.dart';
 
@@ -30,7 +31,7 @@ class MetricsView extends StatelessWidget {
                   Text(controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
                 ])
-              : const Center(child: CircularProgressIndicator());
+              : const PageLoader();
         } else {
           body = Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

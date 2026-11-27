@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ui/motion.dart';
 import 'charts.dart';
 import 'commit_types_card.dart';
 import 'overview_controller.dart';
@@ -20,10 +21,7 @@ class OverviewSection extends StatelessWidget {
         final o = controller.overview;
         if (o == null) {
           if (controller.error != null) return _error(context);
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const PageLoader();
         }
         if (o.kpi['total_commits'] == 0) {
           return const Card(
@@ -39,10 +37,13 @@ class OverviewSection extends StatelessWidget {
             _KpiGrid(kpi: o.kpi, longestStreak: o.continuity.raw['longest_streak']),
             const SizedBox(height: 12),
             if (controller.calendar != null)
-              _CalendarCard(data: controller.calendar!, anomalyDays: _anomalyDays()),
+              Rise(
+                index: 5,
+                child: _CalendarCard(data: controller.calendar!, anomalyDays: _anomalyDays()),
+              ),
             if (controller.commitTypes != null) ...[
               const SizedBox(height: 12),
-              CommitTypesCard(section: controller.commitTypes!),
+              Rise(index: 6, child: CommitTypesCard(section: controller.commitTypes!)),
             ],
           ],
         );
@@ -57,14 +58,16 @@ class OverviewSection extends StatelessWidget {
   }
 
   Widget _error(BuildContext context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(children: [
-            Text(controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-            TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
-          ]),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          Text(controller.error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
+        ],
+      ),
+    ),
+  );
 }
 
 /// Dört KPI kartı, 2x2 ızgara: toplam commit, aktif gün, en uzun seri, repo.
@@ -77,36 +80,58 @@ class _KpiGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    Widget tile(String label, Object? value, [String unit = '']) => Expanded(
-          child: Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text.rich(TextSpan(children: [
-                  TextSpan(text: '${value ?? '-'}', style: theme.textTheme.headlineSmall),
-                  if (unit.isNotEmpty) TextSpan(text: ' $unit', style: theme.textTheme.bodyMedium),
-                ])),
-                Text(label,
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-              ]),
+    // Her kutu sırayla yükselir, sayı 0'dan sayarak gelir, basınca hafifçe küçülür.
+    var order = 0;
+    Widget tile(String label, Object? value, [String unit = '']) {
+      final i = order++;
+      return Expanded(
+        child: Rise(
+          index: 1 + i,
+          child: Pressable(
+            child: Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (value is int)
+                      CountUp(
+                        value: value,
+                        delayMs: 80 + i * Motion.stagger,
+                        style: theme.textTheme.headlineSmall,
+                        suffix: unit.isEmpty ? '' : ' $unit',
+                        suffixStyle: theme.textTheme.bodyMedium,
+                      )
+                    else
+                      Text.rich(TextSpan(children: [
+                        TextSpan(text: '${value ?? '-'}', style: theme.textTheme.headlineSmall),
+                        if (unit.isNotEmpty) TextSpan(text: ' $unit', style: theme.textTheme.bodyMedium),
+                      ])),
+                    Text(label, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  ],
+                ),
+              ),
             ),
           ),
-        );
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(children: [
-          tile('Toplam commit', kpi['total_commits']),
-          const SizedBox(width: 8),
-          tile('Aktif gün', kpi['active_days']),
-        ]),
+        Row(
+          children: [
+            tile('Toplam commit', kpi['total_commits']),
+            const SizedBox(width: 8),
+            tile('Aktif gün', kpi['active_days']),
+          ],
+        ),
         const SizedBox(height: 8),
-        Row(children: [
-          tile('En uzun seri', longestStreak, 'gün'),
-          const SizedBox(width: 8),
-          tile('Repo', kpi['repos']),
-        ]),
+        Row(
+          children: [tile('En uzun seri', longestStreak, 'gün'), const SizedBox(width: 8), tile('Repo', kpi['repos'])],
+        ),
         const SizedBox(height: 8),
         Text(
           'Commit sayısı üretkenliği ya da kaliteyi ölçmez; yalnızca çalışma alışkanlığını betimler.',
@@ -139,18 +164,20 @@ class _CalendarCard extends StatelessWidget {
             if (shown > 0) ...[
               const SizedBox(height: 4),
               // Halka tek başına anlam taşımasın: lejantta yazıyla açıklanır.
-              Row(children: [
-                Container(
-                  width: 11,
-                  height: 11,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: ChartColors.anomaly, width: 1.5),
-                    borderRadius: BorderRadius.circular(2),
+              Row(
+                children: [
+                  Container(
+                    width: 11,
+                    height: 11,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: ChartColors.anomaly, width: 1.5),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Text('Olağan dışı yoğun gün ($shown)', style: theme.textTheme.bodySmall),
-              ]),
+                  const SizedBox(width: 6),
+                  Text('Olağan dışı yoğun gün ($shown)', style: theme.textTheme.bodySmall),
+                ],
+              ),
             ],
             const SizedBox(height: 8),
             Text(data.note, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),

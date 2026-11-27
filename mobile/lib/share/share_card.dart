@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 import 'package:flutter/rendering.dart';
 
 import '../api/api_client.dart';
@@ -160,7 +161,7 @@ class _ShareCardScreenState extends State<ShareCardScreen> {
         builder: (context, snap) {
           if (snap.hasError) return const Center(child: Text('Kart için veri yüklenemedi.'));
           final d = snap.data;
-          if (d == null) return const Center(child: CircularProgressIndicator());
+          if (d == null) return const PageLoader();
           return ListView(padding: const EdgeInsets.all(16), children: [
             Center(
               child: FittedBox(

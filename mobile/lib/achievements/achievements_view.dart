@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../ui/theme_settings.dart';
 
@@ -64,7 +65,7 @@ class _AchievementsViewState extends State<AchievementsView> {
                   Text(controller.error!, style: TextStyle(color: theme.colorScheme.error)),
                   TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
                 ])
-              : const Center(child: CircularProgressIndicator());
+              : const PageLoader();
         } else {
           final badges = (a['badges'] as List).cast<Map<String, dynamic>>();
           body = Column(

@@ -7,8 +7,12 @@ void main() {
   setUp(() => Motion.testMode = false);
   tearDown(() => Motion.testMode = true);
 
-  int shown(WidgetTester tester) =>
-      int.parse((tester.widget<Text>(find.descendant(of: find.byType(CountUp), matching: find.byType(Text)))).data!);
+  int shown(WidgetTester tester) => int.parse(
+    tester
+        .widget<RichText>(find.descendant(of: find.byType(CountUp), matching: find.byType(RichText)))
+        .text
+        .toPlainText(),
+  );
 
   testWidgets('sayaç: 0 dan sayar, hiçbir an gerçek değeri geçmez, sonunda tam değerde', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: Scaffold(body: CountUp(value: 1194))));
@@ -26,18 +30,24 @@ void main() {
   });
 
   testWidgets('animasyonları azalt açıksa sayaç beklemeden son değerde', (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      builder: (context, child) =>
-          MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!),
-      home: const Scaffold(body: CountUp(value: 42)),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        builder: (context, child) =>
+            MediaQuery(data: MediaQuery.of(context).copyWith(disableAnimations: true), child: child!),
+        home: const Scaffold(body: CountUp(value: 42)),
+      ),
+    );
     expect(shown(tester), 42);
   });
 
   testWidgets('gizli sekmedeki giriş oynamaz; sekme görünür olunca oynar', (tester) async {
     Widget app(int epoch, bool active) => MaterialApp(
-          home: EntranceScope(epoch: epoch, active: active, child: const Scaffold(body: CountUp(value: 10))),
-        );
+      home: EntranceScope(
+        epoch: epoch,
+        active: active,
+        child: const Scaffold(body: CountUp(value: 10)),
+      ),
+    );
     await tester.pumpWidget(app(0, false));
     expect(shown(tester), 10); // gizliyken son halinde bekler
     await tester.pumpWidget(app(1, true));

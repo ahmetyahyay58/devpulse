@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../ui/motion.dart';
+
 /// Grafik renkleri. Büyüklük tek renk tonuyla (logonun moru) gösterilir; koyu temada
 /// "az" yüzeye yakın koyu mor, "çok" açık lavantadır. Gökkuşağı yok.
 class ChartColors {
@@ -32,8 +34,12 @@ class ChartColors {
   /// Değişim noktası evreleri: aynı doğrulanmış kategorik palet, sabit sıra (Evre 1 hep mavi).
   /// En çok 6 evre olur (backend sınırlar); renk döngüye girmez.
   static const phases = [
-    Color(0xFF3987E5), Color(0xFFD95926), Color(0xFF199E70),
-    Color(0xFFC98500), Color(0xFFD55181), Color(0xFF008300),
+    Color(0xFF3987E5),
+    Color(0xFFD95926),
+    Color(0xFF199E70),
+    Color(0xFFC98500),
+    Color(0xFFD55181),
+    Color(0xFF008300),
   ];
 
   /// Commit türleri: koyu tema kategorik paleti, sabit sıra (renk sırayı değil türü izler;
@@ -52,8 +58,7 @@ class ChartColors {
 const _weekdayShort = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 const monthShortTr = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 
-String _date(DateTime d) =>
-    '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+String _date(DateTime d) => '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
 
 /// Tek serili dikey çubuk grafik. Lejant yok (başlık neyi gösterdiğini söyler);
 /// her çubuğun değeri dokununca/üzerine gelince görünür.
@@ -81,26 +86,35 @@ class BarChart extends StatelessWidget {
       children: [
         SizedBox(
           height: height,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end, // çubuklar tabana oturur
-            children: [
-              for (var i = 0; i < values.length; i++)
-                Expanded(
-                  child: Tooltip(
-                    message: tooltipFor(i, values[i]),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 1), // çubuklar arası 2px
-                      child: Container(
-                        height: maxValue == 0 ? 0 : height * values[i] / maxValue,
-                        decoration: BoxDecoration(
-                          color: colorFor?.call(i) ?? ChartColors.bar,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+          // Giriş: çubuklar soldan sağa sırayla tabandan yükselir (taşmaz; gerçek boyunu geçmez).
+          child: OnEnter(
+            ms: 700,
+            builder: (context, t, _) => Row(
+              crossAxisAlignment: CrossAxisAlignment.end, // çubuklar tabana oturur
+              children: [
+                for (var i = 0; i < values.length; i++)
+                  Expanded(
+                    child: Tooltip(
+                      message: tooltipFor(i, values[i]),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 1), // çubuklar arası 2px
+                        child: Container(
+                          height: maxValue == 0
+                              ? 0
+                              : height *
+                                    values[i] /
+                                    maxValue *
+                                    seg(t, 0.45 * i / values.length, 0.45 * i / values.length + 0.55),
+                          decoration: BoxDecoration(
+                            color: colorFor?.call(i) ?? ChartColors.bar,
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
         Container(height: 1, color: muted.withValues(alpha: 0.4)), // taban çizgisi
@@ -127,18 +141,18 @@ class BarChart extends StatelessWidget {
 
 /// Saat dağılımı: 24 çubuk, etiketler 0/6/12/18.
 Widget hourChart(List<int> byHour) => BarChart(
-      values: byHour,
-      labelFor: (i) => i % 6 == 0 ? '$i' : null,
-      tooltipFor: (i, v) => '${i.toString().padLeft(2, '0')}:00-${i.toString().padLeft(2, '0')}:59 · $v commit',
-    );
+  values: byHour,
+  labelFor: (i) => i % 6 == 0 ? '$i' : null,
+  tooltipFor: (i, v) => '${i.toString().padLeft(2, '0')}:00-${i.toString().padLeft(2, '0')}:59 · $v commit',
+);
 
 /// Haftanın günü dağılımı: 7 çubuk.
 Widget weekdayChart(List<int> byWeekday) => BarChart(
-      values: byWeekday,
-      labelFor: (i) => _weekdayShort[i],
-      tooltipFor: (i, v) => '${_weekdayShort[i]} · $v commit',
-      height: 56,
-    );
+  values: byWeekday,
+  labelFor: (i) => _weekdayShort[i],
+  tooltipFor: (i, v) => '${_weekdayShort[i]} · $v commit',
+  height: 56,
+);
 
 /// Halka grafik: her dilim bir yay; dilimler arasında yüzey renginde küçük bir boşluk,
 /// ortada toplam. Renk tek başına anlam taşımaz: yanında yazılı lejant olmalı.
@@ -161,13 +175,19 @@ class DonutChart extends StatelessWidget {
     final theme = Theme.of(context);
     return SizedBox.square(
       dimension: size,
-      child: Stack(alignment: Alignment.center, children: [
-        CustomPaint(size: Size.square(size), painter: _DonutPainter(slices)),
-        Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(centerValue, style: theme.textTheme.titleLarge),
-          Text(centerLabel, style: theme.textTheme.bodySmall),
-        ]),
-      ]),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(size: Size.square(size), painter: _DonutPainter(slices)),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(centerValue, style: theme.textTheme.titleLarge),
+              Text(centerLabel, style: theme.textTheme.bodySmall),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -217,19 +237,30 @@ class ScoreRing extends StatelessWidget {
     final theme = Theme.of(context);
     return SizedBox.square(
       dimension: size,
-      child: Stack(alignment: Alignment.center, children: [
-        CustomPaint(
-          size: Size.square(size),
-          painter: _RingPainter(score / 100, theme.colorScheme.surfaceContainerHighest),
-        ),
-        if (percent)
-          Text('%$score', style: theme.textTheme.headlineSmall)
-        else
-          Text.rich(TextSpan(children: [
-            TextSpan(text: '$score', style: theme.textTheme.headlineSmall),
-            TextSpan(text: '/100', style: theme.textTheme.bodySmall),
-          ])),
-      ]),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Halka dolarak gelir (taşmaz: puanın ötesine geçmez).
+          OnEnter(
+            ms: 1000,
+            builder: (context, t, _) => CustomPaint(
+              size: Size.square(size),
+              painter: _RingPainter(score / 100 * seg(t, 0, 1), theme.colorScheme.surfaceContainerHighest),
+            ),
+          ),
+          if (percent)
+            Text('%$score', style: theme.textTheme.headlineSmall)
+          else
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: '$score', style: theme.textTheme.headlineSmall),
+                  TextSpan(text: '/100', style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -261,12 +292,7 @@ class _RingPainter extends CustomPainter {
 
 /// GitHub tarzı katkı ısı haritası: sütunlar hafta, satırlar Pazartesi-Pazar.
 class ContributionHeatmap extends StatelessWidget {
-  const ContributionHeatmap({
-    super.key,
-    required this.days,
-    this.unit = 'katkı',
-    this.highlighted = const {},
-  });
+  const ContributionHeatmap({super.key, required this.days, this.unit = 'katkı', this.highlighted = const {}});
 
   final List<(DateTime, int)> days; // eskiden yeniye, ardışık günler
   final String unit; // ipucunda sayının yanındaki kelime ("katkı" ya da "commit")
@@ -296,16 +322,16 @@ class ContributionHeatmap extends StatelessWidget {
     // AnimatedContainer: renk değişince (senkron ekranında yeni commit'ler geldikçe)
     // kare birden değil, yumuşak bir geçişle dolar.
     Widget square(Color color, {bool ring = false}) => AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          width: cell,
-          height: cell,
-          margin: const EdgeInsets.all(gap / 2),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-            border: ring ? Border.all(color: ChartColors.anomaly, width: 1.5) : null,
-          ),
-        );
+      duration: const Duration(milliseconds: 400),
+      width: cell,
+      height: cell,
+      margin: const EdgeInsets.all(gap / 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(2),
+        border: ring ? Border.all(color: ChartColors.anomaly, width: 1.5) : null,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,61 +343,83 @@ class ContributionHeatmap extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Ay etiketleri: ayın ilk günü hangi haftadaysa o sütunun üstüne.
-              Row(children: [
-                for (var w = 0; w < weeks; w++)
-                  SizedBox(
-                    width: cell + gap,
-                    child: Builder(builder: (_) {
-                      final firstOfMonth = [
-                        for (var r = 0; r < 7; r++)
-                          if (w * 7 + r < cells.length && cells[w * 7 + r]?.$1.day == 1) cells[w * 7 + r]
-                      ];
-                      return Text(
-                        firstOfMonth.isEmpty ? '' : monthShortTr[firstOfMonth.first!.$1.month - 1],
-                        softWrap: false,
-                        overflow: TextOverflow.visible,
-                        style: TextStyle(fontSize: 10, color: muted),
-                      );
-                    }),
-                  ),
-              ]),
-              const SizedBox(height: 2),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (var w = 0; w < weeks; w++)
-                    Column(children: [
-                      for (var r = 0; r < 7; r++)
-                        if (w * 7 + r < cells.length && cells[w * 7 + r] != null)
-                          Tooltip(
-                            message: '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} $unit'
-                                '${highlighted.contains(cells[w * 7 + r]!.$1) ? ' · olağan dışı yoğun gün' : ''}',
-                            child: square(
-                              switch (level(cells[w * 7 + r]!.$2, maxCount)) {
-                                0 => empty,
-                                final l => ChartColors.heatFor(context)[l - 1],
-                              },
-                              ring: highlighted.contains(cells[w * 7 + r]!.$1),
-                            ),
-                          )
-                        else
-                          const SizedBox(width: cell + gap, height: cell + gap),
-                    ]),
+                    SizedBox(
+                      width: cell + gap,
+                      child: Builder(
+                        builder: (_) {
+                          final firstOfMonth = [
+                            for (var r = 0; r < 7; r++)
+                              if (w * 7 + r < cells.length && cells[w * 7 + r]?.$1.day == 1) cells[w * 7 + r],
+                          ];
+                          return Text(
+                            firstOfMonth.isEmpty ? '' : monthShortTr[firstOfMonth.first!.$1.month - 1],
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                            style: TextStyle(fontSize: 10, color: muted),
+                          );
+                        },
+                      ),
+                    ),
                 ],
+              ),
+              const SizedBox(height: 2),
+              // Giriş: haftalar soldan sağa sırayla belirir (dalga); tek denetleyici, hafta başına ilerleme.
+              OnEnter(
+                ms: 1100,
+                delayMs: 150,
+                builder: (context, t, _) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var w = 0; w < weeks; w++)
+                      Builder(
+                        builder: (context) {
+                          final k = seg(t, 0.6 * w / weeks, 0.6 * w / weeks + 0.4);
+                          return Opacity(
+                            opacity: k,
+                            child: Transform.scale(
+                              scale: 0.4 + 0.6 * Motion.spring.transform(k),
+                              child: Column(
+                                children: [
+                                  for (var r = 0; r < 7; r++)
+                                    if (w * 7 + r < cells.length && cells[w * 7 + r] != null)
+                                      Tooltip(
+                                        message:
+                                            '${_date(cells[w * 7 + r]!.$1)} · ${cells[w * 7 + r]!.$2} $unit'
+                                            '${highlighted.contains(cells[w * 7 + r]!.$1) ? ' · olağan dışı yoğun gün' : ''}',
+                                        child: square(switch (level(cells[w * 7 + r]!.$2, maxCount)) {
+                                          0 => empty,
+                                          final l => ChartColors.heatFor(context)[l - 1],
+                                        }, ring: highlighted.contains(cells[w * 7 + r]!.$1)),
+                                      )
+                                    else
+                                      const SizedBox(width: cell + gap, height: cell + gap),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 8),
         // Lejant: renk düzeylerinin anlamı (renk tek başına bilgi taşımasın diye yazılı).
-        Row(children: [
-          Text('Az', style: TextStyle(fontSize: 11, color: muted)),
-          const SizedBox(width: 4),
-          square(empty),
-          for (final c in ChartColors.heatFor(context)) square(c),
-          const SizedBox(width: 4),
-          Text('Çok', style: TextStyle(fontSize: 11, color: muted)),
-        ]),
+        Row(
+          children: [
+            Text('Az', style: TextStyle(fontSize: 11, color: muted)),
+            const SizedBox(width: 4),
+            square(empty),
+            for (final c in ChartColors.heatFor(context)) square(c),
+            const SizedBox(width: 4),
+            Text('Çok', style: TextStyle(fontSize: 11, color: muted)),
+          ],
+        ),
       ],
     );
   }

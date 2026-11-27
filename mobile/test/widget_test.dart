@@ -162,6 +162,7 @@ void main() {
 
     slow.completeError(Exception('ağ yok'));
     await tester.pump();
+    await tester.pump(); // bekleme göstergesi testte durgun: hata ekranı bir sonraki karede
     expect(find.textContaining('Sunucuya ulaşılamadı'), findsOneWidget);
 
     await tester.tap(find.text('Tekrar dene'));

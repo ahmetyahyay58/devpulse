@@ -27,8 +27,7 @@ class Motion {
 }
 
 /// t (0..1) içinde [a, b] aralığının [Motion.out] ile ilerlemesi (0..1, taşmaz).
-double seg(double t, double a, double b) =>
-    t <= a ? 0 : (t >= b ? 1 : Motion.out.transform((t - a) / (b - a)));
+double seg(double t, double a, double b) => t <= a ? 0 : (t >= b ? 1 : Motion.out.transform((t - a) / (b - a)));
 
 /// Sekme girişleri: ana ekran her sekmeyi bununla sarar. Sekme görünür olunca [epoch] artar ve
 /// içindeki [OnEnter] animasyonları yeniden oynar. Gizli sekmeler (IndexedStack) oynamaz.
@@ -99,10 +98,10 @@ class _OnEnterState extends State<OnEnter> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _c,
-        builder: (context, child) => widget.builder(context, _c.value, child),
-        child: widget.child,
-      );
+    animation: _c,
+    builder: (context, child) => widget.builder(context, _c.value, child),
+    child: widget.child,
+  );
 }
 
 /// Kartların kademeli girişi: aşağıdan 14 px yükselir, hafif büyüyerek belirir. [index] sırası.
@@ -113,41 +112,58 @@ class Rise extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OnEnter(
-        ms: 480,
-        delayMs: index * Motion.stagger,
-        child: child,
-        builder: (context, t, child) {
-          final move = Motion.spring.transform(t); // konum/ölçek: yaylanabilir
-          return Opacity(
-            opacity: seg(t, 0, 0.5), // saydamlık: taşmaz
-            child: Transform.translate(
-              offset: Offset(0, 14 * (1 - move)),
-              child: Transform.scale(scale: 0.98 + 0.02 * move, child: child),
-            ),
-          );
-        },
+    ms: 480,
+    delayMs: index * Motion.stagger,
+    child: child,
+    builder: (context, t, child) {
+      final move = Motion.spring.transform(t); // konum/ölçek: yaylanabilir
+      return Opacity(
+        opacity: seg(t, 0, 0.5), // saydamlık: taşmaz
+        child: Transform.translate(
+          offset: Offset(0, 14 * (1 - move)),
+          child: Transform.scale(scale: 0.98 + 0.02 * move, child: child),
+        ),
       );
+    },
+  );
 }
 
 /// 0'dan [value]'ya sayarak gelen sayı. Ekran okuyucu yalnız son değeri okur; ara değer hiçbir
 /// an [value]'yu geçmez.
 class CountUp extends StatelessWidget {
-  const CountUp({super.key, required this.value, this.style, this.ms = 900, this.delayMs = 0});
+  const CountUp({
+    super.key,
+    required this.value,
+    this.style,
+    this.suffix = '',
+    this.suffixStyle,
+    this.ms = 900,
+    this.delayMs = 0,
+  });
   final int value;
   final TextStyle? style;
+  final String suffix; // birim ("gün"): sayıyla aynı satırda, daha küçük
+  final TextStyle? suffixStyle;
   final int ms;
   final int delayMs;
 
   @override
   Widget build(BuildContext context) => Semantics(
-        label: '$value',
-        excludeSemantics: true,
-        child: OnEnter(
-          ms: ms,
-          delayMs: delayMs,
-          builder: (context, t, _) => Text('${(value * seg(t, 0, 1)).round()}', style: style),
+    label: '$value$suffix',
+    excludeSemantics: true,
+    child: OnEnter(
+      ms: ms,
+      delayMs: delayMs,
+      builder: (context, t, _) => Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: '${(value * seg(t, 0, 1)).round()}', style: style),
+            if (suffix.isNotEmpty) TextSpan(text: suffix, style: suffixStyle),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }
 
 /// Basınca hafifçe (%3) küçülen ve dokununca hafif titreşim veren sarmalayıcı.
@@ -264,8 +280,7 @@ class PulseLoader extends StatefulWidget {
 }
 
 class _PulseLoaderState extends State<PulseLoader> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1300));
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300));
 
   @override
   void didChangeDependencies() {
@@ -327,6 +342,7 @@ class PageLoader extends StatelessWidget {
   const PageLoader({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      const Center(child: Padding(padding: EdgeInsets.all(24), child: PulseLoader()));
+  Widget build(BuildContext context) => const Center(
+    child: Padding(padding: EdgeInsets.all(24), child: PulseLoader()),
+  );
 }

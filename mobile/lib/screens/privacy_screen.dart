@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../api/api_client.dart';
 
@@ -18,7 +19,7 @@ class PrivacyScreen extends StatelessWidget {
           if (snap.hasError) {
             return const Center(child: Text('Metin yüklenemedi. Sunucuya ulaşılamıyor olabilir.'));
           }
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snap.hasData) return const PageLoader();
           return Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),

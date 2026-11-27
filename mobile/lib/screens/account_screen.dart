@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../achievements/badge_art.dart';
 import '../ui/theme_settings.dart';
@@ -305,7 +306,7 @@ class _ProfileSectionsState extends State<_ProfileSections> {
               ),
             )
           else if (me == null)
-            const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator()))
+            const PageLoader()
           else ...[
             if (me['scope'] is Map) ...[
               _ScopeCard(scope: (me['scope'] as Map).cast<String, dynamic>()),

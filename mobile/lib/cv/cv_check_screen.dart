@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import 'cv_check.dart';
 import 'cv_controller.dart';
@@ -68,7 +69,7 @@ class _CvCheckScreenState extends State<CvCheckScreen> {
         builder: (context, _) {
           final c = widget.controller;
           final draft = c.effective;
-          if (draft == null) return const Center(child: CircularProgressIndicator());
+          if (draft == null) return const PageLoader();
           final key = _stateKey(c);
           if (key != _key) {
             _key = key;

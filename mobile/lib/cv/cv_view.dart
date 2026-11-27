@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../ai/ai_features.dart';
 import '../screens/file_saver.dart';
@@ -38,7 +39,7 @@ class CvView extends StatelessWidget {
                   Text(controller.error!, style: TextStyle(color: theme.colorScheme.error)),
                   TextButton(onPressed: controller.load, child: const Text('Tekrar dene')),
                 ])
-              : const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()));
+              : const PageLoader();
         } else if (d.projects.isEmpty && d.languages.isEmpty && d.activity.isEmpty) {
           page = const Card(
             child: Padding(

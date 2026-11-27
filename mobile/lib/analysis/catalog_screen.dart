@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../api/api_client.dart';
 
@@ -28,7 +29,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
           if (snap.hasError) {
             return Center(child: Text(userMessage(snap.error!, fallback: 'Katalog yüklenemedi.')));
           }
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snap.hasData) return const PageLoader();
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [

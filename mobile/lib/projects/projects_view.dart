@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../ai/ai_features.dart';
 import 'project_detail_screen.dart';
@@ -62,7 +63,7 @@ class _ProjectsViewState extends State<ProjectsView> {
               ),
             );
           }
-          return const Center(child: CircularProgressIndicator());
+          return const PageLoader();
         }
         final scored = data.projects.where((p) => p.scored).toList();
         final unscored = data.projects.where((p) => !p.scored).toList();
@@ -236,7 +237,7 @@ class _ClustersSection extends StatelessWidget {
         if (snap.hasError) return const Text('Kümeler yüklenemedi.');
         final d = snap.data;
         if (d == null) {
-          return const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()));
+          return const PageLoader();
         }
         final clusters = (d['clusters'] as List).cast<Map<String, dynamic>>();
         String fmt(Object? v) => v == null ? '-' : (v as num).round().toString();

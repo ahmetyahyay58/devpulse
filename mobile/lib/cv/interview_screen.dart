@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ui/motion.dart';
 
 import '../api/api_client.dart';
 import 'cv_controller.dart';
@@ -110,7 +111,7 @@ class _InterviewScreenState extends State<InterviewScreen> {
                     ),
                 ]),
               const SizedBox(height: 16),
-              if (_loading) const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator())),
+              if (_loading) const PageLoader(),
               if (_error != null) Text(_error!, style: TextStyle(color: theme.colorScheme.error)),
               if (a != null) ...[
                 Text('Olası sorular', style: theme.textTheme.titleMedium),

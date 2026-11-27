@@ -119,7 +119,7 @@ void main() {
   testWidgets('"Neden?" düğmesi metriğin açıklamasını alttan açılan panelde gösterir', (tester) async {
     final backend = FakeBackend()..aiConsent = true;
     await _start(tester, backend);
-    await tester.tap(find.text('Analiz'));
+    await tester.tap(find.byTooltip('Analiz'));
     await tester.pumpAndSettle();
     // Sahte sunucuda yalnızca süreklilik sorusu var: tek düğme görünür.
     expect(find.text('Neden?'), findsOneWidget);

@@ -1,3 +1,6 @@
+import '../ui/aurora.dart';
+import '../ui/capsule_nav.dart';
+import '../ui/motion.dart';
 import '../ui/theme_settings.dart';
 import 'package:flutter/material.dart';
 
@@ -86,6 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _wasRunning = false;
   String? _avatarUrl; // GitHub profil fotoğrafı (GET /me); yoksa simge gösterilir
   int _tab = 0; // 0: Genel Bakış, 1: Analiz, 2: Projeler, 3: Başarımlar, 4: CV
+  // Sekme girişleri: sekme görünür olunca sayacı artar, içindeki animasyonlar yeniden oynar.
+  final List<int> _epochs = List.filled(5, 0);
+  int _dir = 0; // son geçişin yönü: 1 sağdaki sekmeye, -1 soldakine
+
+  void _selectTab(int i) => setState(() {
+    _dir = i > _tab ? 1 : (i < _tab ? -1 : 0);
+    _tab = i;
+    _epochs[i]++;
+  });
 
   @override
   void initState() {
@@ -129,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _projects.load();
       _cv.load();
       _loadAvatar(); // senkron profil fotoğrafını güncelleyebilir
+      if (mounted) setState(() => _epochs[_tab]++); // yeni veriyle giriş animasyonu yeniden
     }
     _wasRunning = running;
   }
@@ -158,59 +171,73 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: BrandWordmark(style: Theme.of(context).appBarTheme.titleTextStyle),
-        actions: [
-          if (widget.auth != null)
-            IconButton(
-              tooltip: 'Profil',
-              icon: ProfileAvatarIcon(url: _avatarUrl),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => AccountScreen(
-                    session: widget.session,
-                    auth: widget.auth!,
-                    onLogout: widget.onLogout,
-                    onDeleted: widget.onDeleted ?? (_) {},
-                    // Genel Bakış verisinden: rozet vitrini ve Model Laboratuvarı'ndaki kural/model payı
-                    achievements: _overview.achievements,
-                    bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
-                    ai: _ai,
-                    onResync: _startSync,
+    final tabs = [
+      _overviewTab(context),
+      AnalysisView(controller: _overview, api: widget.api),
+      ProjectsView(controller: _projects),
+      AchievementsView(controller: _overview),
+      CvView(controller: _cv),
+    ];
+    // Arka ışık yalnız bu ekranda; Scaffold ve üst çubuk saydam, kapsül menü içeriğin üstünde yüzer.
+    return AuroraBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBody: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: BrandWordmark(style: Theme.of(context).appBarTheme.titleTextStyle),
+          actions: [
+            if (widget.auth != null)
+              IconButton(
+                tooltip: 'Profil',
+                icon: ProfileAvatarIcon(url: _avatarUrl),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AccountScreen(
+                      session: widget.session,
+                      auth: widget.auth!,
+                      onLogout: widget.onLogout,
+                      onDeleted: widget.onDeleted ?? (_) {},
+                      // Genel Bakış verisinden: rozet vitrini ve Model Laboratuvarı'ndaki kural/model payı
+                      achievements: _overview.achievements,
+                      bySource: (_overview.commitTypes?.raw['by_source'] as Map?)?.cast<String, int>(),
+                      ai: _ai,
+                      onResync: _startSync,
+                    ),
                   ),
                 ),
               ),
-            ),
-          IconButton(tooltip: 'Çıkış yap', onPressed: widget.onLogout, icon: const Icon(Icons.logout)),
-        ],
-      ),
-      // IndexedStack: sekmeler bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
-      floatingActionButton: AskFab(ai: _ai),
-      // AiScope: sekmelerdeki "Neden?" düğmeleri AI denetleyicisini buradan bulur.
-      body: AiScope(
-        ai: _ai,
-        child: IndexedStack(
-          index: _tab,
-          children: [
-            _overviewTab(context),
-            AnalysisView(controller: _overview, api: widget.api),
-            ProjectsView(controller: _projects),
-            AchievementsView(controller: _overview),
-            CvView(controller: _cv),
+            IconButton(tooltip: 'Çıkış yap', onPressed: widget.onLogout, icon: const Icon(Icons.logout)),
           ],
         ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _tab,
-        onDestinationSelected: (i) => setState(() => _tab = i),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.insights), label: 'Genel Bakış'),
-          NavigationDestination(icon: Icon(Icons.query_stats), label: 'Analiz'),
-          NavigationDestination(icon: Icon(Icons.folder_outlined), label: 'Projeler'),
-          NavigationDestination(icon: Icon(Icons.emoji_events_outlined), label: 'Başarımlar'),
-          NavigationDestination(icon: Icon(Icons.description_outlined), label: 'CV'),
-        ],
+        // IndexedStack: sekmeler bellekte kalır; sekme değişince kaydırma/veri kaybolmaz.
+        floatingActionButton: AskFab(ai: _ai),
+        // AiScope: sekmelerdeki "Neden?" düğmeleri AI denetleyicisini buradan bulur.
+        body: AiScope(
+          ai: _ai,
+          child: IndexedStack(
+            index: _tab,
+            children: [
+              for (var i = 0; i < tabs.length; i++)
+                EntranceScope(
+                  epoch: _epochs[i],
+                  active: _tab == i,
+                  child: _TabSlide(dir: _dir, child: tabs[i]),
+                ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: CapsuleNavBar(
+          selected: _tab,
+          onSelect: _selectTab,
+          items: const [
+            CapsuleItem(Icons.insights, 'Genel Bakış'),
+            CapsuleItem(Icons.query_stats, 'Analiz'),
+            CapsuleItem(Icons.folder_outlined, 'Projeler'),
+            CapsuleItem(Icons.emoji_events_outlined, 'Başarımlar'),
+            CapsuleItem(Icons.description_outlined, 'CV'),
+          ],
+        ),
       ),
     );
   }
@@ -260,4 +287,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+/// Sekme girişi: yeni sekme, gidilen yönden 24 px kayarak ve belirerek gelir (yönsüzse yalnız belirir).
+class _TabSlide extends StatelessWidget {
+  const _TabSlide({required this.dir, required this.child});
+  final int dir;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => OnEnter(
+    ms: 360,
+    child: child,
+    builder: (context, t, child) => Opacity(
+      opacity: seg(t, 0, 0.6),
+      child: Transform.translate(offset: Offset(24.0 * dir * (1 - Motion.spring.transform(t)), 0), child: child),
+    ),
+  );
 }

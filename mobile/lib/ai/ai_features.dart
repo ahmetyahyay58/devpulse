@@ -186,7 +186,8 @@ class _AiTipLineState extends State<AiTipLine> {
 
 /// Sekmelerin kaydırılan içeriğinin dolgusu: altta Sor balonu kadar boşluk (56 + 16 kenar + 16),
 /// en alttaki satır düğmenin altında kalmasın.
-const tabPadding = EdgeInsets.fromLTRB(16, 16, 16, 88);
+// Alt boşluk: yüzen kapsül menü (64 + 14 kenar) ve üstündeki soru düğmesi içeriği örtmesin.
+const tabPadding = EdgeInsets.fromLTRB(16, 16, 16, 150);
 
 /// Sağ alttaki Sor balonu: beş hazır soru.
 class AskFab extends StatelessWidget {

@@ -25,7 +25,7 @@ Future<void> _openMetrics(WidgetTester tester, FakeBackend backend) async {
     ),
   ));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Analiz'));
+  await tester.tap(find.byTooltip('Analiz'));
   await tester.pumpAndSettle();
 }
 

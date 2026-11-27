@@ -42,7 +42,16 @@ class Brand {
   /// "Dev" beyazdan "Pulse" morundan geçen logo geçişi (başlıklar, vurgular).
   static const gradient = LinearGradient(colors: [Color(0xFFB9B3FF), violet]);
   static const gradientOnLight = LinearGradient(colors: [violet, Color(0xFF4B3CC4)]);
+
+  /// İkinci renk (Tema Laboratuvarı B2, nane): yalnız değişim ve vurgu noktalarında (haftalık fark,
+  /// "N eksik" sayısı). Durum rengi değildir; "tamam/var" için [successColor] kullanılır.
+  static const mintOnDark = Color(0xFF3DD6BB);
+  static const mintOnLight = Color(0xFF0B8573); // beyaz zeminde ~4.6:1
 }
+
+/// Temaya göre nane vurgusu (koyu zeminde açık, açık zeminde koyu ton).
+Color mintColor(BuildContext context) =>
+    Theme.of(context).brightness == Brightness.dark ? Brand.mintOnDark : Brand.mintOnLight;
 
 /// Uygulamanın iki teması; renkler logonun morundan türer, koyu temanın zemini logonun zemini.
 ThemeData appTheme(Brightness brightness) {
@@ -73,18 +82,20 @@ ThemeData appTheme(Brightness brightness) {
           surfaceContainerHighest: const Color(0xFFE0DCF7),
           outlineVariant: const Color(0xFFDCD8F2),
         );
-  final cardColor = dark ? Brand.inkRaised : Colors.white;
+  // Cam kart (Tema Laboratuvarı C2): yarı saydam zemin + ince mor kenar. Arkasındaki ışık
+  // (AuroraBackground) hafifçe görünür. Bulanıklık filtresi yok: kaydırmada telefonu yorar.
+  final cardColor = dark ? Brand.inkRaised.withValues(alpha: 0.62) : Colors.white.withValues(alpha: 0.72);
+  final cardEdge = Brand.lavender.withValues(alpha: dark ? 0.22 : 0.35);
   return ThemeData(
     colorScheme: scheme,
     scaffoldBackgroundColor: scheme.surface,
-    // Kartlar: zeminden bir adım ayrık, ince mor kenar (logodaki parlayan çerçevenin sakin hali).
     cardTheme: CardThemeData(
       color: cardColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: scheme.outlineVariant),
+        side: BorderSide(color: cardEdge),
       ),
     ),
     appBarTheme: AppBarTheme(

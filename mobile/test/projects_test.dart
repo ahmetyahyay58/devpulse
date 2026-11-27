@@ -24,7 +24,7 @@ Future<void> _openProjects(WidgetTester tester, FakeBackend backend) async {
     ),
   ));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Projeler'));
+  await tester.tap(find.byTooltip('Projeler'));
   await tester.pumpAndSettle();
 }
 
@@ -98,7 +98,7 @@ void main() {
     await _openProjects(tester, backend);
     expect(backend.projectsCalls, 1);
 
-    await tester.tap(find.text('Genel Bakış').last); // alt çubuktaki sekme
+    await tester.tap(find.byTooltip('Genel Bakış')); // alt menüdeki sekme
     await tester.pumpAndSettle();
     await tester.tap(find.text('Yeniden senkronla'));
     await tester.pumpAndSettle();

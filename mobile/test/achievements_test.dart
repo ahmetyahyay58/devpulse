@@ -30,7 +30,7 @@ Future<void> _open(WidgetTester tester) async {
     ),
   ));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Başarımlar').last); // alt çubuktaki sekme
+  await tester.tap(find.byTooltip('Başarımlar')); // alt menüdeki sekme
   await tester.pumpAndSettle();
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ui/theme_settings.dart';
 import '../ui/toast.dart';
 import 'weekly_notifications.dart';
 
@@ -37,7 +38,25 @@ class WeeklyCard extends StatelessWidget {
             cell('${now['active_days']}', 'aktif gün (geçen hafta ${last['active_days']})'),
           ]),
           const SizedBox(height: 8),
-          Text(weekly['summary'] as String, style: theme.textTheme.bodyMedium),
+          // Değişim şeridi: nane vurgu (B2), yön oku ile; yazı tema metin renginde kalır.
+          Builder(builder: (context) {
+            final diff = (now['commits'] as num) - (last['commits'] as num);
+            final mint = mintColor(context);
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: mint.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Icon(diff > 0 ? Icons.trending_up : (diff < 0 ? Icons.trending_down : Icons.trending_flat),
+                    size: 18, color: mint),
+                const SizedBox(width: 8),
+                Expanded(child: Text(weekly['summary'] as String, style: theme.textTheme.bodyMedium)),
+              ]),
+            );
+          }),
+          const SizedBox(height: 4),
           Text('Pazartesi\'den bugüne; geçen haftanın aynı günleriyle kıyaslanır.', style: muted),
         ]),
       ),
